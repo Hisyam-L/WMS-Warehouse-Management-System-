@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Stock Kaca</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, Arial, sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* layout */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* sidebar */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, #0f172a, #1e293b);
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .sidebar button:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateX(3px);
+        }
+
+        /* content */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* navbar mobile */
+        .navbar {
+            display: none;
+            background: #0f172a;
+            color: white;
+            padding: 15px;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+        }
+
+        /* mobile menu */
+        .menu {
+            display: none;
+            flex-direction: column;
+            margin-top: 10px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .menu button {
+            margin-top: 5px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+
+        /* header */
+        h2 {
+            text-align: center;
+            background: #0f172a;
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* dropdown */
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: white;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: #0f172a;
+            box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
+        }
+
+        /* output box */
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .box div {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 500;
+        }
+
+        .box div:last-child {
+            border-bottom: none;
+        }
+
+        /* responsive */
+        @media(max-width:768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .navbar {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- SIDEBAR DESKTOP -->
+        <div class="sidebar">
+            <h3>Monitoring Kaca</h3>
+            <button>Dashboard</button>
+            <button>Laporan</button>
+            <button>Logout</button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- NAVBAR MOBILE -->
+            <div class="navbar">
+                <div>Petugas Monitoring</div>
+                <div onclick="toggleMenu()" style="cursor:pointer;">☰</div>
+            </div>
+
+            <div id="mobileMenu" class="menu">
+                <button>Dashboard</button>
+                <button>Laporan</button>
+                <button>Logout</button>
+            </div>
+
+            <h2 style="text-align:center;background:#1e293b;color:white;padding:10px;border-radius:6px;">
+                Monitoring Stock Kaca
+            </h2>
+
+            <!-- DROPDOWN -->
+            <div style="margin:15px 0;">
+                <!-- KATEGORI -->
+                <select id="kategori" onchange="update()">
+                    <option value="">Pilih Kategori</option>
+                    <option value="Cermin">Cermin</option>
+                    <option value="Rebaint">Rebaint</option>
+                    <option value="Biru">Biru</option>
+                    <option value="Hitam">Hitam</option>
+                </select>
+
+                <!-- KETEBALAN (hidden default) -->
+                <select id="ketebalan" onchange="update()" style="display:none;">
+                    <option value="">Pilih Ketebalan</option>
+                    <option value="5">5mm</option>
+                    <option value="10">10mm</option>
+                </select>
+
+                <!-- UKURAN (hidden default) -->
+                <select id="ukuran" onchange="update()" style="display:none;">
+                    <option value="">Pilih Ukuran</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+
+            <!-- OUTPUT -->
+            <div class="box" id="output">
+                <div>Kaca Cermin : 100</div>
+                <div>Kaca Cermin Rusak : 0</div>
+                <div>Kaca Rebaint : 100</div>
+                <div>Kaca Rebaint Rusak : 2</div>
+                <div>Kaca Biru : 100</div>
+                <div>Kaca Biru Rusak : 5</div>
+                <div>Kaca Hitam : 100</div>
+                <div>Kaca Hitam Rusak : 3</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let menuOpen = false;
+
+        function toggleMenu() {
+            menuOpen = !menuOpen;
+            document.getElementById("mobileMenu").style.display = menuOpen ? "flex" : "none";
+        }
+
+        /* data dummy */
+        let data = {
+            Cermin: { stock: 100, rusak: 0 },
+            Rebaint: { stock: 100, rusak: 2 },
+            Biru: { stock: 100, rusak: 5 },
+            Hitam: { stock: 100, rusak: 3 }
+        };
+
+        function update() {
+
+            let kategori = document.getElementById("kategori").value;
+            let ketebalan = document.getElementById("ketebalan");
+            let ukuran = document.getElementById("ukuran");
+            let output = document.getElementById("output");
+
+            /* STEP 1: kategori belum dipilih */
+            if (!kategori) {
+                ketebalan.style.display = "none";
+                ukuran.style.display = "none";
+
+                output.innerHTML = `
+        <div>Kaca Cermin : 100</div>
+        <div>Kaca Cermin Rusak : 0</div>
+        <div>Kaca Rebaint : 100</div>
+        <div>Kaca Rebaint Rusak : 2</div>
+        <div>Kaca Biru : 100</div>
+        <div>Kaca Biru Rusak : 5</div>
+        <div>Kaca Hitam : 100</div>
+        <div>Kaca Hitam Rusak : 3</div>`;
+                return;
+            }
+
+            /* STEP 2: kategori sudah dipilih → tampilkan ketebalan */
+            ketebalan.style.display = "block";
+
+            let stok = data[kategori];
+
+            /* reset ukuran kalau ganti kategori */
+            ukuran.style.display = "none";
+            ukuran.value = "";
+
+            if (!document.getElementById("ketebalan").value) {
+                output.innerHTML = `
+        <div>Kaca ${kategori} : ${stok.stock}</div>
+        <div>Kaca ${kategori} Rusak : ${stok.rusak}</div>`;
+                return;
+            }
+
+            /* STEP 3: ketebalan dipilih → tampilkan ukuran */
+            ukuran.style.display = "block";
+
+            let k = document.getElementById("ketebalan").value;
+
+            if (!document.getElementById("ukuran").value) {
+                output.innerHTML = `
+        <div>Kaca ${kategori} (${k}mm) : ${stok.stock}</div>
+        <div>Kaca ${kategori} Rusak : ${stok.rusak}</div>`;
+                return;
+            }
+
+            /* STEP 4: ukuran dipilih */
+            let u = document.getElementById("ukuran").value;
+
+            output.innerHTML = `
+    <div>Kaca ${kategori} (${k}mm) : ${u}</div>
+    <div>Kaca ${kategori} Rusak : ${stok.rusak}</div>`;
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,236 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body {
+    background-color: #d8d8ea;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ================= NAVBAR BIRU GELAP ================= */
+.top-navbar {
+    background-color: #1f2957;
+    color: white;
+    height: 60px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    z-index: 1000;
+}
+
+.brand-name {
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.circle-profile {
+    width: 35px;
+    height: 35px;
+    background-color: white;
+    border-radius: 50%;
+}
+
+/* ================= AREA UTAMA ================= */
+.main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background-color: #d1d5e8;
+    border-right: 1px solid #b0b5cc;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.close {
+    width: 80px;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    height: 60px;
+}
+
+.menu-title {
+    font-size: 20px;
+    color: #1a1a1a;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 15px;
+}
+
+.menu-list li {
+    margin-bottom: 12px;
+}
+
+.menu-list li a {
+    text-decoration: none;
+    color: #1f2957;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #a9a9c0;
+    font-weight: bold;
+    height: 45px;
+}
+
+.menu-list li a.active {
+    background-color: #1f2957;
+    color: white;
+}
+
+.full-text {
+    display: inline;
+    white-space: nowrap;
+}
+
+.initial {
+    display: none;
+    font-size: 18px;
+}
+
+.sidebar.close .menu-title,
+.sidebar.close .full-text {
+    display: none;
+}
+
+.sidebar.close .initial {
+    display: inline;
+}
+
+.sidebar.close .sidebar-header {
+    justify-content: center;
+}
+
+/* ================= CONTENT AREA ================= */
+.content-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Tab Dashboard */
+.tab-area {
+    background-color: #ced4e5;
+    padding: 8px 0 0 15px;
+    border-bottom: 1px solid #b0b5cc;
+}
+
+.tab-item {
+    background-color: #f4f4fb;
+    display: inline-block;
+    padding: 6px 30px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #b0b5cc;
+    border-bottom: none;
+    font-size: 14px;
+}
+
+.content-body {
+    padding: 20px;
+}
+
+.content-box {
+    background-color: #f4f4fb;
+    border: 1px solid #a9a9c0;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* Label Laporan (Box Putih) */
+.report-label {
+    background: white;
+    border: 1px solid #a9a9c0;
+    display: inline-block;
+    padding: 4px 25px;
+    border-radius: 5px;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+/* Stok Info Styles */
+.stok-item {
+    border-bottom: 1px solid #a9a9c0;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.stok-row {
+    display: flex;
+    justify-content: start;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.stok-name {
+    width: 120px;
+}
+
+/* Table Styling */
+.table {
+    font-size: 14px;
+    background: white;
+}
+
+.thead-light th {
+    background-color: #e9ecef !important;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.btn-cek {
+    background-color: #1f2957;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Custom Dropdown & Buttons */
+.filter-select {
+    border: 1px solid #a9a9c0;
+    border-radius: 20px;
+    padding: 2px 15px;
+    font-size: 13px;
+    outline: none;
+}
+
+.btn-action {
+    background: white;
+    border: 1px solid #a9a9c0;
+    border-radius: 5px;
+    padding: 2px 15px;
+    font-size: 13px;
+}

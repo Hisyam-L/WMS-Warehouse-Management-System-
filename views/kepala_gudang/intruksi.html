@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pergudangan Kaca</title>
+
+    <!-- Bootstrap Icon aja -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Inter, sans-serif;
+        }
+
+        body {
+            background: #d8d8ea;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVBAR */
+        .top-navbar {
+            background: #1f2957;
+            height: 60px;
+            color: white;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 0 24px;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 14px;
+            border-radius: 30px;
+        }
+
+        .circle-profile {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #e9edff;
+        }
+
+        /* MAIN */
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: #d1d5e8;
+            transition: 0.3s;
+            border-right: 1px solid #b0b5cc;
+        }
+
+        .sidebar.close {
+            width: 80px;
+        }
+
+        .sidebar-header {
+            height: 60px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 0 20px;
+            border-bottom: 1px solid #b6bbd4;
+        }
+
+        .menu-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .toggle-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 20px 16px;
+        }
+
+        .menu-list li {
+            margin-bottom: 12px;
+        }
+
+        .menu-list a {
+            text-decoration: none;
+            color: #1f2957;
+            background: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .menu-list a:hover {
+            background: #eef2ff;
+        }
+
+        .menu-list a.active {
+            background: #1f2957;
+            color: white;
+        }
+
+        .full-text {
+            margin-left: 8px;
+        }
+
+        .initial {
+            display: none;
+        }
+
+        .sidebar.close .menu-title,
+        .sidebar.close .full-text {
+            display: none;
+        }
+
+        .sidebar.close .initial {
+            display: inline;
+        }
+
+        /* CONTENT */
+        .content-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        /* FILTER */
+        .filter-custom {
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px;
+            width: 200px;
+            background: white;
+        }
+
+        /* CARD */
+        .glass-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: 0.3s;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .badge-rusak {
+            position: absolute;
+            top: 0;
+            right: 0;
+
+            background: crimson;
+            color: white;
+
+            padding: 8px 14px;
+            border-bottom-left-radius: 14px;
+        }
+
+        /* PANEL */
+        .custom-panel {
+            position: fixed;
+            top: 0;
+            right: -420px;
+
+            width: 400px;
+            height: 100vh;
+
+            background: white;
+            z-index: 9999;
+
+            transition: 0.35s ease;
+
+            display: flex;
+            flex-direction: column;
+
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .custom-panel.show {
+            right: 0;
+        }
+
+        .panel-header {
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h3 {
+            color: #1f2957;
+        }
+
+        .close-panel {
+            border: none;
+            background: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .panel-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1f2957;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            outline: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            background: #1f2957;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #111b44;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="top-navbar">
+        <div class="brand-name">
+            PT. Cermin Nusantara Glass
+        </div>
+
+        <div class="circle-profile"></div>
+    </nav>
+
+    <div class="main-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="menu-title">
+                    Menu
+                </span>
+                <button class="toggle-btn" id="toggleBtn">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <ul class="menu-list">
+                <li>
+                    <a href="#" class="active">
+                        <span class="full-text">Laporan</span>
+                        <span class="initial">L</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="full-text">Instruksi</span>
+                        <span class="initial">I</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="full-text">Message</span>
+                        <span class="initial">M</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content-section">
+            <!-- FILTER -->
+            <div class="flex flex-wrap gap-4 mb-8">
+                <select class="filter-custom">
+                    <option>Semua Kondisi</option>
+                    <option>Baik</option>
+                    <option>Rusak</option>
+                </select>
+                <select class="filter-custom">
+                    <option>Semua Ukuran</option>
+                    <option>180x22 CM</option>
+                </select>
+            </div>
+            <!-- CARD GRID -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- CARD 1 -->
+                <div class="glass-card glass-item">
+                    <div class="relative">
+                        <img src="https://placehold.co/400x200/9ca3af/ffffff?text=Kaca+Cermin"
+                            class="w-full h-44 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between mb-3">
+                            <h3 class="font-bold text-lg">
+                                Kaca Cermin
+                            </h3>
+                            <span class="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full">
+                                20 PCS
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">
+                            Ukuran: 180 x 22 CM
+                        </p>      
+                        <p class="text-sm text-gray-600">
+                            Ketebalan: 2 Mili
+                        </p>
+                    </div>
+                </div>
+                <!-- CARD 2 -->
+                <div class="glass-card glass-item">
+                    <div class="relative">
+                        <img src="https://placehold.co/400x200/a1a1aa/ffffff?text=Kaca+Rusak"
+                            class="w-full h-44 object-cover">
+                        <div class="badge-rusak">
+                            Rusak
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between mb-3">
+                            <h3 class="font-bold text-lg">
+                                Kaca Hitam
+                            </h3>
+                            <span class="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full">
+                                2 PCS
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">
+                            Ukuran: 180 x 22 CM
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            Ketebalan: 6 Mili
+                        </p>
+                    </div>
+                </div>
+                <!-- CARD 3 -->
+                <div class="glass-card glass-item">
+                    <div class="relative">
+                        <img src="https://placehold.co/400x200/7dd3fc/ffffff?text=Kaca+Biru"
+                            class="w-full h-44 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between mb-3">
+                            <h3 class="font-bold text-lg">
+                                Kaca Biru
+                            </h3>
+                            <span class="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full">
+                                7 PCS
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">
+                            Ukuran: 181 x 22 CM
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            Ketebalan: 6 Mili
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PANEL KANAN -->
+    <div class="custom-panel" id="detailPanel">
+        <div class="panel-header">
+            <h3>Detail Kaca</h3>
+            <button class="close-panel" id="closePanel">
+                ✕
+            </button>
+        </div>
+        <div class="panel-body">
+            <form id="glassForm">
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <input type="text" id="namaKaca" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Jumlah Kaca</label>
+                    <input type="number" placeholder="Masukkan jumlah">
+                </div>
+                <div class="form-group">
+                    <label>Nama Pembeli</label>
+                    <input type="text" id="namaPembeli" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Status Pembayaran</label>
+                    <input type="text" id="statusPembayaran" readonly>
+                </div>
+                <div class="form-group">
+                    <label>No HP Pembeli</label>
+                    <input type="text" id="noHp" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Alamat</label>
+                    <textarea rows="4" placeholder="Tulis alamat..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">
+                    Kirim
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+
+        // SIDEBAR
+        const toggleBtn =
+            document.getElementById("toggleBtn");
+
+        const sidebar =
+            document.getElementById("sidebar");
+
+        const icon =
+            toggleBtn.querySelector("i");
+
+        toggleBtn.addEventListener("click", () => {
+
+            sidebar.classList.toggle("close");
+
+            if (sidebar.classList.contains("close")) {
+
+                icon.classList.replace(
+                    "bi-x-lg",
+                    "bi-list"
+                );
+
+            } else {
+
+                icon.classList.replace(
+                    "bi-list",
+                    "bi-x-lg"
+                );
+
+            }
+
+        });
+
+        // PANEL
+        const glassCards =
+            document.querySelectorAll(".glass-item");
+
+        const detailPanel =
+            document.getElementById("detailPanel");
+
+        const namaKacaInput =
+            document.getElementById("namaKaca");
+
+        glassCards.forEach(card => {
+
+            card.addEventListener("click", () => {
+
+                const nama =
+                    card.querySelector("h3").innerText;
+
+                namaKacaInput.value = nama;
+
+                detailPanel.classList.add("show");
+
+            });
+
+        });
+
+        // CLOSE PANEL
+        document
+            .getElementById("closePanel")
+            .addEventListener("click", () => {
+
+                detailPanel.classList.remove("show");
+
+            });
+
+        // SUBMIT
+        document
+            .getElementById("glassForm")
+            .addEventListener("submit", function (e) {
+
+                e.preventDefault();
+
+                alert("Data berhasil dikirim!");
+
+                detailPanel.classList.remove("show");
+
+            });
+
+    </script>
+
+</body>
+
+</html>

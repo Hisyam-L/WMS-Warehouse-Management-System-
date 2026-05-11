@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Kondisi Kaca</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #0f172a;
+        }
+
+        /* LAYOUT */
+        .container-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, #0f172a, #1e293b);
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .sidebar button:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateX(3px);
+        }
+
+        /* CONTENT */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* NAVBAR MOBILE */
+        .navbar-mobile {
+            display: none;
+            background: #0f172a;
+            color: white;
+            padding: 15px;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+        }
+
+        /* MOBILE MENU */
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            margin-top: 10px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .mobile-menu button {
+            margin-top: 5px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+
+        /* CARD */
+        .main-card {
+            background-color: #f5eeed;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        /* HEADER */
+        .header-box {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        /* FORM */
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-select,
+        .form-control {
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+            background: #fcfcfc;
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            border-color: #0f172a;
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+        }
+
+        /* IMAGE */
+        .upload-box {
+            width: 140px;
+            height: 140px;
+            border: 2px dashed #94a3b8;
+            border-radius: 14px;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+
+        .upload-box:hover {
+            border-color: #0f172a;
+        }
+
+        .upload-box span {
+            color: #64748b;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .upload-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        /* BUTTON */
+        .btn-submit {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:768px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .navbar-mobile {
+                display: flex;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .upload-box {
+                width: 100%;
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-layout">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3>Monitoring Kaca</h3>
+
+            <button>Dashboard</button>
+            <button>Laporan Stok</button>
+            <button>Instruksi Membeli Barang</button>
+            <button>Laporan Kondisi Barang</button>
+            <button>Pesan / Chatting</button>
+            <button>Logout</button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- NAVBAR MOBILE -->
+            <div class="navbar-mobile">
+                <div>Petugas Monitoring</div>
+
+                <div onclick="toggleMenu()" style="cursor:pointer;font-size:22px;">
+                    ☰
+                </div>
+            </div>
+
+            <!-- MOBILE MENU -->
+            <div id="mobileMenu" class="mobile-menu">
+                <button>Dashboard</button>
+                <button>Laporan Stok</button>
+                <button>Instruksi Membeli Barang</button>
+                <button>Laporan Kondisi Barang</button>
+                <button>Pesan / Chatting</button>
+                <button>Logout</button>
+            </div>
+
+            <!-- CARD -->
+            <div class="main-card">
+
+                <div class="header-box">
+                    Laporan Kondisi Kaca
+                </div>
+
+                <form>
+
+                    <!-- UPLOAD -->
+                    <!-- UPLOAD -->
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Tambah Gambar
+                        </label>
+
+                        <div class="upload-box" onclick="bukaKamera()">
+
+                            <span id="uploadText">
+                                Klik untuk buka kamera
+                            </span>
+
+                            <img id="previewImage">
+
+                        </div>
+
+                        <input type="file" id="imgInput" accept="image/*" capture="environment" style="display:none;">
+
+                    </div>
+
+                    <!-- KATEGORI -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Kategori Kaca
+                        </label>
+
+                        <select class="form-select">
+                            <option>Pilih Kategori</option>
+                            <option>Cermin</option>
+                            <option>Rebaint</option>
+                            <option>Biru</option>
+                            <option>Hitam</option>
+                        </select>
+                    </div>
+
+                    <!-- UKURAN -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Ukuran Kaca
+                        </label>
+
+                        <select class="form-select">
+                            <option>Pilih Ukuran</option>
+                            <option>100 x 200</option>
+                            <option>150 x 250</option>
+                        </select>
+                    </div>
+
+                    <!-- KETEBALAN -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Ketebalan Kaca
+                        </label>
+
+                        <select class="form-select">
+                            <option>Pilih Ketebalan</option>
+                            <option>2 mm</option>
+                            <option>5 mm</option>
+                            <option>10 mm</option>
+                        </select>
+                    </div>
+
+                    <!-- CATATAN -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            Catatan Kaca
+                        </label>
+
+                        <textarea class="form-control" rows="4"
+                            placeholder="Masukkan kondisi atau catatan kaca"></textarea>
+                    </div>
+
+                    <!-- BUTTON -->
+                    <button type="submit" class="btn-submit">
+                        Kirim Kondisi Kaca
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        let menuOpen = false;
+
+        function toggleMenu() {
+
+            menuOpen = !menuOpen;
+
+            const mobileMenu =
+                document.getElementById("mobileMenu");
+
+            mobileMenu.style.display =
+                menuOpen ? "flex" : "none";
+        }
+
+        const imgInput =
+            document.getElementById("imgInput");
+
+        const previewImage =
+            document.getElementById("previewImage");
+
+        const uploadText =
+            document.getElementById("uploadText");
+
+        function bukaKamera() {
+
+            imgInput.click();
+        }
+
+        imgInput.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            /* kalau user batal pilih */
+            if (!file) {
+                return;
+            }
+
+            /* validasi file gambar */
+            if (!file.type.startsWith("image/")) {
+
+                alert("File harus berupa gambar");
+
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+
+                /* tampilkan preview */
+                previewImage.src =
+                    event.target.result;
+
+                previewImage.style.display =
+                    "block";
+
+                /* sembunyikan text */
+                uploadText.style.display =
+                    "none";
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+    </script>
+
+</body>
+
+</html>

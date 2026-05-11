@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Dashboard Pergudangan Kaca | Sistem Inventaris</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #d8d8ea;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .top-navbar {
+            background-color: #1f2957;
+            color: white;
+            height: 60px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+
+        .circle-profile {
+            width: 38px;
+            height: 38px;
+            background-color: #e9edff;
+            border-radius: 50%;
+            border: 2px solid #a8b3e0;
+            transition: 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background-color: #d1d5e8;
+            border-right: 1px solid #b0b5cc;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.02);
+        }
+
+        .sidebar.close {
+            width: 80px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            height: 60px;
+            border-bottom: 1px solid #b6bbd4;
+        }
+
+        .menu-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #12172f;
+            letter-spacing: -0.2px;
+        }
+
+        .toggle-btn {
+            background: #eef2ff;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #1f2957;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: #ffffff;
+            color: #0a1030;
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 20px 16px;
+            margin: 0;
+        }
+
+        .menu-list li {
+            margin-bottom: 14px;
+        }
+
+        .menu-list li a {
+            text-decoration: none;
+            color: #1f2957;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #b5bad2;
+            font-weight: 600;
+            height: 48px;
+            font-size: 15px;
+            transition: 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .menu-list li a:hover {
+            background-color: #eef2ff;
+            border-color: #8e95bc;
+            transform: translateX(3px);
+        }
+
+        .menu-list li a.active {
+            background-color: #1f2957;
+            color: white;
+            border-color: #1f2957;
+            box-shadow: 0 2px 6px rgba(31, 41, 87, 0.2);
+        }
+
+        .full-text {
+            display: inline;
+            white-space: nowrap;
+            margin-left: 6px;
+        }
+
+        .initial {
+            display: none;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .sidebar.close .menu-title,
+        .sidebar.close .full-text {
+            display: none;
+        }
+
+        .sidebar.close .initial {
+            display: inline-block;
+        }
+
+        .sidebar.close .sidebar-header {
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        .sidebar.close .menu-list li a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .tab-area {
+            background-color: #ced4e5;
+            padding: 10px 0 0 24px;
+            border-bottom: 1px solid #aeb3cb;
+        }
+
+        .tab-item {
+            background-color: #f4f4fb;
+            display: inline-block;
+            padding: 8px 32px;
+            border-radius: 12px 12px 0 0;
+            border: 1px solid #b0b5cc;
+            border-bottom: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e2652;
+            letter-spacing: 0.3px;
+            box-shadow: 0 -2px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .content-body {
+            padding: 24px 28px;
+            background-color: #E0E9EF;
+        }
+
+        .content-box {
+            background-color: #f4f4fb;
+            border: 1px solid #c9cee2;
+            padding: 22px 24px;
+            border-radius: 20px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s;
+        }
+
+        .report-label {
+            background: white;
+            border: 1px solid #c0c5db;
+            display: inline-block;
+            padding: 6px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 15px;
+            color: #1f2957;
+            letter-spacing: 0.2px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .filter-bar {
+            background: white;
+            border-radius: 60px;
+            padding: 6px 12px;
+            display: inline-flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #cbcfeb;
+        }
+
+        .filter-select {
+            border: none;
+            background: #f4f6fd;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1f2957;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .table-custom {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        .table-custom th {
+            background-color: #eef2ff;
+            color: #1f2957;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 14px 8px;
+            border-bottom: 1px solid #cdd4ea;
+        }
+
+        .table-custom td {
+            padding: 12px 8px;
+            vertical-align: middle;
+            font-size: 13px;
+            border-bottom: 1px solid #e2e6f2;
+            color: #202744;
+        }
+
+        .stok-table-box {
+            background-color: white;
+            border: 1px solid #c0c5db;
+            border-radius: 10px;
+            padding: 15px 20px;
+            width: 100%;
+        }
+
+        .stok-row {
+            display: flex;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #e1e4f0;
+            font-size: 14px;
+            color: #1f2957;
+        }
+
+        .stok-row:last-child {
+            border-bottom: none;
+        }
+
+        .stok-name {
+            width: 170px;
+            font-weight: 500;
+        }
+
+        .stok-separator {
+            width: 20px;
+            text-align: center;
+        }
+
+        .stok-number {
+            width: 50px;
+            font-weight: 700;
+        }
+
+        .btn-cek {
+            background-color: #1f2957;
+            color: white;
+            border: none;
+            padding: 5px 20px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn-cek:hover {
+            background-color: #0f1740;
+            transform: scale(0.96);
+        }
+
+        .btn-action {
+            background: white;
+            border: 1px solid #c2c8e2;
+            border-radius: 40px;
+            padding: 6px 20px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            background-color: #eef2ff;
+            border-color: #8e96bc;
+        }
+
+        .status-badge {
+            background: #e7edff;
+            padding: 4px 12px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-masuk {
+            background: #e0f4e8;
+            color: #196e3a;
+        }
+
+        .status-keluar {
+            background: #ffe6e5;
+            color: #b13e3e;
+        }
+
+        .d-flex.gap-3 {
+            gap: 16px;
+        }
+
+        @media (max-width: 700px) {
+            .content-body {
+                padding: 18px;
+            }
+
+            .stok-card {
+                min-width: 140px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="top-navbar">
+        <div class="brand-name">PT. Cermin Nusantara Glass</div>
+        <div class="circle-profile"></div>
+    </nav>
+
+    <div class="main-container">
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="menu-title">Menu</span>
+                <button class="toggle-btn" id="toggleBtn">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <ul class="menu-list">
+                <li><a href="#" class="active" id="menuLaporan"><span class="full-text">Laporan</span><span
+                            class="initial">L</span></a></li>
+                <li><a href="#" id="menuInstruksi"><span class="full-text">Instruksi</span><span
+                            class="initial">I</span></a></li>
+                <li><a href="#" id="menuMessage"><span class="full-text">Message</span><span
+                            class="initial">M</span></a></li>
+                <li><a href="#" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span
+                            class="initial">T</span></a></li>
+            </ul>
+        </aside>
+
+        <main class="content-section">
+            <div class="tab-area">
+                <div class="tab-item">📋 Dashboard Operasional</div>
+            </div>
+
+            <div class="content-body">
+                <div class="content-box">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <div class="report-label">📊 Laporan Stok Gudang</div>
+                        <div class="filter-bar">
+                            <select class="filter-select" id="filterUkuran">
+                                <option value="all">Semua Ukuran</option>
+                                <option value="180x22">180x22 CM</option>
+                                <option value="181x22">181x22 CM</option>
+                                <option value="182x22">182x22 CM</option>
+                                <option value="200x22">200x22 CM</option>
+                            </select>
+                            <select class="filter-select" id="filterKetebalan">
+                                <option value="all">Semua Ketebalan</option>
+                                <option value="6">6 Mil</option>
+                                <option value="2">2 Mil</option>
+                                <option value="5">5 Mil</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="stok-table-box">
+
+                        <div class="stok-row">
+                            <span class="stok-name">Kaca Cermin</span>
+                            <span class="stok-separator">:</span>
+                            <span class="stok-number">100</span>
+                        </div>
+
+                        <div class="stok-row">
+                            <span class="stok-name">Cermin Rusak</span>
+                            <span class="stok-separator">:</span>
+                            <span class="stok-number">0</span>
+                        </div>
+
+                        <div class="stok-row">
+                            <span class="stok-name">Kaca Rebaint</span>
+                            <span class="stok-separator">:</span>
+                            <span class="stok-number">100</span>
+                        </div>
+
+                        <div class="stok-row">
+                            <span class="stok-name">Rebaint Rusak</span>
+                            <span class="stok-separator">:</span>
+                            <span class="stok-number">0</span>
+                        </div>
+
+                        <div class="stok-row">
+                            <span class="stok-name">Kaca Biru</span>
+                            <span class="stok-separator">:</span>
+                            <span class="stok-number">100</span>
+                        </div>
+
+                        <div class="stok-row">
+                            <span class="stok-name">Biru Rusak</span>
+                            <span class="stok-separator">:</span>
+                            <span class="stok-number">0</span>
+                        </div>
+
+                        <div class="stok-row">
+                            <span class="stok-name">Kaca Hitam</span>
+                            <span class="stok-separator">:</span>
+                            <span class="stok-number">100</span>
+                        </div>
+
+                        <div class="stok-row">
+                            <span class="stok-name">Hitam Rusak</span>
+                            <span class="stok-separator">:</span>
+                            <span class="stok-number">0</span>
+                        </div>
+
+                    </div>
+                    <div class="mt-2 text-muted small text-end">*stok aktual per hari ini</div>
+                </div>
+
+                <div class="content-box">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3 gap-2">
+                        <div class="report-label">📋 Laporan Transaksi Harian</div>
+                        <div class="d-flex gap-2">
+                            <button class="btn-action" id="btnTanggalFilter">📅 Filter Tanggal</button>
+                            <button class="btn-action" id="btnDownloadCSV">⬇️ Download CSV</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-custom" id="transaksiTable">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Waktu</th>
+                                    <th>Jenis Kaca</th>
+                                    <th>Ukuran</th>
+                                    <th>Ketebalan</th>
+                                    <th>Status</th>
+                                    <th>Jumlah</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaksiBody">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const stokData = [
+            { nama: "Kaca Cermin", stokBaik: 100, rusak: 0, varian: "cermin" },
+            { nama: "Kaca Rebaint", stokBaik: 100, rusak: 0, varian: "rebaint" },
+            { nama: "Kaca Biru", stokBaik: 100, rusak: 0, varian: "biru" },
+            { nama: "Kaca Hitam", stokBaik: 100, rusak: 0, varian: "hitam" }
+        ];
+
+        let transactions = [
+            { id: 1, tanggal: "1 April 2026", waktu: "10:00", jenis: "Cermin", ukuran: "180x22 CM", ketebalan: "6 Mil", status: "Keluar", jumlah: 2 },
+            { id: 2, tanggal: "1 April 2026", waktu: "10:00", jenis: "Rebaint", ukuran: "181x22 CM", ketebalan: "2 Mil", status: "Masuk", jumlah: 10 },
+            { id: 3, tanggal: "1 April 2026", waktu: "10:00", jenis: "Biru", ukuran: "182x22 CM", ketebalan: "2 Mil", status: "Masuk", jumlah: 10 },
+            { id: 4, tanggal: "1 April 2026", waktu: "10:00", jenis: "Hitam", ukuran: "200x22 CM", ketebalan: "2 Mil", status: "Keluar", jumlah: 10 },
+            { id: 5, tanggal: "2 April 2026", waktu: "09:15", jenis: "Cermin", ukuran: "180x22 CM", ketebalan: "6 Mil", status: "Keluar", jumlah: 5 },
+            { id: 6, tanggal: "2 April 2026", waktu: "14:30", jenis: "Biru", ukuran: "182x22 CM", ketebalan: "2 Mil", status: "Masuk", jumlah: 15 },
+            { id: 7, tanggal: "3 April 2026", waktu: "11:20", jenis: "Hitam", ukuran: "200x22 CM", ketebalan: "5 Mil", status: "Keluar", jumlah: 3 }
+        ];
+
+        function renderStok() {
+            const container = document.getElementById('stokGridContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            stokData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'stok-card';
+                card.innerHTML = `
+                    <div class="stok-name">${item.nama}</div>
+                    <div class="stok-qty">${item.stokBaik} <small>lembar</small></div>
+                    <div class="stok-rusak"><i class="bi bi-exclamation-triangle-fill" style="font-size:11px;"></i> Rusak: ${item.rusak}</div>
+                    <div style="margin-top: 8px; font-size:12px; color:#65708f;"><i class="bi bi-box-seam"></i> ready</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderTransactions(data) {
+            const tbody = document.getElementById('transaksiBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">Tidak ada transaksi</td></tr>';
+                return;
+            }
+            data.forEach(trx => {
+                const row = tbody.insertRow();
+                const statusClass = trx.status === 'Masuk' ? 'status-masuk' : 'status-keluar';
+                row.innerHTML = `
+                    <td>${trx.tanggal}</td>
+                    <td>${trx.waktu}</td>
+                    <td><strong>${trx.jenis}</strong></td>
+                    <td>${trx.ukuran}</td>
+                    <td>${trx.ketebalan}</td>
+                    <td><span class="status-badge ${statusClass}">${trx.status}</span></td>
+                    <td>${trx.jumlah}</td>
+                    <td><button class="btn-cek" data-id="${trx.id}">Cek Detail</button></td>
+                `;
+            });
+            document.querySelectorAll('.btn-cek').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const found = transactions.find(t => t.id === id);
+                    if (found) {
+                        alert(`📄 Detail Transaksi\nJenis: ${found.jenis}\nUkuran: ${found.ukuran}\nKetebalan: ${found.ketebalan}\nStatus: ${found.status}\nJumlah: ${found.jumlah}\nHari: ${found.tanggal} ${found.waktu}`);
+                    } else {
+                        alert("Transaksi tidak ditemukan");
+                    }
+                });
+            });
+        }
+
+        document.getElementById('btnTanggalFilter')?.addEventListener('click', () => {
+            let filterDate = prompt("Masukkan tanggal (contoh: 1 April 2026 atau 2 April 2026):", "1 April 2026");
+            if (filterDate && filterDate.trim() !== "") {
+                const filtered = transactions.filter(t => t.tanggal.toLowerCase().includes(filterDate.toLowerCase()));
+                if (filtered.length === 0) {
+                    alert(`Tidak ada transaksi pada tanggal "${filterDate}"`);
+                    renderTransactions(transactions);
+                } else {
+                    renderTransactions(filtered);
+                }
+            } else {
+                renderTransactions(transactions);
+            }
+        });
+
+        function downloadCSV() {
+            const headers = ["Tanggal", "Waktu", "Jenis Kaca", "Ukuran", "Ketebalan", "Status", "Jumlah"];
+            const rows = transactions.map(t => [t.tanggal, t.waktu, t.jenis, t.ukuran, t.ketebalan, t.status, t.jumlah]);
+            const csvContent = [headers, ...rows].map(row => row.join(",")).join("\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute("download", "laporan_transaksi_gudang.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+        document.getElementById('btnDownloadCSV')?.addEventListener('click', downloadCSV);
+
+        const filterUkuran = document.getElementById('filterUkuran');
+        const filterKetebalan = document.getElementById('filterKetebalan');
+        function applyStokFilterMessage() {
+            const ukuranVal = filterUkuran?.value || 'all';
+            const tebalVal = filterKetebalan?.value || 'all';
+            let msg = '';
+            if (ukuranVal !== 'all') msg += `Ukuran: ${ukuranVal} `;
+            if (tebalVal !== 'all') msg += `Ketebalan: ${tebalVal} Mil`;
+            if (msg !== '') {
+                const cards = document.querySelectorAll('.stok-card');
+                cards.forEach(card => {
+                    card.style.transition = "0.2s";
+                    card.style.opacity = "1";
+                    if (ukuranVal !== 'all' || tebalVal !== 'all') {
+                        // efek soft highlight
+                        card.style.backgroundColor = "#fefce8";
+                        setTimeout(() => {
+                            card.style.backgroundColor = "";
+                        }, 300);
+                    }
+                });
+                if (!window.filterNotified) {
+                    
+                }
+            } else {
+                document.querySelectorAll('.stok-card').forEach(c => c.style.backgroundColor = "");
+            }
+        }
+        filterUkuran?.addEventListener('change', () => { applyStokFilterMessage(); });
+        filterKetebalan?.addEventListener('change', () => { applyStokFilterMessage(); });
+
+        const toggleBtn = document.getElementById("toggleBtn");
+        const sidebar = document.getElementById("sidebar");
+        const iconSpan = toggleBtn?.querySelector("i");
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("close");
+                if (sidebar.classList.contains("close")) {
+                    iconSpan?.classList.replace("bi-x-lg", "bi-list");
+                } else {
+                    iconSpan?.classList.replace("bi-list", "bi-x-lg");
+                }
+            });
+        }
+
+        document.getElementById('menuInstruksi')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("📌 Instruksi :\n- Gunakan filter ukuran/ketebalan untuk menyaring tampilan stok.\n- Klik 'Cek Detail' untuk info transaksi.\n- Download CSV untuk ekspor data.");
+        });
+        document.getElementById('menuMessage')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("💬 Pesan: Sistem pergudangan berjalan normal. Stok aman. Terima kasih.");
+        });
+        document.getElementById('menuTambahAkun')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("➕ Fitur Tambah Akun akan segera hadir. (Demo interaksi)");
+        });
+        document.getElementById('menuLaporan')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            // scroll ke konten laporan
+            document.querySelector('.content-body')?.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        renderStok();
+        renderTransactions(transactions);
+
+        // tambahan sedikit efek: agar filter ukuran/ketebalan juga mensortir transaksi? tidak diperlukan (tetap).
+        // namun agar rapi, tambahkan reset stok highlight ketika halaman dimuat
+        window.addEventListener('load', () => {
+            // pastikan sidebar awal tidak collapse sebelumnya
+            if (sidebar && !sidebar.classList.contains('close')) {
+                // aman
+            }
+            // update time friendly
+            console.log("Dashboard siap dengan UI rapi");
+        });
+
+    </script>
+</body>
+
+</html>

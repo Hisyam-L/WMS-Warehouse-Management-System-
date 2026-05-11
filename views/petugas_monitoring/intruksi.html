@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instruksi Beli Kaca</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, Arial, sans-serif;
+            background: #f8f9fa;
+            color: #0f172a;
+        }
+
+        /* LAYOUT */
+        .container-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, #0f172a, #1e293b);
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .sidebar button:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateX(3px);
+        }
+
+        /* CONTENT */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* NAVBAR MOBILE */
+        .navbar-mobile {
+            display: none;
+            background: #0f172a;
+            color: white;
+            padding: 15px;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            margin-top: 10px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .mobile-menu button {
+            margin-top: 5px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+
+        /* CARD */
+        .main-card {
+            background: #f5eeed;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            height: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid black;
+        }
+
+        /* HEADER */
+        .header-box {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* FORM */
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-select,
+        .form-control {
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            border-color: #0f172a;
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+        }
+
+        /* BUTTON */
+        .btn-submit {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #1e293b;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .navbar-mobile {
+                display: flex;
+            }
+
+            .content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-layout">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h3>Monitoring Kaca</h3>
+
+            <button>Dashboard</button>
+            <button>Laporan</button>
+            <button>Instruksi Beli</button>
+            <button>Logout</button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- NAVBAR MOBILE -->
+            <div class="navbar-mobile">
+                <div>Petugas Monitoring</div>
+                <div onclick="toggleMenu()" style="cursor:pointer;">☰</div>
+            </div>
+
+            <!-- MOBILE MENU -->
+            <div id="mobileMenu" class="mobile-menu">
+                <button>Dashboard</button>
+                <button>Laporan</button>
+                <button>Instruksi Beli</button>
+                <button>Logout</button>
+            </div>
+
+            <!-- CARD -->
+            <div class="main-card">
+
+                <div class="header-box">
+                    Instruksi Beli Kaca
+                </div>
+
+                <form>
+
+                    <!-- KATEGORI -->
+                    <div class="mb-3">
+                        <label class="form-label">Kategori Kaca</label>
+
+                        <select id="kategori" class="form-select" onchange="updateDropdown()">
+                            <option value="">Pilih Kategori</option>
+                            <option value="Cermin">Cermin</option>
+                            <option value="Rebaint">Rebaint</option>
+                            <option value="Biru">Biru</option>
+                            <option value="Hitam">Hitam</option>
+                        </select>
+                    </div>
+
+                    <!-- UKURAN -->
+                    <div class="mb-3" id="ukuranBox">
+                        <label class="form-label">Ukuran Kaca</label>
+
+                        <select id="ukuran" class="form-select" onchange="updateDropdown()">
+
+                            <option value="">Pilih Ukuran</option>
+                            <option>100 x 200</option>
+                            <option>150 x 250</option>
+
+                        </select>
+                    </div>
+
+                    <!-- KETEBALAN -->
+                    <div class="mb-3" id="ketebalanBox">
+                        <label class="form-label">Ketebalan Kaca</label>
+
+                        <select id="ketebalan" class="form-select">
+
+                            <option value="">Pilih Ketebalan</option>
+                            <option>2 mm</option>
+                            <option>5 mm</option>
+                            <option>10 mm</option>
+
+                        </select>
+                    </div>
+
+                    <!-- JUMLAH -->
+                    <div class="mb-4">
+                        <label class="form-label">Jumlah Kaca</label>
+
+                        <input type="number" class="form-control" placeholder="Masukkan jumlah kaca">
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        Kirim Instruksi
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        let menuOpen = false;
+
+        function toggleMenu() {
+            menuOpen = !menuOpen;
+
+            document.getElementById("mobileMenu").style.display =
+                menuOpen ? "flex" : "none";
+        }
+    </script>
+
+</body>
+
+</html>

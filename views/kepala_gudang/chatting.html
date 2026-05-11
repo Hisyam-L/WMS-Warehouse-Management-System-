@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pergudangan Kaca</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Inter, sans-serif;
+        }
+
+        body {
+            background: #d8d8ea;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-navbar {
+            background: #1f2957;
+            height: 60px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 14px;
+            border-radius: 30px;
+        }
+
+        .circle-profile {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #e9edff;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #d1d5e8;
+            transition: 0.3s;
+            border-right: 1px solid #b0b5cc;
+        }
+
+        .sidebar.close {
+            width: 80px;
+        }
+
+        .sidebar-header {
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #b6bbd4;
+        }
+
+        .menu-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .toggle-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 20px 16px;
+        }
+
+        .menu-list li {
+            margin-bottom: 12px;
+        }
+
+        .menu-list a {
+            text-decoration: none;
+            color: #1f2957;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .menu-list a:hover {
+            background: #eef2ff;
+        }
+
+        .menu-list a.active {
+            background: #1f2957;
+            color: white;
+        }
+
+        .full-text {
+            margin-left: 8px;
+        }
+
+        .initial {
+            display: none;
+        }
+
+        .sidebar.close .menu-title,
+        .sidebar.close .full-text {
+            display: none;
+        }
+
+        .sidebar.close .initial {
+            display: inline;
+        }
+
+        .content-section {
+            flex: 1;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .chat-layout {
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-list {
+            width: 230px;
+            background: #eef2ff;
+            border-right: 1px solid #dbe1ff;
+            padding: 16px;
+        }
+
+        .user-card {
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.5;
+            border: 1px solid #dbe1ff;
+        }
+
+        .user-card.active {
+            background: #1f2957;
+            color: white;
+        }
+
+        .user-card:not(.active) {
+            background: white;
+            color: #374151;
+        }
+
+        .user-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+        }
+
+        .chat-header {
+            height: 70px;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+            font-weight: bold;
+            font-size: 18px;
+            color: #1f2957;
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .chat-row.right {
+            justify-content: flex-end;
+        }
+
+        .chat-avatar {
+            width: 30px;
+            height: 30px;
+            background: #cbd5e1;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .chat-bubble {
+            max-width: 320px;
+            padding: 14px 18px;
+            border-radius: 18px;
+            line-height: 1.5;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .chat-right {
+            background: #1f2957;
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .chat-left {
+            background: #e5e7eb;
+            color: #111827;
+            border-bottom-left-radius: 6px;
+        }
+
+        .input-area {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .input-wrapper {
+            position: relative;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 13px 55px 13px 20px;
+            border-radius: 999px;
+            border: 1px solid #9ca3af;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .chat-input:focus {
+            border-color: #1f2957;
+            box-shadow: 0 0 0 3px rgba(31, 41, 87, 0.15);
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .send-btn:hover {
+            color: #1f2957;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="top-navbar">
+        <div class="brand-name">PT. Cermin Nusantara Glass</div>
+        <div class="circle-profile"></div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="menu-title">Menu</span>
+                <button class="toggle-btn" id="toggleBtn">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <ul class="menu-list">
+                <li>
+                    <a href="#" class="active">
+                        <span class="full-text">Laporan</span>
+                        <span class="initial">L</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="full-text">Instruksi</span>
+                        <span class="initial">I</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="full-text">Message</span>
+                        <span class="initial">M</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        <main class="content-section">
+            <div class="chat-layout">
+                <div class="user-list">
+                    <div class="user-card active" id="btnPencatatan">
+                        Petugas<br>Pencatatan
+                    </div>
+                    <div class="user-card" id="btnMonitoring">
+                        Petugas<br>Monitoring
+                    </div>
+                </div>
+                <div class="chat-area">
+                    <div class="chat-header" id="chatTitle">
+                        Chat - Petugas Pencatatan
+                    </div>
+                    <div class="chat-container" id="chatContainer">
+                    </div>
+                    <div class="input-area">
+                        <div class="input-wrapper">
+                            <input type="text" id="messageInput" class="chat-input"
+                                placeholder="Type a new message here">
+                            <button class="send-btn" id="sendBtn">
+                                <i class="bi bi-send-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById("toggleBtn");
+        const sidebar = document.getElementById("sidebar");
+        const icon = toggleBtn.querySelector("i");
+        toggleBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+            if (sidebar.classList.contains("close")) {
+                icon.classList.replace("bi-x-lg", "bi-list");
+            } else {
+                icon.classList.replace("bi-list", "bi-x-lg");
+            }
+        });
+        const chatContainer = document.getElementById("chatContainer");
+        const chatTitle = document.getElementById("chatTitle");
+        const chats = {
+            pencatatan: [
+                { side: "right", text: "Halo, bagaimana stok kaca hari ini?" },
+                { side: "left", text: "Stok aman, tetapi kaca biru tinggal sedikit." },
+                { side: "right", text: "Oke, nanti saya buat laporan restock." }
+            ],
+            monitoring: [
+                { side: "left", text: "Monitoring gudang selesai dilakukan." },
+                { side: "right", text: "Apakah ada kaca yang rusak?" },
+                { side: "left", text: "Ada 2 kaca retak di area belakang gudang." }
+            ]
+        };
+        let currentChat = "pencatatan";
+        function renderChat(type) {
+            chatContainer.innerHTML = "";
+            chats[type].forEach(chat => {
+                const row = document.createElement("div");
+                row.className = `chat-row ${chat.side === "right" ? "right" : ""}`;
+                const avatar = document.createElement("div");
+                avatar.className = "chat-avatar";
+                const bubble = document.createElement("div");
+                bubble.className = `chat-bubble ${chat.side === "right" ? "chat-right" : "chat-left"}`;
+                bubble.innerText = chat.text;
+                if (chat.side === "right") {
+                    row.appendChild(bubble);
+                    row.appendChild(avatar);
+                } else {
+                    row.appendChild(avatar);
+                    row.appendChild(bubble);
+                }
+                chatContainer.appendChild(row);
+            });
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        renderChat(currentChat);
+        document.getElementById("btnPencatatan").addEventListener("click", () => {
+            currentChat = "pencatatan";
+            document.getElementById("btnPencatatan").classList.add("active");
+            document.getElementById("btnMonitoring").classList.remove("active");
+            chatTitle.innerText = "Chat - Petugas Pencatatan";
+            renderChat(currentChat);
+        });
+
+        document.getElementById("btnMonitoring").addEventListener("click", () => {
+
+            currentChat = "monitoring";
+
+            document.getElementById("btnMonitoring").classList.add("active");
+            document.getElementById("btnPencatatan").classList.remove("active");
+
+            chatTitle.innerText = "Chat - Petugas Monitoring";
+
+            renderChat(currentChat);
+
+        });
+
+        const sendBtn = document.getElementById("sendBtn");
+        const messageInput = document.getElementById("messageInput");
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message === "") return;
+            const newMessage = {
+                side: "right",
+                text: message
+            };
+            chats[currentChat].push(newMessage);
+            renderChat(currentChat);
+            messageInput.value = "";
+            setTimeout(() => {
+                const reply = {
+                    side: "left",
+                    text: "Pesan diterima."
+                };
+                chats[currentChat].push(reply);
+                renderChat(currentChat);
+            }, 700);
+        }
+        sendBtn.addEventListener("click", sendMessage);
+        messageInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

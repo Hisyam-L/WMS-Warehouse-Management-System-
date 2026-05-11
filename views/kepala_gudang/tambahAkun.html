@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard Pergudangan Kaca</title>
+
+    <!-- Bootstrap Icons + Font Awesome untuk icon tambahan -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #d8d8ea;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVBAR */
+        .top-navbar {
+            background: #1f2957;
+            height: 60px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .brand-name {
+            font-size: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        .circle-profile {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #e9edff;
+            border: 2px solid #a8b3e0;
+        }
+
+        /* MAIN */
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR (tidak diubah) */
+        .sidebar {
+            width: 260px;
+            background: #d1d5e8;
+            transition: 0.3s;
+            border-right: 1px solid #b0b5cc;
+        }
+
+        .sidebar.close {
+            width: 80px;
+        }
+
+        .sidebar-header {
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #b6bbd4;
+        }
+
+        .menu-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #12172f;
+        }
+
+        .toggle-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-btn:hover {
+            background: #eef2ff;
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 20px 16px;
+        }
+
+        .menu-list li {
+            margin-bottom: 12px;
+        }
+
+        .menu-list a {
+            text-decoration: none;
+            color: #1f2957;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+            border: 1px solid #c1c6df;
+        }
+
+        .menu-list a:hover {
+            background: #eef2ff;
+            transform: translateX(3px);
+        }
+
+        .menu-list a.active {
+            background: #1f2957;
+            color: white;
+            border-color: #1f2957;
+        }
+
+        .full-text {
+            margin-left: 8px;
+        }
+
+        .initial {
+            display: none;
+        }
+
+        .sidebar.close .menu-title,
+        .sidebar.close .full-text {
+            display: none;
+        }
+
+        .sidebar.close .initial {
+            display: inline;
+        }
+
+        /* CONTENT */
+        .content-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #e9ebf2;
+        }
+
+        /* SECTION */
+        .section-box {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            display: inline-block;
+            background: white;
+            border: 1px solid #93c5fd;
+            padding: 10px 22px;
+            border-radius: 999px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        /* =========== CARD INVITE DIPERBAIKI & DIPERCANTIK (HANYA BAGIAN INI) =========== */
+        .invite-container {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .invite-card {
+            width: 280px;
+            background: white;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e0e7ff;
+            position: relative;
+            overflow: hidden;
+            padding: 24px 20px 28px 20px;
+        }
+
+        /* efek garis atas premium */
+        .invite-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1f2957, #6366f1, #818cf8);
+        }
+
+        .invite-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 28px -12px rgba(0, 0, 0, 0.2);
+            border-color: #b9c3e0;
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            transition: 0.2s;
+        }
+
+        .invite-card:hover .card-icon {
+            background: linear-gradient(135deg, #1f2957, #2d3a7c);
+        }
+
+        .invite-card:hover .card-icon i {
+            color: white !important;
+        }
+
+        .invite-card p {
+            font-weight: 800;
+            font-size: 20px;
+            color: #0f172a;
+            margin: 6px 0 4px;
+            letter-spacing: -0.2px;
+        }
+
+        .role-desc {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 18px;
+            font-weight: 500;
+            background: #f8fafc;
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+
+        .invite-card span {
+            background: #1f2957;
+            color: white;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .invite-card span i {
+            font-size: 14px;
+        }
+
+        .invite-card:hover span {
+            background: #0f1740;
+            transform: scale(0.97);
+            gap: 10px;
+        }
+
+        /* TABLE (tidak diubah, tetap rapi seperti semula) */
+        .table-container {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #bfdbfe;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #eef2ff;
+        }
+
+        th {
+            padding: 18px;
+            color: #374151;
+            font-weight: 700;
+            border-bottom: 1px solid #dbeafe;
+            text-align: center;
+        }
+
+        td {
+            padding: 16px 18px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+
+        .badge-jabatan {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-monitor {
+            background: #e0e7ff;
+            color: #1e40af;
+        }
+
+        .badge-pencatatan {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .accept-btn {
+            background: none;
+            border: none;
+            color: #15803d;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 6px 18px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .accept-btn:hover {
+            background: #e8f5e9;
+            transform: scale(0.96);
+        }
+
+        .reject-btn {
+            background: none;
+            border: none;
+            color: #b91c1c;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 6px 18px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .reject-btn:hover {
+            background: #fee2e2;
+            transform: scale(0.96);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 700px) {
+            .content-section {
+                padding: 20px;
+            }
+
+            .invite-card {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- NAVBAR (TIDAK DIRUBAH) -->
+    <nav class="top-navbar">
+        <div class="brand-name">
+            PT. Cermin Nusantara Glass
+        </div>
+        <div class="circle-profile"></div>
+    </nav>
+
+    <div class="main-container">
+
+        <!-- SIDEBAR (TIDAK DIRUBAH) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="menu-title">Menu</span>
+                <button class="toggle-btn" id="toggleBtn">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <ul class="menu-list">
+                <li>
+                    <a href="#" id="menuLaporan">
+                        <span class="full-text">Laporan</span>
+                        <span class="initial">L</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="menuInstruksi">
+                        <span class="full-text">Instruksi</span>
+                        <span class="initial">I</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="menuMessage">
+                        <span class="full-text">Message</span>
+                        <span class="initial">M</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="active" id="menuTambahAkun">
+                        <span class="full-text">Tambah Akun</span>
+                        <span class="initial">T</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- CONTENT (HANYA CARD INVITE YANG DIPERINDAH, SISANYA SAMA) -->
+        <main class="content-section">
+
+            <!-- INVITE SECTION (Card dipoles) -->
+            <div class="section-box">
+                <div class="section-title">
+                    <i class="bi bi-envelope-paper"></i> Invite Jabatan
+                </div>
+
+                <div class="invite-container">
+                    <!-- Card Petugas Monitor (dipercantik) -->
+                    <div class="invite-card" data-role="Petugas Monitor">
+                        <div class="card-icon">
+                            <i class="bi bi-tv-fill" style="font-size: 32px; color:#1f2957;"></i>
+                        </div>
+                        <p>Petugas Monitor</p>
+                        <div class="role-desc">Monitoring stok & transaksi</div>
+                        <span><i class="bi bi-send-fill"></i> Kirim Undangan</span>
+                    </div>
+
+                    <!-- Card Petugas Pencatatan (dipercantik) -->
+                    <div class="invite-card" data-role="Petugas Pencatatan">
+                        <div class="card-icon">
+                            <i class="bi bi-pencil-square" style="font-size: 32px; color:#1f2957;"></i>
+                        </div>
+                        <p>Petugas Pencatatan</p>
+                        <div class="role-desc">Mencatat keluar/masuk barang</div>
+                        <span><i class="bi bi-send-fill"></i> Kirim Undangan</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPROVAL / REJECT SECTION (TIDAK DIRUBAH, TETAP ASLI & RAPI) -->
+            <div class="section-box">
+                <div class="section-title">
+                    <i class="bi bi-check2-square"></i> Approval / Reject
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Akun</th>
+                                <th>Jabatan</th>
+                                <th>Accept</th>
+                                <th>Reject</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-username="hisyam">
+                                <td>
+                                    <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                        hisyam</div>
+                                </td>
+                                <td><span class="badge-jabatan"> Petugas Monitoring</span></td>
+                                <td><button class="accept-btn"><i class="bi bi-check-lg"></i> accept</button></td>
+                                <td><button class="reject-btn"><i class="bi bi-x-lg"></i> reject</button></td>
+                            </tr>
+                            <tr data-username="fiernaz">
+                                <td>
+                                    <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                        fiernaz</div>
+                                </td>
+                                <td><span class="badge-jabatan"> Petugas Pencatatan</span></td>
+                                <td><button class="accept-btn"><i class="bi bi-check-lg"></i> accept</button></td>
+                                <td><button class="reject-btn"><i class="bi bi-x-lg"></i> reject</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-xs text-gray-500 text-center mt-3 opacity-70">
+                    <i class="bi bi-info-circle"></i> Klik Accept/Reject untuk memproses permintaan akun
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // SIDEBAR TOGGLE (TIDAK DIUBAH)
+        const toggleBtn = document.getElementById("toggleBtn");
+        const sidebar = document.getElementById("sidebar");
+        const iconSpan = toggleBtn.querySelector("i");
+
+        toggleBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+            if (sidebar.classList.contains("close")) {
+                iconSpan.classList.replace("bi-x-lg", "bi-list");
+            } else {
+                iconSpan.classList.replace("bi-list", "bi-x-lg");
+            }
+        });
+
+        // INTERAKSI CARD INVITE (feedback halus)
+        const inviteCards = document.querySelectorAll('.invite-card');
+
+        inviteCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const roleName = card.getAttribute('data-role') || card.querySelector('p')?.innerText;
+                const konfirmasi = confirm(`Kirim undangan untuk ${roleName} ke WhatsApp?`);
+                if (!konfirmasi) return;
+                const nomor = prompt("Masukkan nomor WhatsApp (format 62xxxx):");
+                if (!nomor) {
+                    alert("Nomor tidak boleh kosong!");
+                    return;
+                }
+                const cleanNomor = nomor.trim();
+                const pesan = `Halo, Anda diundang sebagai ${roleName}`;
+                const url = `https://wa.me/${nomor.trim()}?text=${encodeURIComponent(pesan)}`;
+                window.location.href = url;
+            });
+        });
+
+        // INTERAKSI ACCEPT / REJECT (tetap original dengan feedback)
+        const acceptBtns = document.querySelectorAll('.accept-btn');
+        const rejectBtns = document.querySelectorAll('.reject-btn');
+
+        acceptBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const row = btn.closest('tr');
+                const username = row.querySelector('td:first-child')?.innerText?.trim() || 'Pengguna';
+                btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> accepted';
+                btn.disabled = true;
+                btn.style.background = '#e0f2e7';
+                btn.style.color = '#166534';
+                const siblingReject = row.querySelector('.reject-btn');
+                if (siblingReject) {
+                    siblingReject.disabled = true;
+                    siblingReject.style.opacity = '0.5';
+                    siblingReject.style.cursor = 'not-allowed';
+                }
+                alert(`✅ Akun "${username}" berhasil di-ACCEPT.`);
+            });
+        });
+
+        rejectBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const row = btn.closest('tr');
+                const username = row.querySelector('td:first-child')?.innerText?.trim() || 'Pengguna';
+                btn.innerHTML = '<i class="bi bi-x-circle-fill"></i> rejected';
+                btn.disabled = true;
+                btn.style.background = '#fee2e2';
+                btn.style.color = '#b91c1c';
+                const siblingAccept = row.querySelector('.accept-btn');
+                if (siblingAccept) {
+                    siblingAccept.disabled = true;
+                    siblingAccept.style.opacity = '0.5';
+                    siblingAccept.style.cursor = 'not-allowed';
+                }
+                alert(`❌ Akun "${username}" telah di-REJECT.`);
+            });
+        });
+
+        // MENU navigasi dummy (tetap ada)
+        document.getElementById('menuLaporan')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("📊 Halaman Laporan: Menampilkan data transaksi dan stok.");
+        });
+        document.getElementById('menuInstruksi')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("📋 Halaman Instruksi: Panduan operasional gudang.");
+        });
+        document.getElementById('menuMessage')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("💬 Tidak ada pesan baru.");
+        });
+        document.getElementById('menuTambahAkun')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("➕ Anda berada di halaman Tambah Akun.");
+        });
+    </script>
+
+</body>
+
+</html>
