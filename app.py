@@ -23,6 +23,14 @@ app = Flask(__name__,
 
 
 # Rute Dashboard Kepala Gudang (Udah ada sebelumnya)
+@app.route("/")
+def login():
+    return render_template('auth/login.html')
+
+@app.route("/daftar")
+def daftar():
+    return render_template('auth/daftar.html')
+
 @app.route('/kepala_gudang/dashboard')
 def home():
     return render_template('kepala_gudang/dashboard.html')

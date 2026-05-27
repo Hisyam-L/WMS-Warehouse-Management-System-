@@ -74,7 +74,7 @@
             background: #1d2242;
         }
 
-        .login {
+        .daftar {
             text-align: center;
             font-size: 16px;
             color: #2c2c2c;
@@ -95,12 +95,18 @@
         <button class="btn" id="daftarBtn">
             Masuk
         </button>
-        <p class="login">
+        <p class="daftar">
             Belum punya akun?
         </p>
     </div>
     <script>
         const btn = document.getElementById("daftarBtn");
+        const daftar = document.querySelector(".daftar");
+
+        daftar.addEventListener("click", () => {
+            window.location.href='/daftar'
+        })
+
         btn.addEventListener("click", () => {
             alert("Tombol daftar ditekan");
         });

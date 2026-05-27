@@ -104,6 +104,12 @@
     </div>
     <script>
         const btn = document.getElementById("daftarBtn");
+        const login = document.querySelector(".login")
+
+        login.addEventListener("click", () => {
+            window.location.href='/'
+        })
+
         btn.addEventListener("click", () => {
             alert("Tombol daftar ditekan");
         });
