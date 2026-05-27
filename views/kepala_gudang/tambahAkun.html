@@ -412,30 +412,14 @@
                 </button>
             </div>
             <ul class="menu-list">
-                <li>
-                    <a href="#" id="menuLaporan">
-                        <span class="full-text">Laporan</span>
-                        <span class="initial">L</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" id="menuInstruksi">
-                        <span class="full-text">Instruksi</span>
-                        <span class="initial">I</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" id="menuMessage">
-                        <span class="full-text">Message</span>
-                        <span class="initial">M</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="active" id="menuTambahAkun">
-                        <span class="full-text">Tambah Akun</span>
-                        <span class="initial">T</span>
-                    </a>
-                </li>
+                <li><a href="/kepala_gudang/dashboard" id="menuLaporan"><span class="full-text">Laporan</span><span
+                            class="initial">L</span></a></li>
+                <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span
+                            class="initial">I</span></a></li>
+                <li><a href="/kepala_gudang/chatting"  id="menuMessage"><span class="full-text">Message</span><span
+                            class="initial">M</span></a></li>
+                <li><a href="/kepala_gudang/tambahAkun" class="active" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span
+                            class="initial">T</span></a></li>
             </ul>
         </aside>
 
@@ -594,23 +578,23 @@
             });
         });
 
-        // MENU navigasi dummy (tetap ada)
-        document.getElementById('menuLaporan')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert("📊 Halaman Laporan: Menampilkan data transaksi dan stok.");
-        });
-        document.getElementById('menuInstruksi')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert("📋 Halaman Instruksi: Panduan operasional gudang.");
-        });
-        document.getElementById('menuMessage')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert("💬 Tidak ada pesan baru.");
-        });
-        document.getElementById('menuTambahAkun')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert("➕ Anda berada di halaman Tambah Akun.");
-        });
+        // // MENU navigasi dummy (tetap ada)
+        // document.getElementById('menuLaporan')?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     alert("📊 Halaman Laporan: Menampilkan data transaksi dan stok.");
+        // });
+        // document.getElementById('menuInstruksi')?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     alert("📋 Halaman Instruksi: Panduan operasional gudang.");
+        // });
+        // document.getElementById('menuMessage')?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     alert("💬 Tidak ada pesan baru.");
+        // });
+        // document.getElementById('menuTambahAkun')?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     alert("➕ Anda berada di halaman Tambah Akun.");
+        // });
     </script>
 
 </body>

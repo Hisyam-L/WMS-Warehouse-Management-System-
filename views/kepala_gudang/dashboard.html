@@ -405,13 +405,13 @@
                 </button>
             </div>
             <ul class="menu-list">
-                <li><a href="#" class="active" id="menuLaporan"><span class="full-text">Laporan</span><span
+                <li><a href="/kepala_gudang/dashboard" class="active" id="menuLaporan"><span class="full-text">Laporan</span><span
                             class="initial">L</span></a></li>
-                <li><a href="#" id="menuInstruksi"><span class="full-text">Instruksi</span><span
+                <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span
                             class="initial">I</span></a></li>
-                <li><a href="#" id="menuMessage"><span class="full-text">Message</span><span
+                <li><a href="/kepala_gudang/chatting" id="menuMessage"><span class="full-text">Message</span><span
                             class="initial">M</span></a></li>
-                <li><a href="#" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span
+                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span
                             class="initial">T</span></a></li>
             </ul>
         </aside>
@@ -520,7 +520,7 @@
                                 </tr>
                             </thead>
                             <tbody id="transaksiBody">
-                                
+
                             </tbody>
                         </table>
                     </div>
@@ -652,7 +652,7 @@
                     }
                 });
                 if (!window.filterNotified) {
-                    
+
                 }
             } else {
                 document.querySelectorAll('.stok-card').forEach(c => c.style.backgroundColor = "");
@@ -675,23 +675,23 @@
             });
         }
 
-        document.getElementById('menuInstruksi')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert("📌 Instruksi :\n- Gunakan filter ukuran/ketebalan untuk menyaring tampilan stok.\n- Klik 'Cek Detail' untuk info transaksi.\n- Download CSV untuk ekspor data.");
-        });
-        document.getElementById('menuMessage')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert("💬 Pesan: Sistem pergudangan berjalan normal. Stok aman. Terima kasih.");
-        });
-        document.getElementById('menuTambahAkun')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert("➕ Fitur Tambah Akun akan segera hadir. (Demo interaksi)");
-        });
-        document.getElementById('menuLaporan')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            // scroll ke konten laporan
-            document.querySelector('.content-body')?.scrollIntoView({ behavior: 'smooth' });
-        });
+        // document.getElementById('menuInstruksi')?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     alert("📌 Instruksi :\n- Gunakan filter ukuran/ketebalan untuk menyaring tampilan stok.\n- Klik 'Cek Detail' untuk info transaksi.\n- Download CSV untuk ekspor data.");
+        // });
+        // document.getElementById('menuMessage')?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     alert("💬 Pesan: Sistem pergudangan berjalan normal. Stok aman. Terima kasih.");
+        // });
+        // document.getElementById('menuTambahAkun')?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     alert("➕ Fitur Tambah Akun akan segera hadir. (Demo interaksi)");
+        // });
+        // document.getElementById('menuLaporan')?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     // scroll ke konten laporan
+        //     document.querySelector('.content-body')?.scrollIntoView({ behavior: 'smooth' });
+        // });
 
         renderStok();
         renderTransactions(transactions);
