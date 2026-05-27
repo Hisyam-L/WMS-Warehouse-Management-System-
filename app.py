@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template
-from supabase import create_client, Client
+# from supabase import create_client, Client
 from dotenv import load_dotenv
 
 # Membaca file .env untuk mengambil API Key Supabase
@@ -17,9 +17,9 @@ app = Flask(__name__,
             static_url_path='/assets')
 
 # Inisialisasi Koneksi Supabase
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+# url: str = os.environ.get("SUPABASE_URL")
+# key: str = os.environ.get("SUPABASE_KEY")
+# supabase: Client = create_client(url, key)
 
 
 # Rute Dashboard Kepala Gudang (Udah ada sebelumnya)

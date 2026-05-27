@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Petugas Pencatatan</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+
+            font-family:
+                'Segoe UI',
+                Tahoma,
+                Geneva,
+                Verdana,
+                sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333333;
+
+            min-height: 100vh;
+        }
+
+        .kontainerAplikasi {
+            display: flex;
+            flex-direction: column;
+
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .bilahNavigasi {
+            background-color: #222943;
+            color: white;
+
+            width: 100%;
+        }
+
+        .atasNavbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 18px 24px;
+        }
+
+        .judulAplikasi {
+            font-size: 16px;
+            font-weight: 600;
+
+            letter-spacing: 0.5px;
+        }
+
+        .tombolMenu {
+            font-size: 24px;
+            cursor: pointer;
+
+            user-select: none;
+        }
+
+        .menuNavigasi {
+            display: none;
+            flex-direction: column;
+
+            padding: 12px;
+            gap: 10px;
+
+            background: #1b2238;
+        }
+
+        .tombolSidebar {
+            width: 100%;
+
+            padding: 14px 16px;
+
+            border: none;
+            border-radius: 10px;
+
+            background:
+                rgba(255, 255, 255, 0.08);
+
+            color: white;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .tombolSidebar:hover {
+            background:
+                rgba(255, 255, 255, 0.15);
+
+            transform: translateX(2px);
+        }
+
+        .tombolLogout {
+            margin-top: 10px;
+
+            background:
+                rgba(255, 80, 80, 0.2);
+        }
+
+        .pembungkusKonten {
+            flex: 1;
+
+            padding: 24px;
+        }
+
+        .areaKontrol {
+            display: flex;
+            gap: 16px;
+
+            margin-bottom: 24px;
+        }
+
+        .tombolTab {
+            flex: 1;
+
+            padding: 12px 0;
+
+            border-radius: 25px;
+
+            border: 2px solid #222943;
+
+            font-size: 16px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .aktif {
+            background: #222943;
+            color: white;
+        }
+
+        .tidakAktif {
+            background: white;
+            color: #222943;
+        }
+
+        .grupDaftar {
+            display: none;
+
+            animation: fade 0.3s ease;
+        }
+
+        .grupDaftar.tampilkan {
+            display: block;
+        }
+
+        .pembungkusKartu {
+            display: grid;
+
+            grid-template-columns: 1fr;
+
+            gap: 18px;
+        }
+
+        .kartuDetailBarang {
+            background: white;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            border: 1px solid #d6d6d6;
+
+            box-shadow:
+                0 4px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .kontenSpesifikasi {
+            display: grid;
+
+            grid-template-columns: 1fr;
+
+            gap: 14px;
+
+            padding: 18px;
+        }
+
+        .kolomKiri,
+        .kolomKanan {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .labelStatus {
+            background: #ff3b30;
+            color: white;
+
+            padding: 4px 10px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            width: fit-content;
+
+            margin-bottom: 10px;
+        }
+
+        .tabelInformasi {
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+        .tabelInformasi td {
+            padding: 4px 2px;
+
+            font-size: 13px;
+
+            vertical-align: top;
+        }
+
+        .tabelInformasi td:nth-child(2) {
+            width: 10px;
+            text-align: center;
+        }
+
+        .pitaPemesan {
+            background: #3a2e2b;
+            color: white;
+
+            padding: 10px;
+
+            text-align: center;
+
+            font-size: 13px;
+            font-weight: 500;
+
+            display: block;
+            text-decoration: none;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media(min-width:768px) {
+
+            .kontainerAplikasi {
+                flex-direction: row;
+            }
+
+            .bilahNavigasi {
+                width: 280px;
+                min-height: 100vh;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+
+                flex-shrink: 0;
+            }
+
+            .atasNavbar {
+                width: 100%;
+
+                padding: 35px 24px 20px;
+            }
+
+            .judulAplikasi {
+                font-size: 22px;
+                font-weight: 700;
+            }
+
+            .tombolMenu {
+                display: none;
+            }
+
+            .menuNavigasi {
+                display: flex !important;
+
+                flex: 1;
+
+                padding: 0 18px 24px;
+            }
+
+            .tombolLogout {
+                margin-top: auto;
+            }
+
+            .pembungkusKonten {
+                flex: 1;
+
+                padding: 35px;
+            }
+
+            .areaKontrol {
+                max-width: 450px;
+            }
+
+            .pembungkusKartu {
+                grid-template-columns:
+                    repeat(auto-fit, minmax(320px, 1fr));
+            }
+
+            .kontenSpesifikasi {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .kolomKiri {
+                border-right:
+                    1px solid #d6d6d6;
+
+                padding-right: 14px;
+            }
+        }
+
+        @media(max-width:767px) {
+
+            .areaKontrol {
+                flex-direction: column;
+            }
+
+            .kartuDetailBarang {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="kontainerAplikasi">
+
+        <!-- NAVBAR -->
+        <header class="bilahNavigasi">
+
+            <div class="atasNavbar">
+
+                <span class="judulAplikasi">
+                    Petugas Pencatatan
+                </span>
+
+                <div class="tombolMenu" onclick="toggleMenu()">
+                    ☰
+                </div>
+
+            </div>
+
+            <!-- MENU -->
+            <div class="menuNavigasi" id="menuNavigasi">
+
+                <button class="tombolSidebar">
+                    Lapor Barang Masuk
+                </button>
+
+                <button class="tombolSidebar">
+                    Info Barang Dibeli
+                </button>
+
+                <button class="tombolSidebar">
+                    Lapor Barang Keluar
+                </button>
+
+                <button class="tombolSidebar">
+                    Pesan / Chatting
+                </button>
+
+                <button class="tombolSidebar">
+                    Logout
+                </button>
+
+            </div>
+
+        </header>
+
+        <!-- CONTENT -->
+        <div class="pembungkusKonten">
+
+            <!-- LIST -->
+            <main class="kontenBarang">
+
+                <!-- AKAN DIBELI -->
+                <div id="daftarAkanDibeli" class="grupDaftar tampilkan">
+
+                    <div class="pembungkusKartu">
+
+                        <div class="kartuDetailBarang">
+
+                            <div class="kontenSpesifikasi">
+
+                                <div class="kolomKiri">
+
+                                    <div class="labelStatus">
+                                        Status: Rusak
+                                    </div>
+
+                                    <table class="tabelInformasi">
+
+                                        <tr>
+                                            <td>Kategori</td>
+                                            <td>:</td>
+                                            <td>Cermin</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Ukuran</td>
+                                            <td>:</td>
+                                            <td>2 Mili</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Ketebalan</td>
+                                            <td>:</td>
+                                            <td>193 × 22 CM</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Jumlah</td>
+                                            <td>:</td>
+                                            <td>20 Buah</td>
+                                        </tr>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                            <a href="akanMuncul" class="pitaPemesan">
+                                Barang dipesan oleh: Ariansyah
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- SUDAH DIBELI -->
+                <div id="daftarSudahDibeli" class="grupDaftar">
+
+                    <div class="pembungkusKartu">
+
+                        <div class="kartuDetailBarang">
+
+                            <div class="kontenSpesifikasi">
+
+                                <div class="kolomKiri">
+
+                                    <div class="labelStatus" style="background:#28a745">
+
+                                        Status: Aman
+
+                                    </div>
+
+                                    <table class="tabelInformasi">
+
+                                        <tr>
+                                            <td>Kategori</td>
+                                            <td>:</td>
+                                            <td>Tempered</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Ukuran</td>
+                                            <td>:</td>
+                                            <td>8 Mili</td>
+                                        </tr>
+
+                                    </table>
+
+                                </div>
+
+                                <div class="kolomKanan">
+
+                                    <table class="tabelInformasi">
+
+                                        <tr>
+                                            <td>Ketebalan</td>
+                                            <td>:</td>
+                                            <td>200 × 80 CM</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Jumlah</td>
+                                            <td>:</td>
+                                            <td>5 Buah</td>
+                                        </tr>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                            <div class="pitaPemesan">
+                                Barang dipesan oleh: Ridwan
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <script>
+        const menuNavigasi =
+            document.getElementById("menuNavigasi");
+
+        let menuOpen = false;
+
+        function toggleMenu() {
+
+            if (window.innerWidth >= 768) {
+                return;
+            }
+
+            menuOpen = !menuOpen;
+
+            menuNavigasi.style.display =
+                menuOpen ? "flex" : "none";
+        }
+    </script>
+
+</body>
+
+</html>

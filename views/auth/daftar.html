@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #20264b;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            width: 550px;
+            background: #eeeeee;
+            border-radius: 5px;
+            padding: 38px 45px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 23px;
+            color: #1f1f1f;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .boxInput {
+            margin-bottom: 18px;
+        }
+
+        .boxInput input {
+            width: 100%;
+            height: 42px;
+            border: 1px solid #8ab0ff;
+            border-radius: 5px;
+            outline: none;
+            padding: 0 14px;
+            font-size: 14px;
+            background: #f8f8f8;
+            color: #222;
+        }
+
+        .boxInput input::placeholder {
+            color: #2f2f2f;
+        }
+
+        .btn {
+            width: 175px;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            background: #23284d;
+            color: white;
+            display: block;
+            margin: 24px auto 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #1d2242;
+        }
+
+        .login {
+            text-align: center;
+            font-size: 16px;
+            color: #2c2c2c;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1 class="title">Daftar</h1>
+        <div class="boxInput">
+            <input type="text" placeholder="Masukkan nama / identitas perusahaan anda">
+        </div>
+        <div class="boxInput">
+            <input type="text" placeholder="Buat username">
+        </div>
+        <div class="boxInput">
+            <input type="password" placeholder="Buat password">
+        </div>
+        <button class="btn" id="daftarBtn">
+            Daftar
+        </button>
+        <p class="login">
+            Sudah punya akun?
+        </p>
+    </div>
+    <script>
+        const btn = document.getElementById("daftarBtn");
+        btn.addEventListener("click", () => {
+            alert("Tombol daftar ditekan");
+        });
+    </script>
+</body>
+
+</html>
