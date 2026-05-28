@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar</title>
+    <title>Masuk</title>
 
     <style>
         * {
@@ -80,35 +80,68 @@
             color: #2c2c2c;
             cursor: pointer;
         }
+
+        /* Tambahan style untuk pesan error/sukses */
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
     </style>
 </head>
 
 <body>
     <div class="card">
         <h1 class="title">Masuk</h1>
-        <div class="boxInput">
-            <input type="text" placeholder="Masukan username">
-        </div>
-        <div class="boxInput">
-            <input type="password" placeholder="Masukan password">
-        </div>
-        <button class="btn" id="daftarBtn">
-            Masuk
-        </button>
-        <p class="daftar">
-            Belum punya akun?
-        </p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form action="/login" method="POST">
+            <div class="boxInput">
+                <input type="email" name="email" placeholder="Masukan Email Anda" required>
+            </div>
+            <div class="boxInput">
+                <input type="password" name="password" placeholder="Masukan password" required>
+            </div>
+
+            <button type="submit" class="btn">Masuk</button>
+        </form>
+
+        <p class="daftar" id="btnPindahDaftar">Belum punya akun?</p>
     </div>
+
     <script>
-        const btn = document.getElementById("daftarBtn");
-        const daftar = document.querySelector(".daftar");
+        const btnPindah = document.getElementById("btnPindahDaftar");
 
-        daftar.addEventListener("click", () => {
-            window.location.href='/daftar'
-        })
-
-        btn.addEventListener("click", () => {
-            alert("Tombol daftar ditekan");
+        // Pindah ke rute daftar kepala gudang
+        btnPindah.addEventListener("click", () => {
+            window.location.href = '/daftar-kepala';
         });
     </script>
 </body>

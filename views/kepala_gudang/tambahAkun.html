@@ -516,25 +516,40 @@
             }
         });
 
-        // INTERAKSI CARD INVITE (feedback halus)
+        // INTERAKSI CARD INVITE (Integrasi ke Backend Flask)
         const inviteCards = document.querySelectorAll('.invite-card');
 
         inviteCards.forEach(card => {
             card.addEventListener('click', () => {
-                const roleName = card.getAttribute('data-role') || card.querySelector('p')?.innerText;
-                const konfirmasi = confirm(`Kirim undangan untuk ${roleName} ke WhatsApp?`);
+                const roleName = card.getAttribute('data-role');
+                const konfirmasi = confirm(`Buat link undangan resmi untuk posisi ${roleName}?`);
+
                 if (!konfirmasi) return;
-                const nomor = prompt("Masukkan nomor WhatsApp (format 62xxxx):");
-                if (!nomor) {
-                    alert("Nomor tidak boleh kosong!");
-                    return;
+
+                // Bikin form rahasia pakai JavaScript buat ngirim data ke Flask lu
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/kepala-gudang/invite'; // Ini nembak ke route Flask yang tadi kita buat
+
+                const inputRole = document.createElement('input');
+                inputRole.type = 'hidden';
+                inputRole.name = 'role_tujuan'; // Nah, ini variabel yang bakal ditangkep Flask
+
+                // Samain nama role dengan format database lu
+                if (roleName === "Petugas Monitor") {
+                    inputRole.value = "petugas_monitoring";
+                } else {
+                    inputRole.value = "petugas_pencatatan";
                 }
-                const cleanNomor = nomor.trim();
-                const pesan = `Halo, Anda diundang sebagai ${roleName}`;
-                const url = `https://wa.me/${nomor.trim()}?text=${encodeURIComponent(pesan)}`;
-                window.location.href = url;
+
+                form.appendChild(inputRole);
+                document.body.appendChild(form);
+
+                // Submit form-nya otomatis
+                form.submit();
             });
         });
+
 
         // INTERAKSI ACCEPT / REJECT (tetap original dengan feedback)
         const acceptBtns = document.querySelectorAll('.accept-btn');

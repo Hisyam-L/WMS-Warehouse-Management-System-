@@ -2,14 +2,14 @@ import os
 from datetime import datetime
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from werkzeug.security import generate_password_hash, check_password_hash
 
-# Import helper lu
 from utils.helper import format_tanggal_indo
 
-# Setting koneksi Supabase (Cukup di file ini aja!)
+
+# Setting koneksi Supabase
 base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-env_path = os.path.join(base_dir, '.env')
-load_dotenv(env_path)
+load_dotenv(os.path.join(base_dir, '.env'))
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
@@ -69,3 +69,41 @@ def get_semua_transaksi():
 
     transactions_list.reverse()
     return transactions_list
+
+
+
+class AuthService:
+    @staticmethod
+    def register_kepala_gudang(username, email, password, perusahaan):
+        hashed_password = generate_password_hash(password)
+        data = {"username": username, "email": email, "password": hashed_password, "perusahaan": perusahaan, "role": "kepala_gudang", "status": "aktif"}
+        return supabase.table("users").insert(data).execute()
+
+    @staticmethod
+    def register_petugas_pending(username, email, password, perusahaan, role):
+        hashed_password = generate_password_hash(password)
+        data = {"username": username, "email": email, "password": hashed_password, "perusahaan": perusahaan, "role": role, "status": "pending"}
+        return supabase.table("users").insert(data).execute()
+
+    @staticmethod
+    def login_user(email, password):
+        response = supabase.table("users").select("*").eq("email", email).execute()
+        if not response.data:
+            return {"success": False, "message": "Email tidak terdaftar."}
+
+        user = response.data[0]
+
+        if user["status"] == "pending":
+            return {"success": False, "message": "Akun Anda belum diverifikasi."}
+        if user["status"] == "ditolak":
+            return {"success": False, "message": "Pendaftaran Anda ditolak."}
+
+        if check_password_hash(user["password"], password):
+            return {"success": True, "user": user}
+
+        return {"success": False, "message": "Password salah."}
+
+    @staticmethod
+    def terima_atau_tolak_petugas(id_user, keputusan):
+        status_baru = "aktif" if keputusan == "terima" else "ditolak"
+        return supabase.table("users").update({"status": status_baru}).eq("id_user", id_user).execute()

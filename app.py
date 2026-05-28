@@ -1,7 +1,8 @@
-# File: app.py
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
+# Import blueprint lu di sini
 from routes.kepala_gudang import kepala_gudang_bp
+from routes.auth import auth_bp
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 views_dir = os.path.join(base_dir, 'views')
@@ -12,12 +13,17 @@ app = Flask(__name__,
             static_folder=assets_dir,
             static_url_path='/assets')
 
-# REGISTER BLUEPRINT KEPALA GUDANG
+# INI WAJIB BUAT SESSION/COOKIE
+app.config['SECRET_KEY'] = 'kunci-rahasia-wms-kaca-2026'
+
+# REGISTER SEMUA BLUEPRINT
 app.register_blueprint(kepala_gudang_bp)
+app.register_blueprint(auth_bp)
 
 @app.route('/')
 def index():
-    return render_template('pilih_role.html')
+    # Kalau buka web pertama kali, langsung tendang ke halaman login
+    return redirect(url_for('auth.login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
