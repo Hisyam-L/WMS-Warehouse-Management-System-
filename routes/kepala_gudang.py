@@ -25,22 +25,6 @@ def instruksi():
     kaca_data = get_stok_detail()
     return render_template('kepala_gudang/intruksi.html', kaca_json=json.dumps(kaca_data), kaca_data=kaca_data)
 
-@kepala_gudang_bp.route('/buat_instruksi', methods=['POST'])
-def buat_instruksi():
-    id_kaca = request.form.get('id_kaca')
-    jumlah = int(request.form.get('jumlah'))
-    user_id = session.get('user_id')
-
-    # 1. Insert ke instruksi_beli
-    resp = supabase.table('instruksi_beli').insert({'id_user': user_id, 'status': 'Pending'}).execute()
-    id_instruksi = resp.data[0]['id_instruksi_beli']
-
-    # 2. Insert ke detail_instruksi
-    supabase.table('detail_instruksi').insert({'id_kaca': id_kaca, 'id_instruksi_beli': id_instruksi, 'jumlah': jumlah}).execute()
-
-    flash("Instruksi pesanan kaca berhasil dikirim ke Petugas Pencatatan!", "success")
-    return redirect(url_for('kepala_gudang.instruksi'))
-
 @kepala_gudang_bp.route('/tambahAkun')
 def tambah_akun():
     # Ambil user yang statusnya masih 'pending' di perusahaan ini
@@ -82,3 +66,41 @@ def handle_pesan():
         query = f"and(id_pengirim.eq.{my_id},id_penerima.eq.{lawan_id}),and(id_pengirim.eq.{lawan_id},id_penerima.eq.{my_id})"
         resp = supabase.table('pesan').select('*').or_(query).order('waktu').execute()
         return {"pesan": resp.data, "my_id": my_id}
+
+@kepala_gudang_bp.route('/buat_instruksi', methods=['POST'])
+def buat_instruksi():
+    id_kaca = request.form.get('id_kaca')
+    jumlah = int(request.form.get('jumlah'))
+    user_id = session.get('user_id')
+
+    # 1. Insert ke tabel instruksi_beli
+    resp = supabase.table('instruksi_beli').insert({
+        'id_user': user_id,
+        'status': 'Pending'
+    }).execute()
+    id_instruksi = resp.data[0]['id_instruksi_beli']
+
+    # 2. Insert ke detail_instruksi
+    supabase.table('detail_instruksi').insert({
+        'id_kaca': id_kaca,
+        'id_instruksi_beli': id_instruksi,
+        'jumlah': jumlah
+    }).execute()
+
+    # 3. LOGIKA POTONG STOK OTOMATIS
+    stok_resp = supabase.table('stok').select('jumlah').eq('id_kaca', id_kaca).execute()
+
+    if stok_resp.data:
+        stok_sekarang = stok_resp.data[0]['jumlah']
+        stok_baru = stok_sekarang - jumlah
+
+        # Cegah kalau bos pesennya melebihi stok yang ada
+        if stok_baru < 0:
+            flash("Gagal! Jumlah instruksi melebihi stok yang ada.", "danger")
+            return redirect(url_for('kepala_gudang.instruksi'))
+
+        # Eksekusi potong stok di database
+        supabase.table('stok').update({'jumlah': stok_baru}).eq('id_kaca', id_kaca).execute()
+
+    flash("Instruksi pesanan berhasil dikirim dan stok otomatis terpotong!", "success")
+    return redirect(url_for('kepala_gudang.instruksi'))
