@@ -1,5 +1,5 @@
 import json
-from flask import Blueprint, render_template, redirect, url_for, session, flash, request
+from flask import Blueprint, render_template, redirect, url_for, session, flash, request, jsonify
 from utils.helper import generate_invite_token
 from services.supabase_services import AuthService, supabase
 from services.supabase_services import get_stok_detail, get_semua_transaksi
@@ -25,48 +25,7 @@ def instruksi():
     kaca_data = get_stok_detail()
     return render_template('kepala_gudang/intruksi.html', kaca_json=json.dumps(kaca_data), kaca_data=kaca_data)
 
-@kepala_gudang_bp.route('/tambahAkun')
-def tambah_akun():
-    # Ambil user yang statusnya masih 'pending' di perusahaan ini
-    resp = supabase.table('users').select('*').eq('perusahaan', session.get('perusahaan')).eq('status', 'pending').execute()
-    return render_template('kepala_gudang/tambahAkun.html', pending_users=resp.data)
-
-@kepala_gudang_bp.route('/invite_api', methods=['POST'])
-def invite_api():
-    # API khusus untuk Generate URL Enkripsi ke WhatsApp
-    role_tujuan = request.form.get('role_tujuan')
-    token = generate_invite_token(session.get('perusahaan'), role_tujuan)
-    link = url_for('auth.daftar_petugas', token=token, _external=True)
-    return {"link": link}
-
-@kepala_gudang_bp.route('/verifikasi/<id_user>/<keputusan>', methods=['GET'])
-def melakukan_verifikasi(id_user, keputusan):
-    AuthService.terima_atau_tolak_petugas(id_user, keputusan)
-    flash(f"Akun petugas telah di-{keputusan}.", "success")
-    return redirect(url_for('kepala_gudang.tambah_akun'))
-
-@kepala_gudang_bp.route('/chatting')
-def chatting():
-    # Ambil daftar karyawan (Petugas) di satu perusahaan
-    users = supabase.table('users').select('id_user, username, role').eq('perusahaan', session.get('perusahaan')).neq('id_user', session['user_id']).execute()
-    return render_template('kepala_gudang/chatting.html', users=users.data)
-
-@kepala_gudang_bp.route('/api/pesan', methods=['GET', 'POST'])
-def handle_pesan():
-    if request.method == 'POST':
-        data = request.json
-        supabase.table('pesan').insert({
-            'id_pengirim': session['user_id'], 'id_penerima': data['id_penerima'], 'isi': data['isi']
-        }).execute()
-        return {"success": True}
-    else:
-        # GET pesan
-        lawan_id = request.args.get('lawan_id')
-        my_id = session['user_id']
-        query = f"and(id_pengirim.eq.{my_id},id_penerima.eq.{lawan_id}),and(id_pengirim.eq.{lawan_id},id_penerima.eq.{my_id})"
-        resp = supabase.table('pesan').select('*').or_(query).order('waktu').execute()
-        return {"pesan": resp.data, "my_id": my_id}
-
+# INI RUTE YANG HILANG DAN BIKIN ERROR 404
 @kepala_gudang_bp.route('/buat_instruksi', methods=['POST'])
 def buat_instruksi():
     id_kaca = request.form.get('id_kaca')
@@ -94,13 +53,79 @@ def buat_instruksi():
         stok_sekarang = stok_resp.data[0]['jumlah']
         stok_baru = stok_sekarang - jumlah
 
-        # Cegah kalau bos pesennya melebihi stok yang ada
+        # Cegah kalau pesanan melebihi stok yang ada
         if stok_baru < 0:
-            flash("Gagal! Jumlah instruksi melebihi stok yang ada.", "danger")
-            return redirect(url_for('kepala_gudang.instruksi'))
+            flash("Stok tidak mencukupi untuk instruksi ini!", "danger")
+        else:
+            supabase.table('stok').update({'jumlah': stok_baru}).eq('id_kaca', id_kaca).execute()
+            flash("Instruksi berhasil dibuat!", "success")
 
-        # Eksekusi potong stok di database
-        supabase.table('stok').update({'jumlah': stok_baru}).eq('id_kaca', id_kaca).execute()
-
-    flash("Instruksi pesanan berhasil dikirim dan stok otomatis terpotong!", "success")
     return redirect(url_for('kepala_gudang.instruksi'))
+
+@kepala_gudang_bp.route('/tambahAkun')
+def tambah_akun():
+    # Ambil user yang statusnya masih 'pending' di perusahaan ini
+    resp = supabase.table('users').select('*').eq('perusahaan', session.get('perusahaan')).eq('status', 'pending').execute()
+    return render_template('kepala_gudang/tambahAkun.html', pending_users=resp.data)
+
+@kepala_gudang_bp.route('/invite_api', methods=['POST'])
+def invite_api():
+    # API khusus untuk Generate URL Enkripsi ke WhatsApp
+    role_tujuan = request.form.get('role_tujuan')
+    token = generate_invite_token(session.get('perusahaan'), role_tujuan)
+    link = url_for('auth.daftar_petugas', token=token, _external=True)
+    return {"link": link}
+
+@kepala_gudang_bp.route('/verifikasi/<id_user>/<keputusan>', methods=['GET'])
+def melakukan_verifikasi(id_user, keputusan):
+    AuthService.terima_atau_tolak_petugas(id_user, keputusan)
+    flash(f"Akun petugas telah di-{keputusan}.", "success")
+    return redirect(url_for('kepala_gudang.tambah_akun'))
+
+@kepala_gudang_bp.route('/chatting')
+def chatting():
+    my_id = session.get('user_id')
+    my_perusahaan = session.get('perusahaan') # 1. Ambil nama perusahaan user yang lagi login
+
+    # 2. Filter .eq('perusahaan', my_perusahaan) biar nggak nyampur sama perusahaan lain
+    users_resp = supabase.table('users').select('id_user, username, role') \
+        .eq('perusahaan', my_perusahaan) \
+        .neq('id_user', my_id) \
+        .execute()
+
+    daftar_user = users_resp.data if users_resp.data else []
+
+    return render_template('kepala_gudang/chatting.html', daftar_user=daftar_user)
+
+@kepala_gudang_bp.route('/api/pesan', methods=['GET'])
+def get_pesan():
+    my_id = session.get('user_id')
+    lawan_id = request.args.get('lawan_id')
+
+    if not lawan_id:
+        return jsonify({"pesan": [], "my_id": my_id})
+
+    # Logika OR Supabase: (pengirim=Saya DAN penerima=Dia) ATAU (pengirim=Dia DAN penerima=Saya)
+    query = f"and(id_pengirim.eq.{my_id},id_penerima.eq.{lawan_id}),and(id_pengirim.eq.{lawan_id},id_penerima.eq.{my_id})"
+    resp = supabase.table('pesan').select('*').or_(query).order('waktu').execute()
+
+    return jsonify({"pesan": resp.data, "my_id": my_id})
+
+@kepala_gudang_bp.route('/api/pesan', methods=['POST'])
+def kirim_pesan():
+    my_id = session.get('user_id')
+    data = request.json
+    lawan_id = data.get('id_penerima')
+    isi = data.get('isi')
+
+    if not lawan_id or not isi:
+        return jsonify({"error": "Data tidak valid"}), 400
+
+    # Insert data ke tabel pesan sesuai skema
+    supabase.table('pesan').insert({
+        'id_pengirim': my_id,
+        'id_penerima': lawan_id,
+        'isi': isi
+    }).execute()
+
+    return jsonify({"status": "sukses"})

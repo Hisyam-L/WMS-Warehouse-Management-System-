@@ -9,11 +9,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
+        /* =========================================
+           GLOBAL, NAVBAR, SIDEBAR (STANDAR TAMBAH AKUN)
+           ========================================= */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Inter, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
@@ -32,13 +35,12 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 24px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
         .brand-name {
             font-size: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 5px 14px;
-            border-radius: 30px;
+            font-weight: 600;
         }
 
         .circle-profile {
@@ -46,6 +48,7 @@
             height: 38px;
             border-radius: 50%;
             background: #e9edff;
+            border: 2px solid #a8b3e0;
         }
 
         .main-container {
@@ -77,6 +80,7 @@
         .menu-title {
             font-size: 20px;
             font-weight: bold;
+            color: #12172f;
         }
 
         .toggle-btn {
@@ -86,6 +90,13 @@
             background: white;
             border-radius: 8px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-btn:hover {
+            background: #eef2ff;
         }
 
         .menu-list {
@@ -108,15 +119,18 @@
             border-radius: 12px;
             font-weight: 600;
             transition: 0.2s;
+            border: 1px solid #c1c6df;
         }
 
         .menu-list a:hover {
             background: #eef2ff;
+            transform: translateX(3px);
         }
 
         .menu-list a.active {
             background: #1f2957;
             color: white;
+            border-color: #1f2957;
         }
 
         .full-text {
@@ -136,6 +150,9 @@
             display: inline;
         }
 
+        /* =========================================
+           CSS SPESIFIK KONTEN CHAT
+           ========================================= */
         .content-section {
             flex: 1;
             overflow: hidden;
@@ -156,6 +173,7 @@
             background: #eef2ff;
             border-right: 1px solid #dbe1ff;
             padding: 16px;
+            overflow-y: auto;
         }
 
         .user-card {
@@ -319,36 +337,35 @@
                 </button>
             </div>
             <ul class="menu-list">
-                <li><a href="/kepala_gudang/dashboard" id="menuLaporan"><span class="full-text">Laporan</span><span
-                            class="initial">L</span></a></li>
-                <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span
-                            class="initial">I</span></a></li>
-                <li><a href="/kepala_gudang/chatting" class="active" id="menuMessage"><span
-                            class="full-text">Message</span><span class="initial">M</span></a></li>
-                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah
-                            Akun</span><span class="initial">T</span></a></li>
+                <li><a href="/kepala_gudang/dashboard" id="menuLaporan"><span class="full-text">Laporan</span><span class="initial">L</span></a></li>
+                <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span class="initial">I</span></a></li>
+                <li><a href="/kepala_gudang/chatting" class="active" id="menuMessage"><span class="full-text">Message</span><span class="initial">M</span></a></li>
+                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span class="initial">T</span></a></li>
             </ul>
         </aside>
+
         <main class="content-section">
             <div class="chat-layout">
                 <div class="user-list">
-                    {% for u in users %}
-                    <div class="user-card" onclick="pilihChat('{{ u.id_user }}', '{{ u.username }}')">
-                        {{ u.username }}<br><span style="font-size:12px; font-weight:normal;">{{ u.role.replace('_', '
-                            ') }}</span>
+                    {% for u in daftar_user %}
+                    <div class="user-card" onclick="pilihChat('{{ u.id_user }}', '{{ u.username }}', this)">
+                        {{ u.username }}<br><span style="font-size:12px; font-weight:normal;">{{ u.role.replace('_', ' ').title() }}</span>
                     </div>
+                    {% else %}
+                    <div style="text-align: center; color: #888; font-size: 14px;">Belum ada kontak</div>
                     {% endfor %}
                 </div>
+
                 <div class="chat-area">
                     <div class="chat-header" id="chatTitle">
-                        Chat - Petugas Pencatatan
+                        Chat - Pilih Kontak
                     </div>
                     <div class="chat-container" id="chatContainer">
-                    </div>
-                    <div class="input-area">
+                        </div>
+
+                    <div class="input-area" id="inputArea" style="display: none;">
                         <div class="input-wrapper">
-                            <input type="text" id="messageInput" class="chat-input"
-                                placeholder="Type a new message here">
+                            <input type="text" id="messageInput" class="chat-input" placeholder="Type a new message here" autocomplete="off">
                             <button class="send-btn" id="sendBtn">
                                 <i class="bi bi-send-fill"></i>
                             </button>
@@ -360,149 +377,84 @@
     </div>
 
     <script>
+        // --- LOGIKA TOGGLE SIDEBAR ---
         const toggleBtn = document.getElementById("toggleBtn");
         const sidebar = document.getElementById("sidebar");
-        const icon = toggleBtn.querySelector("i");
+        const iconSpan = toggleBtn.querySelector("i");
+
         toggleBtn.addEventListener("click", () => {
             sidebar.classList.toggle("close");
             if (sidebar.classList.contains("close")) {
-                icon.classList.replace("bi-x-lg", "bi-list");
+                iconSpan.classList.replace("bi-x-lg", "bi-list");
             } else {
-                icon.classList.replace("bi-list", "bi-x-lg");
-            }
-        });
-        const chatContainer = document.getElementById("chatContainer");
-        const chatTitle = document.getElementById("chatTitle");
-        const chats = {
-            pencatatan: [
-                { side: "right", text: "Halo, bagaimana stok kaca hari ini?" },
-                { side: "left", text: "Stok aman, tetapi kaca biru tinggal sedikit." },
-                { side: "right", text: "Oke, nanti saya buat laporan restock." }
-            ],
-            monitoring: [
-                { side: "left", text: "Monitoring gudang selesai dilakukan." },
-                { side: "right", text: "Apakah ada kaca yang rusak?" },
-                { side: "left", text: "Ada 2 kaca retak di area belakang gudang." }
-            ]
-        };
-        let currentChat = "pencatatan";
-        function renderChat(type) {
-            chatContainer.innerHTML = "";
-            chats[type].forEach(chat => {
-                const row = document.createElement("div");
-                row.className = `chat-row ${chat.side === "right" ? "right" : ""}`;
-                const avatar = document.createElement("div");
-                avatar.className = "chat-avatar";
-                const bubble = document.createElement("div");
-                bubble.className = `chat-bubble ${chat.side === "right" ? "chat-right" : "chat-left"}`;
-                bubble.innerText = chat.text;
-                if (chat.side === "right") {
-                    row.appendChild(bubble);
-                    row.appendChild(avatar);
-                } else {
-                    row.appendChild(avatar);
-                    row.appendChild(bubble);
-                }
-                chatContainer.appendChild(row);
-            });
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-        renderChat(currentChat);
-        document.getElementById("btnPencatatan").addEventListener("click", () => {
-            currentChat = "pencatatan";
-            document.getElementById("btnPencatatan").classList.add("active");
-            document.getElementById("btnMonitoring").classList.remove("active");
-            chatTitle.innerText = "Chat - Petugas Pencatatan";
-            renderChat(currentChat);
-        });
-
-        document.getElementById("btnMonitoring").addEventListener("click", () => {
-
-            currentChat = "monitoring";
-
-            document.getElementById("btnMonitoring").classList.add("active");
-            document.getElementById("btnPencatatan").classList.remove("active");
-
-            chatTitle.innerText = "Chat - Petugas Monitoring";
-
-            renderChat(currentChat);
-
-        });
-
-        const sendBtn = document.getElementById("sendBtn");
-        const messageInput = document.getElementById("messageInput");
-
-        function sendMessage() {
-            const message = messageInput.value.trim();
-            if (message === "") return;
-            const newMessage = {
-                side: "right",
-                text: message
-            };
-            chats[currentChat].push(newMessage);
-            renderChat(currentChat);
-            messageInput.value = "";
-            setTimeout(() => {
-                const reply = {
-                    side: "left",
-                    text: "Pesan diterima."
-                };
-                chats[currentChat].push(reply);
-                renderChat(currentChat);
-            }, 700);
-        }
-        sendBtn.addEventListener("click", sendMessage);
-        messageInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                sendMessage();
+                iconSpan.classList.replace("bi-list", "bi-x-lg");
             }
         });
 
+        // --- LOGIKA CHAT SUPABASE ---
         let currentLawanId = null;
 
-        async function pilihChat(id_lawan, nama_lawan) {
+        async function pilihChat(id_lawan, nama_lawan, element) {
             currentLawanId = id_lawan;
             document.getElementById("chatTitle").innerText = "Chat - " + nama_lawan;
+            document.getElementById("inputArea").style.display = "block";
+
+            document.querySelectorAll('.user-card').forEach(el => el.classList.remove('active'));
+            if (element) element.classList.add('active');
+
             loadPesan();
         }
 
         async function loadPesan() {
             if (!currentLawanId) return;
-            let res = await fetch(`/kepala_gudang/api/pesan?lawan_id=${currentLawanId}`);
-            let data = await res.json();
+            try {
+                let res = await fetch(`/kepala_gudang/api/pesan?lawan_id=${currentLawanId}`);
+                let data = await res.json();
 
-            const container = document.getElementById("chatContainer");
-            container.innerHTML = "";
+                const container = document.getElementById("chatContainer");
+                container.innerHTML = "";
 
-            data.pesan.forEach(p => {
-                let isMe = (p.id_pengirim === data.my_id);
-                container.innerHTML += `
-            <div class="chat-row ${isMe ? 'right' : ''}">
-                ${!isMe ? '<div class="chat-avatar"></div>' : ''}
-                <div class="chat-bubble ${isMe ? 'chat-right' : 'chat-left'}">${p.isi}</div>
-                ${isMe ? '<div class="chat-avatar"></div>' : ''}
-            </div>
-        `;
-            });
-            container.scrollTop = container.scrollHeight;
+                data.pesan.forEach(p => {
+                    let isMe = (p.id_pengirim === data.my_id);
+                    container.innerHTML += `
+                        <div class="chat-row ${isMe ? 'right' : ''}">
+                            ${!isMe ? '<div class="chat-avatar"></div>' : ''}
+                            <div class="chat-bubble ${isMe ? 'chat-right' : 'chat-left'}">${p.isi}</div>
+                            ${isMe ? '<div class="chat-avatar"></div>' : ''}
+                        </div>
+                    `;
+                });
+                container.scrollTop = container.scrollHeight;
+            } catch (err) {
+                console.error("Gagal load pesan:", err);
+            }
         }
 
-        // Auto-Refresh tiap 3 detik seperti aplikasi chat
-        setInterval(loadPesan, 3000);
+        setInterval(loadPesan, 2000);
 
         async function sendMessage() {
             const input = document.getElementById("messageInput");
             if (input.value.trim() === "" || !currentLawanId) return;
 
-            await fetch('/kepala_gudang/api/pesan', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_penerima: currentLawanId, isi: input.value })
-            });
-            input.value = "";
-            loadPesan();
+            try {
+                await fetch('/kepala_gudang/api/pesan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_penerima: currentLawanId, isi: input.value })
+                });
+                input.value = "";
+                loadPesan();
+            } catch (err) {
+                console.error("Gagal kirim pesan:", err);
+            }
         }
+
         document.getElementById("sendBtn").addEventListener("click", sendMessage);
+        document.getElementById("messageInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
     </script>
 </body>
 
