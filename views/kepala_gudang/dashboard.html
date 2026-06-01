@@ -388,11 +388,7 @@
 
 <body>
 
-    <nav class="top-navbar">
-        <div class="brand-name">PT. Cermin Nusantara Glass</div>
-        <div class="circle-profile"></div>
-    </nav>
-
+    {% include 'components/navbarKepalaGudang.html' %}
     <div class="main-container">
 
         <aside class="sidebar" id="sidebar">
@@ -441,26 +437,6 @@
                     </div>
 
                     <div class="stok-table-box">
-                        {% for nama_kategori, detail in stok_summary.items() %}
-
-                        <div class="stok-row">
-                            <span class="stok-name">Kaca {{ nama_kategori }}</span>
-                            <span class="stok-separator">:</span>
-                            <span class="stok-number">{{ detail.get('Baik', 0) }}</span>
-                        </div>
-
-                        <div class="stok-row">
-                            <span class="stok-name">{{ nama_kategori }} Rusak</span>
-                            <span class="stok-separator">:</span>
-                            <span class="stok-number text-danger">{{ detail.get('Rusak', 0) }}</span>
-                        </div>
-
-                        {% else %}
-                        <div class="text-center text-muted py-3">
-                            Belum ada data stok kaca di database.
-                        </div>
-                        {% endfor %}
-
                     </div>
 
                     <div class="mt-2 text-muted small text-end">*stok aktual per hari ini</div>
@@ -470,8 +446,9 @@
                     <div class="d-flex justify-content-between align-items-center flex-wrap mb-3 gap-2">
                         <div class="report-label">📋 Laporan Transaksi Harian</div>
                         <div class="d-flex gap-2">
-                            <button class="btn-action" id="btnTanggalFilter">📅 Filter Tanggal</button>
-                            <button class="btn-action" id="btnDownloadCSV">⬇️ Download CSV</button>
+                            <input type="date" class="btn-action filter-select" id="inputTanggalFilter"
+                                style="outline: none;">
+                            <button class="btn-action" id="btnDownloadCSV">📥 Download CSV</button>
                         </div>
                     </div>
 
@@ -490,7 +467,7 @@
                                 </tr>
                             </thead>
                             <tbody id="transaksiBody">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -498,6 +475,7 @@
         </main>
     </div>
 
+    <div id="supabase-stok-data" data-json='{{ stok_json | safe }}' style="display: none;"></div>
     <div id="supabase-tx-data" data-json='{{ transactions_json | safe }}' style="display: none;"></div>
     <script>
         let transactions = JSON.parse(document.getElementById('supabase-tx-data').getAttribute('data-json') || '[]');
@@ -538,20 +516,70 @@
             });
         }
 
-        document.getElementById('btnTanggalFilter')?.addEventListener('click', () => {
-            let filterDate = prompt("Masukkan tanggal (contoh: 1 April 2026 atau 2 April 2026):", "1 April 2026");
-            if (filterDate && filterDate.trim() !== "") {
-                const filtered = transactions.filter(t => t.tanggal.toLowerCase().includes(filterDate.toLowerCase()));
-                if (filtered.length === 0) {
-                    alert(`Tidak ada transaksi pada tanggal "${filterDate}"`);
-                    renderTransactions(transactions);
-                } else {
-                    renderTransactions(filtered);
-                }
+        // --- LOGIKA FILTER TANGGAL TRANSAKSI ---
+        document.getElementById('inputTanggalFilter')?.addEventListener('change', (e) => {
+            let val = e.target.value; // Format: YYYY-MM-DD
+            if (val) {
+                let d = new Date(val);
+                const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                let indoDate = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+
+                const filtered = transactions.filter(t => t.tanggal === indoDate);
+                renderTransactions(filtered);
             } else {
                 renderTransactions(transactions);
             }
         });
+
+        // --- LOGIKA FILTER STOK (UKURAN & KETEBALAN) ---
+        let stokData = JSON.parse(document.getElementById('supabase-stok-data').getAttribute('data-json') || '[]');
+
+        function renderStok(data) {
+            const container = document.querySelector('.stok-table-box');
+            container.innerHTML = '';
+
+            let grouped = {};
+            data.forEach(item => {
+                if (!grouped[item.kategori]) grouped[item.kategori] = { Baik: 0, Rusak: 0 };
+                grouped[item.kategori][item.kondisi] += item.jumlah;
+            });
+
+            let html = '';
+            for (let [kategori, detail] of Object.entries(grouped)) {
+                html += `
+        <div class="stok-row">
+            <span class="stok-name">Kaca ${kategori}</span>
+            <span class="stok-separator">:</span><span class="stok-number">${detail.Baik}</span>
+        </div>
+        <div class="stok-row">
+            <span class="stok-name">${kategori} Rusak</span>
+            <span class="stok-separator">:</span><span class="stok-number text-danger">${detail.Rusak}</span>
+        </div>`;
+            }
+
+            if (Object.keys(grouped).length === 0) {
+                html = '<div class="text-center text-muted py-3">Tidak ada data stok yang sesuai dengan filter.</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        document.getElementById('filterUkuran').addEventListener('change', applyStokFilter);
+        document.getElementById('filterKetebalan').addEventListener('change', applyStokFilter);
+
+        function applyStokFilter() {
+            let filterU = document.getElementById('filterUkuran').value;
+            let filterK = document.getElementById('filterKetebalan').value;
+
+            let filtered = stokData.filter(item => {
+                // Mengakomodasi filter regex / includes sederhana
+                let matchU = filterU === 'all' || item.ukuran.includes(filterU);
+                let matchK = filterK === 'all' || item.ketebalan.includes(filterK);
+                return matchU && matchK;
+            });
+            renderStok(filtered);
+        }
+        // Eksekusi awal
+        renderStok(stokData);
 
         function downloadCSV() {
             const headers = ["Tanggal", "Waktu", "Jenis Kaca", "Ukuran", "Ketebalan", "Status", "Jumlah"];

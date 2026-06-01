@@ -393,14 +393,7 @@
 
 <body>
 
-    <!-- NAVBAR (TIDAK DIRUBAH) -->
-    <nav class="top-navbar">
-        <div class="brand-name">
-            PT. Cermin Nusantara Glass
-        </div>
-        <div class="circle-profile"></div>
-    </nav>
-
+   {% include 'components/navbarKepalaGudang.html' %}
     <div class="main-container">
 
         <!-- SIDEBAR (TIDAK DIRUBAH) -->
@@ -416,10 +409,10 @@
                             class="initial">L</span></a></li>
                 <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span
                             class="initial">I</span></a></li>
-                <li><a href="/kepala_gudang/chatting"  id="menuMessage"><span class="full-text">Message</span><span
+                <li><a href="/kepala_gudang/chatting" id="menuMessage"><span class="full-text">Message</span><span
                             class="initial">M</span></a></li>
-                <li><a href="/kepala_gudang/tambahAkun" class="active" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span
-                            class="initial">T</span></a></li>
+                <li><a href="/kepala_gudang/tambahAkun" class="active" id="menuTambahAkun"><span
+                            class="full-text">Tambah Akun</span><span class="initial">T</span></a></li>
             </ul>
         </aside>
 
@@ -472,24 +465,35 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-username="hisyam">
+                            {% for p_user in pending_users %}
+                            <tr>
                                 <td>
-                                    <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                        hisyam</div>
+                                    <div
+                                        style="display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: bold;">
+                                        {{ p_user.username }}
+                                    </div>
                                 </td>
-                                <td><span class="badge-jabatan"> Petugas Monitoring</span></td>
-                                <td><button class="accept-btn"><i class="bi bi-check-lg"></i> accept</button></td>
-                                <td><button class="reject-btn"><i class="bi bi-x-lg"></i> reject</button></td>
-                            </tr>
-                            <tr data-username="fiernaz">
+                                <td><span class="badge-jabatan" style="background:#e0e7ff; color:#1e40af;"> {{
+                                        p_user.role.replace('_', ' ').title() }}</span></td>
                                 <td>
-                                    <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                        fiernaz</div>
+                                    <a href="/kepala_gudang/verifikasi/{{ p_user.id_user }}/terima" class="accept-btn"
+                                        style="text-decoration:none;">
+                                        <i class="bi bi-check-lg"></i> Terima
+                                    </a>
                                 </td>
-                                <td><span class="badge-jabatan"> Petugas Pencatatan</span></td>
-                                <td><button class="accept-btn"><i class="bi bi-check-lg"></i> accept</button></td>
-                                <td><button class="reject-btn"><i class="bi bi-x-lg"></i> reject</button></td>
+                                <td>
+                                    <a href="/kepala_gudang/verifikasi/{{ p_user.id_user }}/ditolak" class="reject-btn"
+                                        style="text-decoration:none;">
+                                        <i class="bi bi-x-lg"></i> Tolak
+                                    </a>
+                                </td>
                             </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">Belum ada permintaan pendaftaran
+                                    akun.</td>
+                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -516,37 +520,31 @@
             }
         });
 
-        // INTERAKSI CARD INVITE (Integrasi ke Backend Flask)
         const inviteCards = document.querySelectorAll('.invite-card');
 
         inviteCards.forEach(card => {
-            card.addEventListener('click', () => {
+            card.addEventListener('click', async () => {
                 const roleName = card.getAttribute('data-role');
-                const konfirmasi = confirm(`Buat link undangan resmi untuk posisi ${roleName}?`);
-
+                const konfirmasi = confirm(`Buat link undangan resmi untuk posisi ${roleName} ke WhatsApp?`);
                 if (!konfirmasi) return;
 
-                // Bikin form rahasia pakai JavaScript buat ngirim data ke Flask lu
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/kepala-gudang/invite'; // Ini nembak ke route Flask yang tadi kita buat
+                const roleValue = roleName === "Petugas Monitor" ? "petugas_monitoring" : "petugas_pencatatan";
 
-                const inputRole = document.createElement('input');
-                inputRole.type = 'hidden';
-                inputRole.name = 'role_tujuan'; // Nah, ini variabel yang bakal ditangkep Flask
+                let formData = new FormData();
+                formData.append('role_tujuan', roleValue);
 
-                // Samain nama role dengan format database lu
-                if (roleName === "Petugas Monitor") {
-                    inputRole.value = "petugas_monitoring";
-                } else {
-                    inputRole.value = "petugas_pencatatan";
+                try {
+                    let res = await fetch('/kepala_gudang/invite_api', { method: 'POST', body: formData });
+                    let data = await res.json();
+
+                    if (data.link) {
+                        let pesanText = `Halo! Silakan daftar sebagai *${roleName}* di WMS Gudang Kaca melalui link enkripsi berikut:\n\n${data.link}\n\n_Link berlaku selama 24 jam._`;
+                        let waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesanText)}`;
+                        window.open(waUrl, '_blank'); // Otomatis nge-lempar ke WhatsApp Web/App
+                    }
+                } catch (e) {
+                    alert('Gagal membuat link undangan.');
                 }
-
-                form.appendChild(inputRole);
-                document.body.appendChild(form);
-
-                // Submit form-nya otomatis
-                form.submit();
             });
         });
 

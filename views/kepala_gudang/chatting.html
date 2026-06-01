@@ -308,10 +308,7 @@
 
 <body>
 
-    <nav class="top-navbar">
-        <div class="brand-name">PT. Cermin Nusantara Glass</div>
-        <div class="circle-profile"></div>
-    </nav>
+    {% include 'components/navbarKepalaGudang.html' %}
 
     <div class="main-container">
         <aside class="sidebar" id="sidebar">
@@ -326,21 +323,21 @@
                             class="initial">L</span></a></li>
                 <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span
                             class="initial">I</span></a></li>
-                <li><a href="/kepala_gudang/chatting" class="active" id="menuMessage"><span class="full-text">Message</span><span
-                            class="initial">M</span></a></li>
-                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span
-                            class="initial">T</span></a></li>
+                <li><a href="/kepala_gudang/chatting" class="active" id="menuMessage"><span
+                            class="full-text">Message</span><span class="initial">M</span></a></li>
+                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah
+                            Akun</span><span class="initial">T</span></a></li>
             </ul>
         </aside>
         <main class="content-section">
             <div class="chat-layout">
                 <div class="user-list">
-                    <div class="user-card active" id="btnPencatatan">
-                        Petugas<br>Pencatatan
+                    {% for u in users %}
+                    <div class="user-card" onclick="pilihChat('{{ u.id_user }}', '{{ u.username }}')">
+                        {{ u.username }}<br><span style="font-size:12px; font-weight:normal;">{{ u.role.replace('_', '
+                            ') }}</span>
                     </div>
-                    <div class="user-card" id="btnMonitoring">
-                        Petugas<br>Monitoring
-                    </div>
+                    {% endfor %}
                 </div>
                 <div class="chat-area">
                     <div class="chat-header" id="chatTitle">
@@ -460,6 +457,52 @@
                 sendMessage();
             }
         });
+
+        let currentLawanId = null;
+
+        async function pilihChat(id_lawan, nama_lawan) {
+            currentLawanId = id_lawan;
+            document.getElementById("chatTitle").innerText = "Chat - " + nama_lawan;
+            loadPesan();
+        }
+
+        async function loadPesan() {
+            if (!currentLawanId) return;
+            let res = await fetch(`/kepala_gudang/api/pesan?lawan_id=${currentLawanId}`);
+            let data = await res.json();
+
+            const container = document.getElementById("chatContainer");
+            container.innerHTML = "";
+
+            data.pesan.forEach(p => {
+                let isMe = (p.id_pengirim === data.my_id);
+                container.innerHTML += `
+            <div class="chat-row ${isMe ? 'right' : ''}">
+                ${!isMe ? '<div class="chat-avatar"></div>' : ''}
+                <div class="chat-bubble ${isMe ? 'chat-right' : 'chat-left'}">${p.isi}</div>
+                ${isMe ? '<div class="chat-avatar"></div>' : ''}
+            </div>
+        `;
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Auto-Refresh tiap 3 detik seperti aplikasi chat
+        setInterval(loadPesan, 3000);
+
+        async function sendMessage() {
+            const input = document.getElementById("messageInput");
+            if (input.value.trim() === "" || !currentLawanId) return;
+
+            await fetch('/kepala_gudang/api/pesan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_penerima: currentLawanId, isi: input.value })
+            });
+            input.value = "";
+            loadPesan();
+        }
+        document.getElementById("sendBtn").addEventListener("click", sendMessage);
     </script>
 </body>
 

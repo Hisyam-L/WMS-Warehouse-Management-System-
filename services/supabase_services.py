@@ -70,7 +70,25 @@ def get_semua_transaksi():
     transactions_list.reverse()
     return transactions_list
 
-
+def get_stok_detail():
+    stok_list = []
+    try:
+        # Ambil id_kaca, jumlah, kondisi beserta data detail kacanya
+        response = supabase.table('stok').select('id_kaca, jumlah, kondisi, kaca(ukuran, ketebalan, kategori(kategori))').execute()
+        for item in response.data:
+            if not item.get('kaca') or not item['kaca'].get('kategori'):
+                continue
+            stok_list.append({
+                "id_kaca": item['id_kaca'],
+                "kategori": item['kaca']['kategori']['kategori'],
+                "ukuran": item['kaca']['ukuran'],
+                "ketebalan": item['kaca']['ketebalan'],
+                "kondisi": item['kondisi'] if item['kondisi'] else "Baik",
+                "jumlah": item['jumlah']
+            })
+    except Exception as e:
+        print(f"Error fetch stok detail: {e}")
+    return stok_list
 
 class AuthService:
     @staticmethod

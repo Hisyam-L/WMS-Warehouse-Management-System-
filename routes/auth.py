@@ -10,7 +10,6 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Udah bersih, nggak butuh bawa-bawa variabel supabase lagi
         hasil = AuthService.login_user(email, password)
 
         if hasil["success"]:
@@ -45,7 +44,12 @@ def daftar_kepala():
             return redirect(url_for('auth.login'))
         except Exception as e:
             print(f"ERROR SAAT DAFTAR KEPALA GUDANG: {str(e)}")
-            flash("Registrasi gagal. Cek terminal VS Code untuk detailnya.", "danger")
+
+            # 1. LOGIKA CEK EMAIL KEMBAR (KODE ERROR 23505)
+            if '23505' in str(e) or 'duplicate key' in str(e).lower():
+                flash("Email sudah terdaftar! Silakan gunakan email lain.", "danger")
+            else:
+                flash("Registrasi gagal. Terjadi kesalahan pada server.", "danger")
 
     return render_template('auth/daftar.html', role_konteks="kepala_gudang")
 
@@ -73,7 +77,12 @@ def daftar_petugas():
             return redirect(url_for('auth.login'))
         except Exception as e:
             print(f"ERROR SAAT DAFTAR PETUGAS: {str(e)}")
-            flash("Registrasi gagal. Cek terminal VS Code untuk detailnya.", "danger")
+
+            # 2. LOGIKA CEK EMAIL KEMBAR UNTUK PETUGAS JUGA
+            if '23505' in str(e) or 'duplicate key' in str(e).lower():
+                flash("Email sudah terdaftar! Silakan gunakan email lain.", "danger")
+            else:
+                flash("Registrasi gagal. Terjadi kesalahan pada server.", "danger")
 
     return render_template('auth/daftar.html',
                            role_konteks=token_data["role"],
@@ -81,6 +90,6 @@ def daftar_petugas():
 
 @auth_bp.route('/logout')
 def logout():
-    session.clear() # Ini yang bikin cookie lu bersih dan gak stuck!
+    session.clear()
     flash("Anda telah berhasil logout.", "success")
     return redirect(url_for('auth.login'))
