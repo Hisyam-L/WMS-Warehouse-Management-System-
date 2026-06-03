@@ -25,25 +25,36 @@ def instruksi():
     kaca_data = get_stok_detail()
     return render_template('kepala_gudang/intruksi.html', kaca_json=json.dumps(kaca_data), kaca_data=kaca_data)
 
-# INI RUTE YANG HILANG DAN BIKIN ERROR 404
+# INI RUTE YANG UDAH DISESUAIKAN DENGAN SCHEMA DATABASE LU
 @kepala_gudang_bp.route('/buat_instruksi', methods=['POST'])
 def buat_instruksi():
+    # Tangkap data kaca
     id_kaca = request.form.get('id_kaca')
     jumlah = int(request.form.get('jumlah'))
-    user_id = session.get('user_id')
 
-    # 1. Insert ke tabel instruksi_beli
-    resp = supabase.table('instruksi_beli').insert({
-        'id_user': user_id,
-        'status': 'Pending'
+    # Tangkap data pembeli dari form baru
+    nama_pembeli = request.form.get('nama_pembeli')
+    status_pembayaran = request.form.get('status_pembayaran')
+    no_hp_pembeli = request.form.get('no_hp_pembeli')
+    alamat = request.form.get('alamat')
+
+    # 1. Insert ke tabel kaca_keluar sesuai schema
+    resp = supabase.table('kaca_keluar').insert({
+        'nama_pembeli': nama_pembeli,
+        'no_hp': no_hp_pembeli,           # Sesuai kolom 'no_hp' di schema
+        'alamat': alamat,
+        'status_pembayaran': status_pembayaran,
+        'status_pengiriman': 'Pending'    # Kasih default value pengiriman
     }).execute()
-    id_instruksi = resp.data[0]['id_instruksi_beli']
 
-    # 2. Insert ke detail_instruksi
-    supabase.table('detail_instruksi').insert({
+    id_kaca_keluar = resp.data[0]['id_kaca_keluar']
+
+    # 2. Insert ke detail_kaca_keluar
+    supabase.table('detail_kaca_keluar').insert({
         'id_kaca': id_kaca,
-        'id_instruksi_beli': id_instruksi,
+        'id_kaca_keluar': id_kaca_keluar,
         'jumlah': jumlah
+        # Kolom 'kondisi' lu biarin kosong aja dulu sesuai schema kalau nggak ada inputnya
     }).execute()
 
     # 3. LOGIKA POTONG STOK OTOMATIS
@@ -55,10 +66,10 @@ def buat_instruksi():
 
         # Cegah kalau pesanan melebihi stok yang ada
         if stok_baru < 0:
-            flash("Stok tidak mencukupi untuk instruksi ini!", "danger")
+            flash("Stok tidak mencukupi untuk instruksi pesanan ini!", "danger")
         else:
             supabase.table('stok').update({'jumlah': stok_baru}).eq('id_kaca', id_kaca).execute()
-            flash("Instruksi berhasil dibuat!", "success")
+            flash("Instruksi pesanan berhasil dibuat!", "success")
 
     return redirect(url_for('kepala_gudang.instruksi'))
 

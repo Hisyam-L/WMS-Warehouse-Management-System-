@@ -39,7 +39,6 @@
         .brand-name {
             font-size: 20px;
             font-weight: 600;
-            /* Biar teks nama perusahaan lebih tegas & rapi */
         }
 
         .circle-profile {
@@ -50,6 +49,17 @@
             border: 2px solid #a8b3e0;
             transition: 0.2s;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2957;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .circle-profile:hover {
+            background-color: #d1d5e8;
         }
 
         .main-container {
@@ -385,7 +395,30 @@
 
 <body>
 
-    {% include 'components/navbarKepalaGudang.html' %}
+    <nav class="top-navbar">
+        <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
+
+        <div style="position: relative;">
+            <div class="circle-profile" id="profileBtn" title="Menu Profil">
+                {{ session.get('username', 'U')[0] | upper }}
+            </div>
+
+            <div id="profileDropdown" style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e2e6f2; background-color: #f4f6fd;">
+                    <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">Masuk sebagai</p>
+                    <p style="font-size: 14px; font-weight: bold; color: #1f2957; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ session.get('username') }}
+                    </p>
+                </div>
+                <div style="padding: 4px 0;">
+                    <a href="{{ url_for('auth.logout') }}" style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">
+                        <i class="bi bi-box-arrow-right" style="margin-right: 8px;"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div class="main-container">
 
         <aside class="sidebar" id="sidebar">
@@ -396,14 +429,10 @@
                 </button>
             </div>
             <ul class="menu-list">
-                <li><a href="/kepala_gudang/dashboard" class="active" id="menuLaporan"><span
-                            class="full-text">Laporan</span><span class="initial">L</span></a></li>
-                <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span
-                            class="initial">I</span></a></li>
-                <li><a href="/kepala_gudang/chatting" id="menuMessage"><span class="full-text">Message</span><span
-                            class="initial">M</span></a></li>
-                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah
-                            Akun</span><span class="initial">T</span></a></li>
+                <li><a href="/kepala_gudang/dashboard" class="active" id="menuLaporan"><span class="full-text">Laporan</span><span class="initial">L</span></a></li>
+                <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span class="initial">I</span></a></li>
+                <li><a href="/kepala_gudang/chatting" id="menuMessage"><span class="full-text">Message</span><span class="initial">M</span></a></li>
+                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span class="initial">T</span></a></li>
             </ul>
         </aside>
 
@@ -475,6 +504,28 @@
     <div id="supabase-stok-data" data-json='{{ stok_json | safe }}' style="display: none;"></div>
     <div id="supabase-tx-data" data-json='{{ transactions_json | safe }}' style="display: none;"></div>
     <script>
+        // --- LOGIKA DROPDOWN PROFIL NAVBAR ---
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if(profileBtn) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
+                    profileDropdown.style.display = 'block';
+                } else {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        }
+
+        window.addEventListener('click', (e) => {
+            if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+
+        // --- DASHBOARD LOGIC ---
         let transactions = JSON.parse(document.getElementById('supabase-tx-data').getAttribute('data-json') || '[]');
 
         function renderTransactions(data) {
@@ -513,9 +564,8 @@
             });
         }
 
-        // --- LOGIKA FILTER TANGGAL TRANSAKSI ---
         document.getElementById('inputTanggalFilter')?.addEventListener('change', (e) => {
-            let val = e.target.value; // Format: YYYY-MM-DD
+            let val = e.target.value;
             if (val) {
                 let d = new Date(val);
                 const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -528,7 +578,6 @@
             }
         });
 
-        // --- LOGIKA FILTER STOK (UKURAN & KETEBALAN) ---
         let stokData = JSON.parse(document.getElementById('supabase-stok-data').getAttribute('data-json') || '[]');
 
         function renderStok(data) {
@@ -568,14 +617,12 @@
             let filterK = document.getElementById('filterKetebalan').value;
 
             let filtered = stokData.filter(item => {
-                // Mengakomodasi filter regex / includes sederhana
                 let matchU = filterU === 'all' || item.ukuran.includes(filterU);
                 let matchK = filterK === 'all' || item.ketebalan.includes(filterK);
                 return matchU && matchK;
             });
             renderStok(filtered);
         }
-        // Eksekusi awal
         renderStok(stokData);
 
         function downloadCSV() {
@@ -610,10 +657,6 @@
 
         renderTransactions(transactions);
 
-        window.addEventListener('load', () => {
-            console.log("Dashboard siap dengan UI rapi");
-        });
     </script>
 </body>
-
 </html>

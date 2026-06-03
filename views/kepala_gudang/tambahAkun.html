@@ -7,8 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Dashboard Pergudangan Kaca</title>
-
-    <!-- Bootstrap Icons + Font Awesome untuk icon tambahan -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
@@ -37,21 +35,34 @@
             align-items: center;
             padding: 0 24px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
         }
 
-          .brand-name {
+        .brand-name {
             font-size: 20px;
             font-weight: 600;
-            /* Biar teks nama perusahaan lebih tegas & rapi */
         }
 
 
         .circle-profile {
             width: 38px;
             height: 38px;
+            background-color: #e9edff;
             border-radius: 50%;
-            background: #e9edff;
             border: 2px solid #a8b3e0;
+            transition: 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2957;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .circle-profile:hover {
+            background-color: #d1d5e8;
         }
 
         /* MAIN */
@@ -61,12 +72,15 @@
             overflow: hidden;
         }
 
-        /* SIDEBAR (tidak diubah) */
+        /* SIDEBAR */
         .sidebar {
             width: 260px;
             background: #d1d5e8;
             transition: 0.3s;
             border-right: 1px solid #b0b5cc;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.02);
         }
 
         .sidebar.close {
@@ -180,7 +194,7 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
         }
 
-        /* =========== CARD INVITE DIPERBAIKI & DIPERCANTIK (HANYA BAGIAN INI) =========== */
+        /* CARD INVITE */
         .invite-container {
             display: flex;
             gap: 32px;
@@ -205,7 +219,6 @@
             padding: 24px 20px 28px 20px;
         }
 
-        /* efek garis atas premium */
         .invite-card::before {
             content: '';
             position: absolute;
@@ -284,7 +297,7 @@
             gap: 10px;
         }
 
-        /* TABLE (tidak diubah, tetap rapi seperti semula) */
+        /* TABLE */
         .table-container {
             background: white;
             border-radius: 18px;
@@ -323,16 +336,6 @@
             border-radius: 40px;
             font-size: 12px;
             font-weight: 600;
-        }
-
-        .badge-monitor {
-            background: #e0e7ff;
-            color: #1e40af;
-        }
-
-        .badge-pencatatan {
-            background: #dcfce7;
-            color: #166534;
         }
 
         .accept-btn {
@@ -375,7 +378,6 @@
             transform: scale(0.96);
         }
 
-        /* RESPONSIVE */
         @media (max-width: 700px) {
             .content-section {
                 padding: 20px;
@@ -392,10 +394,32 @@
 
 <body>
 
-   {% include 'components/navbarKepalaGudang.html' %}
+    <nav class="top-navbar">
+        <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
+
+        <div style="position: relative;">
+            <div class="circle-profile" id="profileBtn" title="Menu Profil">
+                {{ session.get('username', 'U')[0] | upper }}
+            </div>
+
+            <div id="profileDropdown" style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e2e6f2; background-color: #f4f6fd;">
+                    <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">Masuk sebagai</p>
+                    <p style="font-size: 14px; font-weight: bold; color: #1f2957; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ session.get('username') }}
+                    </p>
+                </div>
+                <div style="padding: 4px 0;">
+                    <a href="{{ url_for('auth.logout') }}" style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">
+                        <i class="bi bi-box-arrow-right" style="margin-right: 8px;"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div class="main-container">
 
-        <!-- SIDEBAR (TIDAK DIRUBAH) -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <span class="menu-title">Menu</span>
@@ -404,28 +428,21 @@
                 </button>
             </div>
             <ul class="menu-list">
-                <li><a href="/kepala_gudang/dashboard" id="menuLaporan"><span class="full-text">Laporan</span><span
-                            class="initial">L</span></a></li>
-                <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span
-                            class="initial">I</span></a></li>
-                <li><a href="/kepala_gudang/chatting" id="menuMessage"><span class="full-text">Message</span><span
-                            class="initial">M</span></a></li>
-                <li><a href="/kepala_gudang/tambahAkun" class="active" id="menuTambahAkun"><span
-                            class="full-text">Tambah Akun</span><span class="initial">T</span></a></li>
+                <li><a href="/kepala_gudang/dashboard" id="menuLaporan"><span class="full-text">Laporan</span><span class="initial">L</span></a></li>
+                <li><a href="/kepala_gudang/instruksi" id="menuInstruksi"><span class="full-text">Instruksi</span><span class="initial">I</span></a></li>
+                <li><a href="/kepala_gudang/chatting" id="menuMessage"><span class="full-text">Message</span><span class="initial">M</span></a></li>
+                <li><a href="/kepala_gudang/tambahAkun" class="active" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span class="initial">T</span></a></li>
             </ul>
         </aside>
 
-        <!-- CONTENT (HANYA CARD INVITE YANG DIPERINDAH, SISANYA SAMA) -->
         <main class="content-section">
 
-            <!-- INVITE SECTION (Card dipoles) -->
             <div class="section-box">
                 <div class="section-title">
                     <i class="bi bi-envelope-paper"></i> Invite Jabatan
                 </div>
 
                 <div class="invite-container">
-                    <!-- Card Petugas Monitor (dipercantik) -->
                     <div class="invite-card" data-role="Petugas Monitor">
                         <div class="card-icon">
                             <i class="bi bi-tv-fill" style="font-size: 32px; color:#1f2957;"></i>
@@ -435,7 +452,6 @@
                         <span><i class="bi bi-send-fill"></i> Kirim Undangan</span>
                     </div>
 
-                    <!-- Card Petugas Pencatatan (dipercantik) -->
                     <div class="invite-card" data-role="Petugas Pencatatan">
                         <div class="card-icon">
                             <i class="bi bi-pencil-square" style="font-size: 32px; color:#1f2957;"></i>
@@ -447,7 +463,6 @@
                 </div>
             </div>
 
-            <!-- APPROVAL / REJECT SECTION (TIDAK DIRUBAH, TETAP ASLI & RAPI) -->
             <div class="section-box">
                 <div class="section-title">
                     <i class="bi bi-check2-square"></i> Approval / Reject
@@ -505,7 +520,28 @@
     </div>
 
     <script>
-        // SIDEBAR TOGGLE (TIDAK DIUBAH)
+        // --- LOGIKA DROPDOWN PROFIL NAVBAR ---
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if(profileBtn) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
+                    profileDropdown.style.display = 'block';
+                } else {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        }
+
+        window.addEventListener('click', (e) => {
+            if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+
+        // --- LOGIKA SIDEBAR TOGGLE ---
         const toggleBtn = document.getElementById("toggleBtn");
         const sidebar = document.getElementById("sidebar");
         const iconSpan = toggleBtn.querySelector("i");
@@ -539,7 +575,7 @@
                     if (data.link) {
                         let pesanText = `Halo! Silakan daftar sebagai *${roleName}* di WMS Gudang Kaca melalui link enkripsi berikut:\n\n${data.link}\n\n_Link berlaku selama 24 jam._`;
                         let waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesanText)}`;
-                        window.open(waUrl, '_blank'); // Otomatis nge-lempar ke WhatsApp Web/App
+                        window.open(waUrl, '_blank');
                     }
                 } catch (e) {
                     alert('Gagal membuat link undangan.');
@@ -547,8 +583,6 @@
             });
         });
 
-
-        // INTERAKSI ACCEPT / REJECT (tetap original dengan feedback)
         const acceptBtns = document.querySelectorAll('.accept-btn');
         const rejectBtns = document.querySelectorAll('.reject-btn');
 
@@ -589,24 +623,6 @@
                 alert(`❌ Akun "${username}" telah di-REJECT.`);
             });
         });
-
-        // // MENU navigasi dummy (tetap ada)
-        // document.getElementById('menuLaporan')?.addEventListener('click', (e) => {
-        //     e.preventDefault();
-        //     alert("📊 Halaman Laporan: Menampilkan data transaksi dan stok.");
-        // });
-        // document.getElementById('menuInstruksi')?.addEventListener('click', (e) => {
-        //     e.preventDefault();
-        //     alert("📋 Halaman Instruksi: Panduan operasional gudang.");
-        // });
-        // document.getElementById('menuMessage')?.addEventListener('click', (e) => {
-        //     e.preventDefault();
-        //     alert("💬 Tidak ada pesan baru.");
-        // });
-        // document.getElementById('menuTambahAkun')?.addEventListener('click', (e) => {
-        //     e.preventDefault();
-        //     alert("➕ Anda berada di halaman Tambah Akun.");
-        // });
     </script>
 
 </body>

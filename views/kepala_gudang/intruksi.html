@@ -5,36 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instruksi Kaca - WMS</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
-        /* =========================================
-           GLOBAL, NAVBAR, SIDEBAR (STANDAR TAMBAH AKUN)
-           ========================================= */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
         }
 
         body {
-            background: #d8d8ea;
-            height: 100vh;
-            overflow: hidden;
+            background-color: #d8d8ea;
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .top-navbar {
-            background: #1f2957;
-            height: 60px;
+            background-color: #1f2957;
             color: white;
+            height: 60px;
+            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 24px;
+            padding: 0 25px;
+            z-index: 1000;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
@@ -46,22 +45,39 @@
         .circle-profile {
             width: 38px;
             height: 38px;
+            background-color: #e9edff;
             border-radius: 50%;
-            background: #e9edff;
             border: 2px solid #a8b3e0;
+            transition: 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2957;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .circle-profile:hover {
+            background-color: #d1d5e8;
         }
 
         .main-container {
-            flex: 1;
             display: flex;
+            flex: 1;
             overflow: hidden;
         }
 
+        /* SIDEBAR */
         .sidebar {
             width: 260px;
-            background: #d1d5e8;
-            transition: 0.3s;
+            background-color: #d1d5e8;
             border-right: 1px solid #b0b5cc;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.02);
         }
 
         .sidebar.close {
@@ -69,76 +85,91 @@
         }
 
         .sidebar-header {
-            height: 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            padding: 15px 20px;
+            height: 60px;
             border-bottom: 1px solid #b6bbd4;
         }
 
         .menu-title {
             font-size: 20px;
-            font-weight: bold;
+            font-weight: 600;
             color: #12172f;
+            letter-spacing: -0.2px;
         }
 
         .toggle-btn {
-            width: 35px;
-            height: 35px;
+            background: #eef2ff;
             border: none;
-            background: white;
-            border-radius: 8px;
+            font-size: 22px;
             cursor: pointer;
+            color: #1f2957;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: 0.2s;
         }
 
         .toggle-btn:hover {
-            background: #eef2ff;
+            background: #ffffff;
+            color: #0a1030;
         }
 
         .menu-list {
             list-style: none;
             padding: 20px 16px;
+            margin: 0;
         }
 
         .menu-list li {
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
-        .menu-list a {
+        .menu-list li a {
             text-decoration: none;
             color: #1f2957;
-            background: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 12px;
+            background-color: white;
+            padding: 10px 12px;
             border-radius: 12px;
+            border: 1px solid #b5bad2;
             font-weight: 600;
+            height: 48px;
+            font-size: 15px;
             transition: 0.2s;
-            border: 1px solid #c1c6df;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
-        .menu-list a:hover {
-            background: #eef2ff;
+        .menu-list li a:hover {
+            background-color: #eef2ff;
+            border-color: #8e95bc;
             transform: translateX(3px);
         }
 
-        .menu-list a.active {
-            background: #1f2957;
+        .menu-list li a.active {
+            background-color: #1f2957;
             color: white;
             border-color: #1f2957;
+            box-shadow: 0 2px 6px rgba(31, 41, 87, 0.2);
         }
 
         .full-text {
-            margin-left: 8px;
+            display: inline;
+            white-space: nowrap;
+            margin-left: 6px;
         }
 
         .initial {
             display: none;
+            font-size: 20px;
+            font-weight: bold;
         }
 
         .sidebar.close .menu-title,
@@ -147,12 +178,19 @@
         }
 
         .sidebar.close .initial {
-            display: inline;
+            display: inline-block;
         }
 
-        /* =========================================
-           CSS SPESIFIK KONTEN INTRUKSI
-           ========================================= */
+        .sidebar.close .sidebar-header {
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        .sidebar.close .menu-list li a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+
         .content-section {
             flex: 1;
             overflow-y: auto;
@@ -236,6 +274,8 @@
 
         .panel-body {
             padding: 20px;
+            overflow-y: auto;
+            /* Biar field yang banyak bisa discroll kalau mentok bawah */
         }
 
         .form-group {
@@ -249,13 +289,16 @@
             color: #1f2957;
         }
 
+        /* GUA TAMBAHIN SELECT DI SINI BIAR DROPDOWN NYA RAPI */
         .form-group input,
+        .form-group select,
         .form-group textarea {
             width: 100%;
             padding: 12px;
             border-radius: 12px;
             border: 1px solid #cbd5e1;
             outline: none;
+            font-size: 14px;
         }
 
         .submit-btn {
@@ -268,6 +311,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.2s;
+            margin-top: 10px;
         }
 
         .submit-btn:hover {
@@ -280,7 +324,31 @@
 
     <nav class="top-navbar">
         <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
-        <div class="circle-profile"></div>
+
+        <div style="position: relative;">
+            <div class="circle-profile" id="profileBtn" title="Menu Profil">
+                {{ session.get('username', 'U')[0] | upper }}
+            </div>
+
+            <div id="profileDropdown"
+                style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e2e6f2; background-color: #f4f6fd;">
+                    <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">Masuk sebagai</p>
+                    <p
+                        style="font-size: 14px; font-weight: bold; color: #1f2957; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ session.get('username') }}
+                    </p>
+                </div>
+                <div style="padding: 4px 0;">
+                    <a href="{{ url_for('auth.logout') }}"
+                        style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none; border-top: 1px solid #e2e6f2;"
+                        onmouseover="this.style.backgroundColor='#fef2f2'"
+                        onmouseout="this.style.backgroundColor='transparent'">
+                        <i class="bi bi-box-arrow-right" style="margin-right: 8px;"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <div class="main-container">
@@ -292,10 +360,14 @@
                 </button>
             </div>
             <ul class="menu-list">
-                <li><a href="/kepala_gudang/dashboard" id="menuLaporan"><span class="full-text">Laporan</span><span class="initial">L</span></a></li>
-                <li><a href="/kepala_gudang/instruksi" class="active" id="menuInstruksi"><span class="full-text">Instruksi</span><span class="initial">I</span></a></li>
-                <li><a href="/kepala_gudang/chatting" id="menuMessage"><span class="full-text">Message</span><span class="initial">M</span></a></li>
-                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah Akun</span><span class="initial">T</span></a></li>
+                <li><a href="/kepala_gudang/dashboard" id="menuLaporan"><span class="full-text">Laporan</span><span
+                            class="initial">L</span></a></li>
+                <li><a href="/kepala_gudang/instruksi" class="active" id="menuInstruksi"><span
+                            class="full-text">Instruksi</span><span class="initial">I</span></a></li>
+                <li><a href="/kepala_gudang/chatting" id="menuMessage"><span class="full-text">Message</span><span
+                            class="initial">M</span></a></li>
+                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah
+                            Akun</span><span class="initial">T</span></a></li>
             </ul>
         </aside>
 
@@ -304,16 +376,21 @@
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
             {% for category, message in messages %}
-            <div class="mb-4 p-4 rounded-xl text-sm {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+            <div
+                class="mb-4 p-4 rounded-xl text-sm {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
             {% endif %}
             {% endwith %}
 
+            {% set list_kondisi = [] %}
             {% set list_ukuran = [] %}
             {% set list_ketebalan = [] %}
             {% for kaca in kaca_data %}
+            {% if kaca.kondisi and kaca.kondisi not in list_kondisi %}
+            {% set _ = list_kondisi.append(kaca.kondisi) %}
+            {% endif %}
             {% if kaca.ukuran and kaca.ukuran not in list_ukuran %}
             {% set _ = list_ukuran.append(kaca.ukuran) %}
             {% endif %}
@@ -323,6 +400,13 @@
             {% endfor %}
 
             <div class="flex flex-wrap gap-4 mb-8">
+                <select class="filter-custom" id="filterKondisi">
+                    <option value="all">Semua Kondisi</option>
+                    {% for kon in list_kondisi %}
+                    <option value="{{ kon }}">{{ kon }}</option>
+                    {% endfor %}
+                </select>
+
                 <select class="filter-custom" id="filterUkuran">
                     <option value="all">Semua Ukuran</option>
                     {% for uk in list_ukuran %}
@@ -342,7 +426,8 @@
                 {% for kaca in kaca_data %}
                 <div class="glass-card glass-item" data-id="{{ kaca.id_kaca }}"
                     data-nama="Kaca {{ kaca.kategori }} - {{ kaca.ukuran }} ({{ kaca.ketebalan }})"
-                    data-ukuran="{{ kaca.ukuran }}" data-ketebalan="{{ kaca.ketebalan }}">
+                    data-kondisi="{{ kaca.kondisi }}" data-ukuran="{{ kaca.ukuran }}"
+                    data-ketebalan="{{ kaca.ketebalan }}">
 
                     <div class="relative">
                         <img src="https://placehold.co/400x200/9ca3af/ffffff?text=Kaca+{{ kaca.kategori }}"
@@ -358,7 +443,8 @@
                                 <h3 class="font-bold text-lg leading-tight">
                                     Kaca {{ kaca.kategori }}
                                 </h3>
-                                <span class="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full whitespace-nowrap">
+                                <span
+                                    class="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full whitespace-nowrap">
                                     {{ kaca.jumlah }} PCS
                                 </span>
                             </div>
@@ -387,7 +473,8 @@
 
                 <div class="form-group">
                     <label>Kategori Kaca</label>
-                    <input type="text" id="namaKaca" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+                    <input type="text" id="namaKaca" readonly
+                        style="background-color: #f1f5f9; cursor: not-allowed; color: #64748b;">
                 </div>
 
                 <div class="form-group">
@@ -395,12 +482,58 @@
                     <input type="number" name="jumlah" placeholder="Masukkan jumlah pesanan..." min="1" required>
                 </div>
 
-                <button type="submit" class="submit-btn mt-4">Kirim Instruksi ke Pencatatan</button>
+                <div class="form-group">
+                    <label>Nama Pembeli</label>
+                    <input type="text" name="nama_pembeli" placeholder="Masukkan nama pembeli..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Status Pembayaran</label>
+                    <select name="status_pembayaran" required>
+                        <option value="" disabled selected>Pilih Status...</option>
+                        <option value="Lunas">Lunas</option>
+                        <option value="DP">DP (Down Payment)</option>
+                        <option value="Belum Bayar">Belum Bayar</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>No HP Pembeli</label>
+                    <input type="text" name="no_hp_pembeli" placeholder="Contoh: 08123456789" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Alamat</label>
+                    <textarea name="alamat" rows="3" placeholder="Alamat lengkap pengiriman..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Kirim Instruksi ke Pencatatan</button>
             </form>
         </div>
     </div>
 
     <script>
+        // --- LOGIKA DROPDOWN PROFIL NAVBAR ---
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if (profileBtn) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
+                    profileDropdown.style.display = 'block';
+                } else {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        }
+
+        window.addEventListener('click', (e) => {
+            if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+
         // --- LOGIKA TOGGLE SIDEBAR ---
         const toggleBtn = document.getElementById("toggleBtn");
         const sidebar = document.getElementById("sidebar");
@@ -415,23 +548,27 @@
             }
         });
 
-        // --- LOGIKA INTRUKSI ---
+        // --- LOGIKA MULTI FILTER ---
+        const filterKondisi = document.getElementById("filterKondisi");
         const filterUkuran = document.getElementById("filterUkuran");
         const filterKetebalan = document.getElementById("filterKetebalan");
         const glassCards = document.querySelectorAll(".glass-item");
 
         function applyInstruksiFilter() {
-            let valU = filterUkuran.value;
-            let valK = filterKetebalan.value;
+            let valKon = filterKondisi ? filterKondisi.value : 'all';
+            let valU = filterUkuran ? filterUkuran.value : 'all';
+            let valK = filterKetebalan ? filterKetebalan.value : 'all';
 
             glassCards.forEach(card => {
+                let kon = card.getAttribute("data-kondisi") || 'Baik';
                 let u = card.getAttribute("data-ukuran");
                 let k = card.getAttribute("data-ketebalan");
 
+                let matchKon = (valKon === 'all' || kon === valKon || (valKon === 'all' && !kon));
                 let matchU = (valU === 'all' || u === valU);
                 let matchK = (valK === 'all' || k === valK);
 
-                if (matchU && matchK) {
+                if (matchKon && matchU && matchK) {
                     card.style.display = "flex";
                 } else {
                     card.style.display = "none";
@@ -439,10 +576,12 @@
             });
         }
 
+        if (filterKondisi) filterKondisi.addEventListener("change", applyInstruksiFilter);
         if (filterUkuran) filterUkuran.addEventListener("change", applyInstruksiFilter);
         if (filterKetebalan) filterKetebalan.addEventListener("change", applyInstruksiFilter);
 
 
+        // --- LOGIKA BUKA PANEL FORM ---
         const detailPanel = document.getElementById("detailPanel");
         const namaKacaInput = document.getElementById("namaKaca");
         const inputIdKaca = document.getElementById("inputIdKaca");
@@ -451,8 +590,9 @@
             card.addEventListener("click", () => {
                 const id_kaca = card.getAttribute("data-id");
                 const nama = card.getAttribute("data-nama");
+                const kondisi = card.getAttribute("data-kondisi") || 'Baik';
 
-                namaKacaInput.value = nama;
+                namaKacaInput.value = nama + (kondisi === 'Rusak' ? ' (Rusak)' : '');
                 inputIdKaca.value = id_kaca;
                 detailPanel.classList.add("show");
             });
