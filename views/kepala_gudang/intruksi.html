@@ -13,7 +13,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
@@ -22,8 +22,10 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
+            color: #0f172a;
         }
 
+        /* NAVBAR & SIDEBAR (DISAMAKAN DENGAN PETUGAS MONITORING) */
         .top-navbar {
             background-color: #1f2957;
             color: white;
@@ -49,7 +51,6 @@
             border-radius: 50%;
             border: 2px solid #a8b3e0;
             transition: 0.2s;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -69,15 +70,14 @@
             overflow: hidden;
         }
 
-        /* SIDEBAR */
         .sidebar {
             width: 260px;
             background-color: #d1d5e8;
             border-right: 1px solid #b0b5cc;
-            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: all 0.25s;
             display: flex;
             flex-direction: column;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.02);
+            z-index: 10;
         }
 
         .sidebar.close {
@@ -97,7 +97,6 @@
             font-size: 20px;
             font-weight: 600;
             color: #12172f;
-            letter-spacing: -0.2px;
         }
 
         .toggle-btn {
@@ -134,7 +133,6 @@
             text-decoration: none;
             color: #1f2957;
             display: flex;
-            justify-content: center;
             align-items: center;
             background-color: white;
             padding: 10px 12px;
@@ -144,12 +142,10 @@
             height: 48px;
             font-size: 15px;
             transition: 0.2s;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
         .menu-list li a:hover {
             background-color: #eef2ff;
-            border-color: #8e95bc;
             transform: translateX(3px);
         }
 
@@ -157,19 +153,21 @@
             background-color: #1f2957;
             color: white;
             border-color: #1f2957;
-            box-shadow: 0 2px 6px rgba(31, 41, 87, 0.2);
+            justify-content: center;
         }
 
         .full-text {
-            display: inline;
-            white-space: nowrap;
             margin-left: 6px;
+            white-space: nowrap;
+            flex: 1;
         }
 
         .initial {
             display: none;
             font-size: 20px;
             font-weight: bold;
+            text-align: center;
+            width: 100%;
         }
 
         .sidebar.close .menu-title,
@@ -191,6 +189,7 @@
             padding: 10px 0;
         }
 
+        /* KONTEN TENGAH (TIDAK DIUBAH) */
         .content-section {
             flex: 1;
             overflow-y: auto;
@@ -275,7 +274,6 @@
         .panel-body {
             padding: 20px;
             overflow-y: auto;
-            /* Biar field yang banyak bisa discroll kalau mentok bawah */
         }
 
         .form-group {
@@ -289,7 +287,6 @@
             color: #1f2957;
         }
 
-        /* GUA TAMBAHIN SELECT DI SINI BIAR DROPDOWN NYA RAPI */
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -324,12 +321,10 @@
 
     <nav class="top-navbar">
         <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
-
         <div style="position: relative;">
             <div class="circle-profile" id="profileBtn" title="Menu Profil">
                 {{ session.get('username', 'U')[0] | upper }}
             </div>
-
             <div id="profileDropdown"
                 style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
                 <div style="padding: 12px 16px; border-bottom: 1px solid #e2e6f2; background-color: #f4f6fd;">
@@ -341,10 +336,10 @@
                 </div>
                 <div style="padding: 4px 0;">
                     <a href="{{ url_for('auth.logout') }}"
-                        style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none; border-top: 1px solid #e2e6f2;"
+                        style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;"
                         onmouseover="this.style.backgroundColor='#fef2f2'"
                         onmouseout="this.style.backgroundColor='transparent'">
-                        <i class="bi bi-box-arrow-right" style="margin-right: 8px;"></i>Logout
+                        Logout
                     </a>
                 </div>
             </div>
@@ -352,22 +347,21 @@
     </nav>
 
     <div class="main-container">
+
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <span class="menu-title">Menu</span>
-                <button class="toggle-btn" id="toggleBtn">
-                    <i class="bi bi-x-lg"></i>
-                </button>
+                <button class="toggle-btn" id="toggleBtn">☰</button>
             </div>
             <ul class="menu-list">
-                <li><a href="/kepala_gudang/dashboard" id="menuLaporan"><span class="full-text">Laporan</span><span
+                <li><a href="/kepala_gudang/dashboard"><span class="full-text">Laporan</span><span
                             class="initial">L</span></a></li>
-                <li><a href="/kepala_gudang/instruksi" class="active" id="menuInstruksi"><span
-                            class="full-text">Instruksi</span><span class="initial">I</span></a></li>
-                <li><a href="/kepala_gudang/chatting" id="menuMessage"><span class="full-text">Message</span><span
-                            class="initial">M</span></a></li>
-                <li><a href="/kepala_gudang/tambahAkun" id="menuTambahAkun"><span class="full-text">Tambah
-                            Akun</span><span class="initial">T</span></a></li>
+                <li><a href="/kepala_gudang/instruksi" class="active"><span class="full-text">Instruksi</span><span
+                            class="initial">I</span></a></li>
+                <li><a href="/kepala_gudang/chatting"><span class="full-text">Chatting</span><span
+                            class="initial">C</span></a></li>
+                <li><a href="/kepala_gudang/tambahAkun"><span class="full-text">Tambah Akun</span><span
+                            class="initial">T</span></a></li>
             </ul>
         </aside>
 
@@ -406,14 +400,12 @@
                     <option value="{{ kon }}">{{ kon }}</option>
                     {% endfor %}
                 </select>
-
                 <select class="filter-custom" id="filterUkuran">
                     <option value="all">Semua Ukuran</option>
                     {% for uk in list_ukuran %}
                     <option value="{{ uk }}">{{ uk }}</option>
                     {% endfor %}
                 </select>
-
                 <select class="filter-custom" id="filterKetebalan">
                     <option value="all">Semua Ketebalan</option>
                     {% for tb in list_ketebalan %}
@@ -428,7 +420,6 @@
                     data-nama="Kaca {{ kaca.kategori }} - {{ kaca.ukuran }} ({{ kaca.ketebalan }})"
                     data-kondisi="{{ kaca.kondisi }}" data-ukuran="{{ kaca.ukuran }}"
                     data-ketebalan="{{ kaca.ketebalan }}">
-
                     <div class="relative">
                         <img src="https://placehold.co/400x200/9ca3af/ffffff?text=Kaca+{{ kaca.kategori }}"
                             class="w-full h-44 object-cover">
@@ -436,17 +427,13 @@
                         <div class="badge-rusak">Rusak</div>
                         {% endif %}
                     </div>
-
                     <div class="p-4 flex-1 flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between mb-3 items-start">
-                                <h3 class="font-bold text-lg leading-tight">
-                                    Kaca {{ kaca.kategori }}
-                                </h3>
+                                <h3 class="font-bold text-lg leading-tight">Kaca {{ kaca.kategori }}</h3>
                                 <span
-                                    class="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full whitespace-nowrap">
-                                    {{ kaca.jumlah }} PCS
-                                </span>
+                                    class="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full whitespace-nowrap">{{
+                                    kaca.jumlah }} PCS</span>
                             </div>
                             <p class="text-sm text-gray-600 mb-1">Ukuran: {{ kaca.ukuran }}</p>
                             <p class="text-sm text-gray-600">Ketebalan: {{ kaca.ketebalan }}</p>
@@ -470,23 +457,19 @@
         <div class="panel-body">
             <form action="/kepala_gudang/buat_instruksi" method="POST" id="glassForm">
                 <input type="hidden" name="id_kaca" id="inputIdKaca">
-
                 <div class="form-group">
                     <label>Kategori Kaca</label>
                     <input type="text" id="namaKaca" readonly
                         style="background-color: #f1f5f9; cursor: not-allowed; color: #64748b;">
                 </div>
-
                 <div class="form-group">
                     <label>Jumlah Kaca Dipesan / Restock</label>
                     <input type="number" name="jumlah" placeholder="Masukkan jumlah pesanan..." min="1" required>
                 </div>
-
                 <div class="form-group">
                     <label>Nama Pembeli</label>
                     <input type="text" name="nama_pembeli" placeholder="Masukkan nama pembeli..." required>
                 </div>
-
                 <div class="form-group">
                     <label>Status Pembayaran</label>
                     <select name="status_pembayaran" required>
@@ -496,59 +479,30 @@
                         <option value="Belum Bayar">Belum Bayar</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label>No HP Pembeli</label>
                     <input type="text" name="no_hp_pembeli" placeholder="Contoh: 08123456789" required>
                 </div>
-
                 <div class="form-group">
                     <label>Alamat</label>
                     <textarea name="alamat" rows="3" placeholder="Alamat lengkap pengiriman..." required></textarea>
                 </div>
-
                 <button type="submit" class="submit-btn">Kirim Instruksi ke Pencatatan</button>
             </form>
         </div>
     </div>
 
     <script>
-        // --- LOGIKA DROPDOWN PROFIL NAVBAR ---
+        // --- LOGIKA MENU NAVBAR & SIDEBAR (BARU) ---
         const profileBtn = document.getElementById('profileBtn');
         const profileDropdown = document.getElementById('profileDropdown');
-
-        if (profileBtn) {
-            profileBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
-                    profileDropdown.style.display = 'block';
-                } else {
-                    profileDropdown.style.display = 'none';
-                }
-            });
-        }
-
-        window.addEventListener('click', (e) => {
-            if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
-                profileDropdown.style.display = 'none';
-            }
-        });
-
-        // --- LOGIKA TOGGLE SIDEBAR ---
+        if (profileBtn) { profileBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none'; }); }
+        window.addEventListener('click', (e) => { if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) { profileDropdown.style.display = 'none'; } });
         const toggleBtn = document.getElementById("toggleBtn");
         const sidebar = document.getElementById("sidebar");
-        const iconSpan = toggleBtn.querySelector("i");
+        if (toggleBtn) { toggleBtn.addEventListener("click", () => { sidebar.classList.toggle("close"); }); }
 
-        toggleBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("close");
-            if (sidebar.classList.contains("close")) {
-                iconSpan.classList.replace("bi-x-lg", "bi-list");
-            } else {
-                iconSpan.classList.replace("bi-list", "bi-x-lg");
-            }
-        });
-
-        // --- LOGIKA MULTI FILTER ---
+        // --- LOGIKA MULTI FILTER (KODINGAN LAMA ANDA) ---
         const filterKondisi = document.getElementById("filterKondisi");
         const filterUkuran = document.getElementById("filterUkuran");
         const filterKetebalan = document.getElementById("filterKetebalan");
