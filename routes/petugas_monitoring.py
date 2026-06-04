@@ -10,36 +10,19 @@ def cek_sesi():
         flash("Akses ditolak! Silakan login sebagai Petugas Monitoring.", "danger")
         return redirect(url_for('auth.login'))
 
-
 # ==========================================
 # 1. DASHBOARD MONITORING STOK
 # ==========================================
 @petugas_monitoring_bp.route('/dashboard')
 def dashboard():
-    # Tarik data stok dari database
-    res_stok = supabase.table('stok').select('jumlah, kondisi, kaca(kategori(kategori))').execute()
+    try:
+        res_stok = supabase.table('stok').select('*, kaca(*, kategori(*))').execute()
+        raw_stok = res_stok.data if res_stok.data else []
+    except Exception as e:
+        print("Error fetch stok (Dashboard):", e)
+        raw_stok = []
 
-    stok_dict = {}
-    if res_stok.data:
-        for item in res_stok.data:
-            if not item.get('kaca') or not item['kaca'].get('kategori'):
-                continue
-
-            kategori = item['kaca']['kategori']['kategori']
-            kondisi = item.get('kondisi', 'Baik').lower()
-            jumlah = item.get('jumlah', 0)
-
-            if kategori not in stok_dict:
-                stok_dict[kategori] = {'stock': 0, 'rusak': 0}
-
-            if kondisi == 'rusak':
-                stok_dict[kategori]['rusak'] += jumlah
-            else:
-                stok_dict[kategori]['stock'] += jumlah
-
-    # Kirim data ke frontend (ubah dictionary python ke JSON string)
-    return render_template('petugas_monitoring/dashboard.html', stok_data=json.dumps(stok_dict))
-
+    return render_template('petugas_monitoring/dashboard.html', raw_stok=raw_stok)
 
 # ==========================================
 # 2. INSTRUKSI BELI
@@ -56,15 +39,12 @@ def instruksi():
             return redirect(url_for('petugas_monitoring.instruksi'))
 
         try:
-            # Bikin master instruksinya
             res_instruksi = supabase.table('instruksi_beli').insert({
                 'id_user': id_user,
                 'status': 'Menunggu'
             }).execute()
-
             id_instruksi = res_instruksi.data[0]['id_instruksi_beli']
 
-            # Bikin detail kacanya
             supabase.table('detail_instruksi').insert({
                 'id_instruksi_beli': id_instruksi,
                 'id_kaca': id_kaca,
@@ -77,10 +57,13 @@ def instruksi():
 
         return redirect(url_for('petugas_monitoring.instruksi'))
 
-    res_kaca = supabase.table('kaca').select('id_kaca, ketebalan, ukuran, kategori(kategori)').execute()
-    list_kaca = res_kaca.data if res_kaca.data else []
-    return render_template('petugas_monitoring/intruksi.html', list_kaca=list_kaca)
+    try:
+        res_kaca = supabase.table('kaca').select('*, kategori(*)').execute()
+        list_kaca = res_kaca.data if res_kaca.data else []
+    except Exception as e:
+        list_kaca = []
 
+    return render_template('petugas_monitoring/instruksi.html', list_kaca=list_kaca)
 
 # ==========================================
 # 3. LAPORAN KONDISI KACA (RUSAK)
@@ -92,22 +75,21 @@ def kondisi_kaca():
         catatan = request.form.get('catatan')
         id_user = session.get('user_id')
         jumlah_rusak = int(request.form.get('jumlah_rusak', 0))
+        gambar_base64 = request.form.get('gambar_base64', '')
 
         if not id_kaca or not catatan:
-            flash("Semua field wajib diisi!", "danger")
+            flash("Mohon pastikan Kategori, Ukuran, dan Ketebalan sudah terpilih!", "danger")
             return redirect(url_for('petugas_monitoring.kondisi_kaca'))
 
         try:
-            # Catat laporannya
             supabase.table('laporan_kerusakan').insert({
                 'id_kaca': id_kaca,
                 'id_user': id_user,
-                'catatan': catatan
+                'catatan': catatan,
+                'gambar': gambar_base64
             }).execute()
 
-            # (Opsional) Langsung update tambah stok 'Rusak' dan kurangi stok 'Baik'
             if jumlah_rusak > 0:
-                # 1. Tambah data rusak
                 stok_rusak = supabase.table('stok').select('*').eq('id_kaca', id_kaca).eq('kondisi', 'Rusak').execute()
                 if stok_rusak.data:
                     baru_rusak = stok_rusak.data[0]['jumlah'] + jumlah_rusak
@@ -115,35 +97,78 @@ def kondisi_kaca():
                 else:
                     supabase.table('stok').insert({'id_kaca': id_kaca, 'jumlah': jumlah_rusak, 'kondisi': 'Rusak'}).execute()
 
-                # 2. Kurangi stok baik
                 stok_baik = supabase.table('stok').select('*').eq('id_kaca', id_kaca).eq('kondisi', 'Baik').execute()
                 if stok_baik.data:
                     baru_baik = max(0, stok_baik.data[0]['jumlah'] - jumlah_rusak)
                     supabase.table('stok').update({'jumlah': baru_baik}).eq('id_stok', stok_baik.data[0]['id_stok']).execute()
 
-            flash("Laporan kerusakan berhasil dicatat!", "success")
+            flash("Laporan kerusakan dan foto berhasil dicatat ke database!", "success")
         except Exception as e:
             flash(f"Gagal melapor: {str(e)}", "danger")
 
         return redirect(url_for('petugas_monitoring.kondisi_kaca'))
 
-    res_kaca = supabase.table('kaca').select('id_kaca, ketebalan, ukuran, kategori(kategori)').execute()
-    list_kaca = res_kaca.data if res_kaca.data else []
+    try:
+        res_kaca = supabase.table('kaca').select('*, kategori(*)').execute()
+        list_kaca = res_kaca.data if res_kaca.data else []
+    except Exception as e:
+        list_kaca = []
+
     return render_template('petugas_monitoring/kondisiKaca.html', list_kaca=list_kaca)
 
-
 # ==========================================
-# 4. CHATTING
+# 4. CHATTING (UI & API)
 # ==========================================
 @petugas_monitoring_bp.route('/chatting')
 def chatting():
-    return render_template('petugas_monitoring/chatting.html')
+    my_id = session.get('user_id')
+    my_perusahaan = session.get('perusahaan') # Ambil nama perusahaan kita dari sesi login
 
-# Rute ini lu sesuaikan dengan nama file HTML chat-nya yang bener (kalo ada)
-@petugas_monitoring_bp.route('/chat/kepala')
-def chat_kepala():
-    return render_template('petugas_monitoring/kepalaGudang.html')
+    try:
+        # FILTER PENTING: Hanya tarik user yang perusahaannya SAMA dan bukan kita sendiri
+        res_user = supabase.table('users').select('id_user, username, role') \
+            .eq('perusahaan', my_perusahaan) \
+            .neq('id_user', my_id).execute()
 
-@petugas_monitoring_bp.route('/chat/pencatatan')
-def chat_pencatatan():
-    return render_template('petugas_monitoring/petugasPencatatan.html')
+        daftar_user = res_user.data if res_user.data else []
+    except Exception as e:
+        print("Error fetch user:", e)
+        daftar_user = []
+
+    return render_template('petugas_monitoring/chatting.html', daftar_user=daftar_user)
+
+@petugas_monitoring_bp.route('/api/pesan', methods=['GET', 'POST'])
+def api_pesan():
+    my_id = session.get('user_id')
+
+    if request.method == 'GET':
+        lawan_id = request.args.get('lawan_id')
+        if not lawan_id:
+            return jsonify({'pesan': [], 'my_id': my_id})
+
+        try:
+            # Mengambil histori chat antara User A dan User B
+            query = f"and(id_pengirim.eq.{my_id},id_penerima.eq.{lawan_id}),and(id_pengirim.eq.{lawan_id},id_penerima.eq.{my_id})"
+            res = supabase.table('pesan').select('*').or_(query).order('waktu', desc=False).execute()
+            return jsonify({'pesan': res.data, 'my_id': my_id})
+        except Exception as e:
+            print("Error get pesan:", e)
+            return jsonify({'pesan': [], 'my_id': my_id})
+
+    if request.method == 'POST':
+        data = request.json
+        id_penerima = data.get('id_penerima')
+        isi = data.get('isi')
+
+        if id_penerima and isi:
+            try:
+                supabase.table('pesan').insert({
+                    'id_pengirim': my_id,
+                    'id_penerima': id_penerima,
+                    'isi': isi
+                }).execute()
+                return jsonify({'status': 'success'})
+            except Exception as e:
+                return jsonify({'status': 'error', 'msg': str(e)}), 500
+
+        return jsonify({'status': 'error', 'msg': 'Data tidak lengkap'}), 400

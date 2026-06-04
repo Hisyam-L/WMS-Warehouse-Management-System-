@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instruksi Beli Kaca</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #d8d8ea;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            color: #0f172a;
+        }
+
+        /* NAVBAR & SIDEBAR DARI GITHUB */
+        .top-navbar {
+            background-color: #1f2957;
+            color: white;
+            height: 60px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .circle-profile {
+            width: 38px;
+            height: 38px;
+            background-color: #e9edff;
+            border-radius: 50%;
+            border: 2px solid #a8b3e0;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2957;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .circle-profile:hover {
+            background-color: #d1d5e8;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: #d1d5e8;
+            border-right: 1px solid #b0b5cc;
+            transition: all 0.25s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.close {
+            width: 80px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            height: 60px;
+            border-bottom: 1px solid #b6bbd4;
+        }
+
+        .menu-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #12172f;
+        }
+
+        .toggle-btn {
+            background: #eef2ff;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #1f2957;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 20px 16px;
+            margin: 0;
+        }
+
+        .menu-list li {
+            margin-bottom: 14px;
+        }
+
+        .menu-list li a {
+            text-decoration: none;
+            color: #1f2957;
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #b5bad2;
+            font-weight: 600;
+            height: 48px;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .menu-list li a:hover {
+            background-color: #eef2ff;
+            transform: translateX(3px);
+        }
+
+        .menu-list li a.active {
+            background-color: #1f2957;
+            color: white;
+            border-color: #1f2957;
+            justify-content: center;
+        }
+
+        .full-text {
+            margin-left: 6px;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .initial {
+            display: none;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+
+        .sidebar.close .menu-title,
+        .sidebar.close .full-text {
+            display: none;
+        }
+
+        .sidebar.close .initial {
+            display: inline-block;
+        }
+
+        .sidebar.close .sidebar-header {
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        .sidebar.close .menu-list li a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .content-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f1f5f9;
+        }
+
+        /* ISI KONTEN INSTRUKSI */
+        .main-card {
+            background: #f5eeed;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid black;
+        }
+
+        .header-box {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-select,
+        .form-control {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            border-color: #0f172a;
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+        }
+
+        .btn-submit {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.2s;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background: #1e293b;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            color: white;
+        }
+        .alert-success { background-color: #10b981; }
+        .alert-danger { background-color: #ef4444; }
+    </style>
+</head>
+
+<body>
+    <nav class="top-navbar">
+        <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
+        <div style="position: relative;">
+            <div class="circle-profile" id="profileBtn" title="Menu Profil">{{ session.get('username', 'U')[0] | upper }}</div>
+            <div id="profileDropdown" style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e2e6f2; background-color: #f4f6fd;">
+                    <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">Masuk sebagai</p>
+                    <p style="font-size: 14px; font-weight: bold; color: #1f2957; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ session.get('username', 'Petugas') }}</p>
+                </div>
+                <div style="padding: 4px 0;">
+                    <a href="{{ url_for('auth.logout') }}" style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="menu-title">Menu</span>
+                <button class="toggle-btn" id="toggleBtn">☰</button>
+            </div>
+            <ul class="menu-list">
+                <li><a href="{{ url_for('petugas_monitoring.dashboard') }}"><span class="full-text">Dashboard</span><span class="initial">D</span></a></li>
+                <li><a href="{{ url_for('petugas_monitoring.kondisi_kaca') }}"><span class="full-text">Laporan Kaca</span><span class="initial">L</span></a></li>
+                <li><a href="{{ url_for('petugas_monitoring.instruksi') }}" class="active"><span class="full-text">Instruksi Beli Kaca</span><span class="initial">I</span></a></li>
+                <li><a href="{{ url_for('petugas_monitoring.chatting') }}"><span class="full-text">Chatting</span><span class="initial">C</span></a></li>
+            </ul>
+        </aside>
+
+        <main class="content-section">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="main-card">
+                <div class="header-box">Instruksi Beli Kaca</div>
+
+                <form action="{{ url_for('petugas_monitoring.instruksi') }}" method="POST" onsubmit="validasiForm(event)">
+
+                    <div class="mb-3">
+                        <label class="form-label">Kategori Kaca</label>
+                        <select id="kategori" class="form-select" onchange="loadUkuran()" required>
+                            <option value="">Memuat data...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="ukuranBox">
+                        <label class="form-label">Ukuran Kaca</label>
+                        <select id="ukuran" class="form-select" onchange="loadKetebalan()" required>
+                            <option value="">Pilih Ukuran</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="ketebalanBox">
+                        <label class="form-label">Ketebalan Kaca</label>
+                        <select id="ketebalan" class="form-select" onchange="setIdKaca()" required>
+                            <option value="">Pilih Ketebalan</option>
+                        </select>
+                    </div>
+
+                    <input type="hidden" name="id_kaca" id="id_kaca">
+
+                    <div class="mb-4">
+                        <label class="form-label">Jumlah Kaca (Pcs)</label>
+                        <input type="number" name="jumlah" class="form-control" placeholder="Masukkan jumlah pesanan" required min="1">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Kirim Instruksi Restock</button>
+                </form>
+            </div>
+
+        </main>
+    </div>
+
+<script>
+    // Pastikan HTML selesai dirender sebelum Javascript berjalan (ANTI-KOSONG)
+    document.addEventListener("DOMContentLoaded", function() {
+
+        // --- TEMBAK JSON LANGSUNG DARI PYTHON ---
+        const kacaData = {{ list_kaca | default([]) | tojson | safe }};
+        console.log("Data Kaca Supabase:", kacaData);
+
+        const selKat = document.getElementById('kategori');
+        const selUk = document.getElementById('ukuran');
+        const selTeb = document.getElementById('ketebalan');
+        const inputId = document.getElementById('id_kaca');
+
+        // Jika Supabase kosong / RLS Error
+        if (!kacaData || kacaData.length === 0) {
+            selKat.innerHTML = '<option value="">Data kaca di database kosong!</option>';
+            return;
+        }
+
+        // Load Kategori
+        const categories = [...new Set(kacaData.filter(k => k.kategori).map(k => k.kategori.kategori))];
+        selKat.innerHTML = '<option value="">Pilih Kategori</option>'; // Reset opsi loading
+        categories.forEach(c => selKat.innerHTML += `<option value="${c}">${c}</option>`);
+
+        // Didaftarkan ke window agar bisa dipanggil oleh onchange di HTML
+        window.loadUkuran = function() {
+            const kat = selKat.value;
+            selUk.innerHTML = '<option value="">Pilih Ukuran</option>';
+            selTeb.innerHTML = '<option value="">Pilih Ketebalan</option>';
+            inputId.value = "";
+
+            if(!kat) return;
+
+            const ukurans = [...new Set(kacaData.filter(k => k.kategori && k.kategori.kategori === kat).map(k => k.ukuran))];
+            ukurans.forEach(u => selUk.innerHTML += `<option value="${u}">${u}</option>`);
+        };
+
+        window.loadKetebalan = function() {
+            const kat = selKat.value;
+            const uk = selUk.value;
+            selTeb.innerHTML = '<option value="">Pilih Ketebalan</option>';
+            inputId.value = "";
+
+            if(!kat || !uk) return;
+
+            const tebals = [...new Set(kacaData.filter(k => k.kategori && k.kategori.kategori === kat && k.ukuran === uk).map(k => k.ketebalan))];
+            tebals.forEach(t => selTeb.innerHTML += `<option value="${t}">${t} mm</option>`);
+        };
+
+        window.setIdKaca = function() {
+            const kat = selKat.value;
+            const uk = selUk.value;
+            const tebal = selTeb.value.replace(" mm", ""); // Hapus string ' mm' untuk pencocokan
+
+            const kaca = kacaData.find(k => k.kategori && k.kategori.kategori === kat && k.ukuran === uk && k.ketebalan === tebal);
+            if (kaca) {
+                inputId.value = kaca.id_kaca;
+            } else {
+                inputId.value = "";
+            }
+        };
+
+        window.validasiForm = function(event) {
+            if (inputId.value === "") {
+                event.preventDefault();
+                alert("Harap pilih Kategori, Ukuran, dan Ketebalan kaca hingga selesai!");
+            }
+        };
+    });
+
+    // --- LOGIKA MENU ---
+    const profileBtn = document.getElementById('profileBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    if (profileBtn) { profileBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none'; }); }
+    window.addEventListener('click', (e) => { if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) { profileDropdown.style.display = 'none'; } });
+    const toggleBtn = document.getElementById("toggleBtn");
+    const sidebar = document.getElementById("sidebar");
+    if (toggleBtn) { toggleBtn.addEventListener("click", () => { sidebar.classList.toggle("close"); }); }
+</script>
+</body>
+</html>
