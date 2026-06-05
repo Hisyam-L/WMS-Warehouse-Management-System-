@@ -1,0 +1,380 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+    background-color: #d8d8ea;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    color: #0f172a;
+}
+
+/* NAVBAR & SIDEBAR (DISAMAKAN DENGAN PETUGAS MONITORING) */
+.top-navbar {
+    background-color: #1f2957;
+    color: white;
+    height: 60px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.brand-name {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.circle-profile {
+    width: 38px;
+    height: 38px;
+    background-color: #e9edff;
+    border-radius: 50%;
+    border: 2px solid #a8b3e0;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1f2957;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.circle-profile:hover {
+    background-color: #d1d5e8;
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 260px;
+    background-color: #d1d5e8;
+    border-right: 1px solid #b0b5cc;
+    transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.close {
+    width: 80px;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    height: 60px;
+    border-bottom: 1px solid #b6bbd4;
+}
+
+.menu-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #12172f;
+}
+
+.toggle-btn {
+    background: #eef2ff;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #1f2957;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.toggle-btn:hover {
+    background: #ffffff;
+    color: #0a1030;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 20px 16px;
+    margin: 0;
+}
+
+.menu-list li {
+    margin-bottom: 14px;
+}
+
+.menu-list li a {
+    text-decoration: none;
+    color: #1f2957;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #b5bad2;
+    font-weight: 600;
+    height: 48px;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.menu-list li a:hover {
+    background-color: #eef2ff;
+    transform: translateX(3px);
+}
+
+.menu-list li a.active {
+    background-color: #1f2957;
+    color: white;
+    border-color: #1f2957;
+    justify-content: center;
+}
+
+.full-text {
+    margin-left: 6px;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.initial {
+    display: none;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+}
+
+.sidebar.close .menu-title,
+.sidebar.close .full-text {
+    display: none;
+}
+
+.sidebar.close .initial {
+    display: inline-block;
+}
+
+.sidebar.close .sidebar-header {
+    justify-content: center;
+    padding: 15px 0;
+}
+
+.sidebar.close .menu-list li a {
+    justify-content: center;
+    padding: 10px 0;
+}
+
+/* KONTEN TENGAH (TIDAK DIUBAH) */
+.content-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.tab-area {
+    background-color: #ced4e5;
+    padding: 10px 0 0 24px;
+    border-bottom: 1px solid #aeb3cb;
+}
+
+.tab-item {
+    background-color: #f4f4fb;
+    display: inline-block;
+    padding: 8px 32px;
+    border-radius: 12px 12px 0 0;
+    border: 1px solid #b0b5cc;
+    border-bottom: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e2652;
+    letter-spacing: 0.3px;
+    box-shadow: 0 -2px 2px rgba(0, 0, 0, 0.02);
+}
+
+.content-body {
+    padding: 24px 28px;
+    background-color: #E0E9EF;
+}
+
+.content-box {
+    background-color: #f4f4fb;
+    border: 1px solid #c9cee2;
+    padding: 22px 24px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s;
+}
+
+.report-label {
+    background: white;
+    border: 1px solid #c0c5db;
+    display: inline-block;
+    padding: 6px 28px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #1f2957;
+    letter-spacing: 0.2px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.filter-bar {
+    background: white;
+    border-radius: 60px;
+    padding: 6px 12px;
+    display: inline-flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #cbcfeb;
+}
+
+.filter-select {
+    border: none;
+    background: #f4f6fd;
+    border-radius: 30px;
+    padding: 6px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1f2957;
+    outline: none;
+    cursor: pointer;
+}
+
+.table-custom {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.table-custom th {
+    background-color: #eef2ff;
+    color: #1f2957;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 14px 8px;
+    border-bottom: 1px solid #cdd4ea;
+}
+
+.table-custom td {
+    padding: 12px 8px;
+    vertical-align: middle;
+    font-size: 13px;
+    border-bottom: 1px solid #e2e6f2;
+    color: #202744;
+}
+
+.stok-table-box {
+    background-color: white;
+    border: 1px solid #c0c5db;
+    border-radius: 10px;
+    padding: 15px 20px;
+    width: 100%;
+}
+
+.stok-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #e1e4f0;
+    font-size: 14px;
+    color: #1f2957;
+}
+
+.stok-row:last-child {
+    border-bottom: none;
+}
+
+.stok-name {
+    width: 170px;
+    font-weight: 500;
+}
+
+.stok-separator {
+    width: 20px;
+    text-align: center;
+}
+
+.stok-number {
+    width: 50px;
+    font-weight: 700;
+}
+
+.btn-cek {
+    background-color: #1f2957;
+    color: white;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.btn-cek:hover {
+    background-color: #0f1740;
+    transform: scale(0.96);
+}
+
+.btn-action {
+    background: white;
+    border: 1px solid #c2c8e2;
+    border-radius: 40px;
+    padding: 6px 20px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.btn-action:hover {
+    background-color: #eef2ff;
+    border-color: #8e96bc;
+}
+
+.status-badge {
+    background: #e7edff;
+    padding: 4px 12px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.status-masuk {
+    background: #e0f4e8;
+    color: #196e3a;
+}
+
+.status-keluar {
+    background: #ffe6e5;
+    color: #b13e3e;
+}
+
+.d-flex.gap-3 {
+    gap: 16px;
+}
+
+@media (max-width: 700px) {
+    .content-body {
+        padding: 18px;
+    }
+}

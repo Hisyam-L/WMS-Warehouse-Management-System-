@@ -1,0 +1,241 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+
+    font-family:
+        'Segoe UI',
+        Tahoma,
+        Geneva,
+        Verdana,
+        sans-serif;
+}
+
+body {
+    background: #f0f2f5;
+    min-height: 100vh;
+}
+
+.kontainerAplikasi {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #fcf8f8;
+}
+
+.bilahNavigasi {
+    background: #222943;
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.judulAplikasi {
+
+    font-size: 16px;
+    font-weight: 600;
+
+    letter-spacing: 0.5px;
+}
+
+.hamburgerMenu {
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+    user-select: none;
+}
+
+.menuMobile {
+
+    display: none;
+
+    flex-direction: column;
+
+    background: #1b2238;
+
+    padding: 12px;
+
+    gap: 10px;
+}
+
+.menuMobile button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background:rgba(255, 255, 255, 0.08);
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.menuMobile button:hover {
+    background:rgba(255, 255, 255, 0.16);
+}
+
+.pembungkusKonten {
+    flex: 1;
+    padding: 20px;
+}
+
+.areaKontrol {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.tombolTab {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tombolAkanDibeli,
+.tombolSudahDibeli {
+    border: 2px solid #222943;
+}
+
+.aktif {
+    background: #222943;
+    color: white;
+}
+
+.tidakAktif {
+    background: white;
+    color: #222943;
+}
+
+.grupDaftar {
+    display: none;
+    animation: fade 0.3s ease;
+}
+
+.grupDaftar.tampilkan {
+    display: block;
+}
+
+.pembungkusKartu {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+.kartuBarang {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 5px solid #222943;
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.03),
+        0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.namaBarang {
+    font-weight: 600;
+    color: #222943;
+}
+
+.jumlahBarang {
+    background: #eef1f6;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #222943;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media(min-width:768px) {
+    .kontainerAplikasi {
+        flex-direction: row;
+    }
+    .sidebarWrapper {
+        width: 280px;
+        min-height: 100vh;
+        background: #222943;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .bilahNavigasi {
+        justify-content: flex-start;
+        padding: 30px 20px;
+        position: static;
+    }
+
+    .judulAplikasi {
+        width: 100%;
+        font-size: 22px;
+        font-weight: 700;
+        padding-bottom: 20px;
+        border-bottom:
+            1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .hamburgerMenu {
+        display: none;
+    }
+
+    .menuMobile {
+        display: flex !important;
+        flex-direction: column;
+        background: transparent;
+        padding: 20px;
+        gap: 10px;
+    }
+
+    .menuMobile button {
+        padding: 14px 16px;
+        border-radius: 12px;
+    }
+
+    .pembungkusKonten {
+        flex: 1;
+        padding: 35px;
+    }
+
+    .areaKontrol {
+        max-width: 450px;
+    }
+
+    .pembungkusKartu {
+        grid-template-columns:
+            repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+@media(max-width:767px) {
+    .areaKontrol {
+        flex-direction: column;
+    }
+
+    .kartuBarang {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

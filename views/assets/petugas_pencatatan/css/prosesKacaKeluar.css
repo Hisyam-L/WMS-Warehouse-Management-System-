@@ -1,0 +1,207 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #f0f2f5;
+    min-height: 100vh;
+    color: #333;
+}
+
+.kontainerAplikasi {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #fcf8f8;
+}
+
+.bilahNavigasi {
+    background: #222943;
+    color: white;
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.judulAplikasi {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.tombolMenu {
+    font-size: 24px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.menuMobile {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: #1b2238;
+    padding: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.menuMobile button {
+    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    padding: 14px;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.menuMobile button:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.pembungkusKonten {
+    flex: 1;
+    padding: 24px;
+}
+
+.kotakJudul {
+    border: 1px solid #333;
+    background: white;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    max-width: 500px;
+    margin: 0 auto 24px auto;
+}
+
+.pembungkusGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.kartuProsesBarang {
+    background: white;
+    border: 1px solid #333;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+.areaDetailProses {
+    padding: 18px;
+}
+
+.tabelInformasi {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabelInformasi td {
+    padding: 6px 2px;
+    font-size: 14px;
+    vertical-align: top;
+}
+
+.tabelInformasi td:nth-child(2) {
+    width: 15px;
+    text-align: center;
+}
+
+.tombolSelesai {
+    border: none;
+    background: #322927;
+    color: white;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tombolSelesai:hover {
+    background: #221a18;
+}
+
+@media(min-width:768px) {
+    .kontainerAplikasi {
+        flex-direction: row;
+        width: 100%;
+        min-height: 100vh;
+    }
+
+    .bilahNavigasi {
+        width: 260px;
+        min-height: 100vh;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 30px;
+        padding: 40px 24px;
+        position: sticky;
+        left: 0;
+    }
+
+    .judulAplikasi {
+        width: 100%;
+        font-size: 22px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tombolMenu {
+        display: none;
+    }
+
+    .menuMobile {
+        display: flex !important;
+        position: static;
+        width: 100%;
+        background: none;
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .menuMobile button {
+        width: 100%;
+    }
+
+    .pembungkusKonten {
+        flex: 1;
+        padding: 35px;
+    }
+
+    .pembungkusGrid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+
+    .kartuProsesBarang {
+        flex-direction: row;
+    }
+
+    .areaDetailProses {
+        flex: 1;
+    }
+
+    .tombolSelesai {
+        width: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

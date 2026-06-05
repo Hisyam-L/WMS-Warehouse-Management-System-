@@ -1,0 +1,180 @@
+body {
+    margin: 0;
+    font-family: system-ui, Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #0f172a;
+}
+
+.container-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, #0f172a, #1e293b);
+    color: white;
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h3 {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.sidebar button:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateX(3px);
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+.navbarMobile {
+    display: none;
+    background: #0f172a;
+    color: white;
+    padding: 15px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.menuMobile {
+    display: none;
+    flex-direction: column;
+    margin-top: 10px;
+    background: #1e293b;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.menuMobile button {
+    margin-top: 5px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: none;
+    border-radius: 8px;
+}
+
+.cardUtama {
+    background-color: #f5eeed;
+    border-radius: 16px;
+    padding: 25px;
+    margin-top: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.boxHeader {
+    background: white;
+    border: 1px #0f172a solid;
+    color: #0f172a;
+    text-align: center;
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.labelForm {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-select,
+.form-control {
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 12px;
+    background: #fcfcfc;
+}
+
+.form-select:focus,
+.form-control:focus {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+}
+
+.boxUpload {
+    width: 140px;
+    height: 140px;
+    border: 2px dashed #94a3b8;
+    border-radius: 14px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: 0.2s;
+}
+
+.boxUpload:hover {
+    border-color: #0f172a;
+}
+
+.boxUpload span {
+    color: #64748b;
+    font-size: 14px;
+    text-align: center;
+    padding: 10px;
+}
+
+.boxUpload img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.btn-submit {
+    background: #0f172a;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    width: 100%;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.btn-submit:hover {
+    background: #1e293b;
+    color: white;
+}
+
+@media(max-width:768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .navbarMobile {
+        display: flex;
+    }
+
+    .content {
+        padding: 15px;
+    }
+
+    .boxUpload {
+        width: 100%;
+        height: 180px;
+    }
+}
