@@ -14,37 +14,40 @@ def cek_sesi():
 
 @kepala_gudang_bp.route('/dashboard')
 def dashboard():
-    stok_data = get_stok_detail()
-    transaksi_data = get_semua_transaksi()
+    my_perusahaan = session.get('perusahaan') # Ambil perusahaan dari session
+
+    stok_data = get_stok_detail(my_perusahaan) # Lempar ke fungsi
+    transaksi_data = get_semua_transaksi(my_perusahaan) # Lempar ke fungsi
+
     return render_template('kepala_gudang/dashboard.html',
                            stok_json=json.dumps(stok_data),
                            transactions_json=json.dumps(transaksi_data))
 
 @kepala_gudang_bp.route('/instruksi')
 def instruksi():
-    kaca_data = get_stok_detail()
+    my_perusahaan = session.get('perusahaan') # Ambil perusahaan
+    kaca_data = get_stok_detail(my_perusahaan) # Filter stok kaca buat modal instruksi
     return render_template('kepala_gudang/intruksi.html', kaca_json=json.dumps(kaca_data), kaca_data=kaca_data)
 
-# INI RUTE YANG UDAH DISESUAIKAN DENGAN SCHEMA DATABASE LU
 @kepala_gudang_bp.route('/buat_instruksi', methods=['POST'])
 def buat_instruksi():
-    # Tangkap data kaca
+    my_perusahaan = session.get('perusahaan') # Ambil perusahaan buat disimpen ke tabel
+
     id_kaca = request.form.get('id_kaca')
     jumlah = int(request.form.get('jumlah'))
-
-    # Tangkap data pembeli dari form baru
     nama_pembeli = request.form.get('nama_pembeli')
     status_pembayaran = request.form.get('status_pembayaran')
     no_hp_pembeli = request.form.get('no_hp_pembeli')
     alamat = request.form.get('alamat')
 
-    # 1. Insert ke tabel kaca_keluar sesuai schema
+    # 1. Insert ke tabel kaca_keluar (wajib masukin 'perusahaan' ke DB)
     resp = supabase.table('kaca_keluar').insert({
+        'perusahaan': my_perusahaan,      # <--- BIKIN DATA INI GAK BOCOR KE PERUSAHAAN LAIN
         'nama_pembeli': nama_pembeli,
-        'no_hp': no_hp_pembeli,           # Sesuai kolom 'no_hp' di schema
+        'no_hp': no_hp_pembeli,
         'alamat': alamat,
         'status_pembayaran': status_pembayaran,
-        'status_pengiriman': 'Pending'    # Kasih default value pengiriman
+        'status_pengiriman': 'Pending'
     }).execute()
 
     id_kaca_keluar = resp.data[0]['id_kaca_keluar']
@@ -54,17 +57,15 @@ def buat_instruksi():
         'id_kaca': id_kaca,
         'id_kaca_keluar': id_kaca_keluar,
         'jumlah': jumlah
-        # Kolom 'kondisi' lu biarin kosong aja dulu sesuai schema kalau nggak ada inputnya
     }).execute()
 
-    # 3. LOGIKA POTONG STOK OTOMATIS
+    # 3. LOGIKA POTONG STOK OTOMATIS (Aman, ini udah per row ID Kacanya langsung)
     stok_resp = supabase.table('stok').select('jumlah').eq('id_kaca', id_kaca).execute()
 
     if stok_resp.data:
         stok_sekarang = stok_resp.data[0]['jumlah']
         stok_baru = stok_sekarang - jumlah
 
-        # Cegah kalau pesanan melebihi stok yang ada
         if stok_baru < 0:
             flash("Stok tidak mencukupi untuk instruksi pesanan ini!", "danger")
         else:
@@ -72,6 +73,7 @@ def buat_instruksi():
             flash("Instruksi pesanan berhasil dibuat!", "success")
 
     return redirect(url_for('kepala_gudang.instruksi'))
+
 
 @kepala_gudang_bp.route('/tambahAkun')
 def tambah_akun():
