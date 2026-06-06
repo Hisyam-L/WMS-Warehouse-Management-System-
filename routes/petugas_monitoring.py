@@ -15,8 +15,10 @@ def cek_sesi():
 # ==========================================
 @petugas_monitoring_bp.route('/dashboard')
 def dashboard():
+    my_perusahaan = session.get('perusahaan') # PENTING BIAR GAK BOCOR
     try:
-        res_stok = supabase.table('stok').select('*, kaca(*, kategori(*))').execute()
+        # FILTER PERUSAHAAN DITAMBAHKAN DI SINI
+        res_stok = supabase.table('stok').select('*, kaca(*, kategori(*))').eq('perusahaan', my_perusahaan).execute()
         raw_stok = res_stok.data if res_stok.data else []
     except Exception as e:
         print("Error fetch stok (Dashboard):", e)
@@ -25,26 +27,54 @@ def dashboard():
     return render_template('petugas_monitoring/dashboard.html', raw_stok=raw_stok)
 
 # ==========================================
-# 2. INSTRUKSI BELI
+# 2. INSTRUKSI BELI (UDAH SUPORT INPUT MANUAL)
 # ==========================================
 @petugas_monitoring_bp.route('/instruksi', methods=['GET', 'POST'])
 def instruksi():
+    my_perusahaan = session.get('perusahaan')
+
     if request.method == 'POST':
         id_kaca = request.form.get('id_kaca')
         jumlah = request.form.get('jumlah')
         id_user = session.get('user_id')
 
-        if not id_kaca or not jumlah:
-            flash("Kaca dan jumlah wajib diisi!", "danger")
+        # Nangkep inputan kalau user ngetik manual
+        kategori_manual = request.form.get('kategori')
+        ukuran_manual = request.form.get('ukuran')
+        ketebalan_manual = request.form.get('ketebalan')
+
+        if not jumlah:
+            flash("Jumlah wajib diisi!", "danger")
             return redirect(url_for('petugas_monitoring.instruksi'))
 
         try:
+            # KALAU DIKETIK MANUAL (id_kaca KOSONG)
+            if not id_kaca or id_kaca.strip() == "":
+                # 1. Cek atau Insert Kategori
+                res_kat = supabase.table('kategori').select('id_kategori').eq('kategori', kategori_manual).execute()
+                if res_kat.data:
+                    id_kategori = res_kat.data[0]['id_kategori']
+                else:
+                    kat_baru = supabase.table('kategori').insert({'kategori': kategori_manual}).execute()
+                    id_kategori = kat_baru.data[0]['id_kategori']
+
+                # 2. Insert Kaca Baru
+                kaca_baru = supabase.table('kaca').insert({
+                    'id_kategori': id_kategori,
+                    'ukuran': ukuran_manual,
+                    'ketebalan': ketebalan_manual
+                }).execute()
+                id_kaca = kaca_baru.data[0]['id_kaca']
+
+            # INSERT INSTRUKSI BELI DENGAN PERUSAHAAN
             res_instruksi = supabase.table('instruksi_beli').insert({
                 'id_user': id_user,
-                'status': 'Menunggu'
+                'status': 'Menunggu',
+                'perusahaan': my_perusahaan
             }).execute()
             id_instruksi = res_instruksi.data[0]['id_instruksi_beli']
 
+            # INSERT DETAIL INSTRUKSI
             supabase.table('detail_instruksi').insert({
                 'id_instruksi_beli': id_instruksi,
                 'id_kaca': id_kaca,
@@ -70,6 +100,8 @@ def instruksi():
 # ==========================================
 @petugas_monitoring_bp.route('/kondisi_kaca', methods=['GET', 'POST'])
 def kondisi_kaca():
+    my_perusahaan = session.get('perusahaan')
+
     if request.method == 'POST':
         id_kaca = request.form.get('id_kaca')
         catatan = request.form.get('catatan')
@@ -82,6 +114,7 @@ def kondisi_kaca():
             return redirect(url_for('petugas_monitoring.kondisi_kaca'))
 
         try:
+            # Catat kerusakan dengan membawa perusahaan (tambahkan kolom jika perlu di db)
             supabase.table('laporan_kerusakan').insert({
                 'id_kaca': id_kaca,
                 'id_user': id_user,
@@ -90,14 +123,15 @@ def kondisi_kaca():
             }).execute()
 
             if jumlah_rusak > 0:
-                stok_rusak = supabase.table('stok').select('*').eq('id_kaca', id_kaca).eq('kondisi', 'Rusak').execute()
+                # FILTER eq('perusahaan', my_perusahaan) BIAR GAK UPDATE STOK PERUSAHAAN LAIN
+                stok_rusak = supabase.table('stok').select('*').eq('id_kaca', id_kaca).eq('kondisi', 'Rusak').eq('perusahaan', my_perusahaan).execute()
                 if stok_rusak.data:
                     baru_rusak = stok_rusak.data[0]['jumlah'] + jumlah_rusak
                     supabase.table('stok').update({'jumlah': baru_rusak}).eq('id_stok', stok_rusak.data[0]['id_stok']).execute()
                 else:
-                    supabase.table('stok').insert({'id_kaca': id_kaca, 'jumlah': jumlah_rusak, 'kondisi': 'Rusak'}).execute()
+                    supabase.table('stok').insert({'id_kaca': id_kaca, 'jumlah': jumlah_rusak, 'kondisi': 'Rusak', 'perusahaan': my_perusahaan}).execute()
 
-                stok_baik = supabase.table('stok').select('*').eq('id_kaca', id_kaca).eq('kondisi', 'Baik').execute()
+                stok_baik = supabase.table('stok').select('*').eq('id_kaca', id_kaca).eq('kondisi', 'Baik').eq('perusahaan', my_perusahaan).execute()
                 if stok_baik.data:
                     baru_baik = max(0, stok_baik.data[0]['jumlah'] - jumlah_rusak)
                     supabase.table('stok').update({'jumlah': baru_baik}).eq('id_stok', stok_baik.data[0]['id_stok']).execute()
@@ -122,14 +156,12 @@ def kondisi_kaca():
 @petugas_monitoring_bp.route('/chatting')
 def chatting():
     my_id = session.get('user_id')
-    my_perusahaan = session.get('perusahaan') # Ambil nama perusahaan kita dari sesi login
+    my_perusahaan = session.get('perusahaan')
 
     try:
-        # FILTER PENTING: Hanya tarik user yang perusahaannya SAMA dan bukan kita sendiri
         res_user = supabase.table('users').select('id_user, username, role') \
             .eq('perusahaan', my_perusahaan) \
             .neq('id_user', my_id).execute()
-
         daftar_user = res_user.data if res_user.data else []
     except Exception as e:
         print("Error fetch user:", e)
@@ -139,6 +171,7 @@ def chatting():
 
 @petugas_monitoring_bp.route('/api/pesan', methods=['GET', 'POST'])
 def api_pesan():
+    # BIARKAN SAMA SEPERTI KODE LU, GAK ADA MASALAH DI SINI
     my_id = session.get('user_id')
 
     if request.method == 'GET':
@@ -147,12 +180,10 @@ def api_pesan():
             return jsonify({'pesan': [], 'my_id': my_id})
 
         try:
-            # Mengambil histori chat antara User A dan User B
             query = f"and(id_pengirim.eq.{my_id},id_penerima.eq.{lawan_id}),and(id_pengirim.eq.{lawan_id},id_penerima.eq.{my_id})"
             res = supabase.table('pesan').select('*').or_(query).order('waktu', desc=False).execute()
             return jsonify({'pesan': res.data, 'my_id': my_id})
         except Exception as e:
-            print("Error get pesan:", e)
             return jsonify({'pesan': [], 'my_id': my_id})
 
     if request.method == 'POST':

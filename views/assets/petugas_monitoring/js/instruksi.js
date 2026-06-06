@@ -1,145 +1,85 @@
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Data Kaca Supabase:", kacaData);
+    const daftarKaca = document.getElementById("daftarKaca");
 
-    const selKat = document.getElementById("kategori");
-    const selUk = document.getElementById("ukuran");
-    const selTeb = document.getElementById("ketebalan");
-    const inputId = document.getElementById("id_kaca");
+    // 1. Render data kaca ke dalam Pop-up Modal
+    if (kacaData && kacaData.length > 0) {
+        kacaData.forEach(k => {
+            if (!k.kategori) return;
 
-    if (!kacaData || kacaData.length === 0) {
-        selKat.innerHTML =
-            '<option value="">Data kaca di database kosong!</option>';
-        return;
+            let div = document.createElement("div");
+            div.className = "kaca-item";
+            div.innerHTML = `
+                <div><b>${k.kategori.kategori}</b> <br> <small style="color: gray;">Ukuran: ${k.ukuran}</small></div>
+                <div class="badge-tebal">${k.ketebalan} mm</div>
+            `;
+
+            // Pas salah satu baris diklik, isi otomatis kotak inputnya
+            div.onclick = function() {
+                document.getElementById("id_kaca").value = k.id_kaca;
+                document.getElementById("kategori").value = k.kategori.kategori;
+                document.getElementById("ukuran").value = k.ukuran;
+                document.getElementById("ketebalan").value = k.ketebalan;
+                tutupModal();
+            };
+
+            daftarKaca.appendChild(div);
+        });
+    } else {
+        daftarKaca.innerHTML = "<p style='text-align:center; padding:15px; color: gray;'>Data di database kosong</p>";
     }
 
-    const categories = [
-        ...new Set(
-            kacaData
-                .filter((k) => k.kategori)
-                .map((k) => k.kategori.kategori),
-        ),
-    ];
-
-    selKat.innerHTML =
-        '<option value="">Pilih Kategori</option>';
-
-    categories.forEach((c) => {
-        selKat.innerHTML += `<option value="${c}">${c}</option>`;
+    // 2. Kalau user tiba-tiba ngetik manual/ngedit setelah milih dari DB, ID-nya otomatis di-reset jadi data baru
+    ["kategori", "ukuran", "ketebalan"].forEach(id => {
+        document.getElementById(id).addEventListener("input", function() {
+            document.getElementById("id_kaca").value = "";
+        });
     });
-
-    window.loadUkuran = function () {
-        const kat = selKat.value;
-
-        selUk.innerHTML =
-            '<option value="">Pilih Ukuran</option>';
-
-        selTeb.innerHTML =
-            '<option value="">Pilih Ketebalan</option>';
-
-        inputId.value = "";
-
-        if (!kat) return;
-
-        const ukurans = [
-            ...new Set(
-                kacaData
-                    .filter(
-                        (k) =>
-                            k.kategori &&
-                            k.kategori.kategori === kat,
-                    )
-                    .map((k) => k.ukuran),
-            ),
-        ];
-
-        ukurans.forEach((u) => {
-            selUk.innerHTML += `<option value="${u}">${u}</option>`;
-        });
-    };
-
-    window.loadKetebalan = function () {
-        const kat = selKat.value;
-        const uk = selUk.value;
-
-        selTeb.innerHTML =
-            '<option value="">Pilih Ketebalan</option>';
-
-        inputId.value = "";
-
-        if (!kat || !uk) return;
-
-        const tebals = [
-            ...new Set(
-                kacaData
-                    .filter(
-                        (k) =>
-                            k.kategori &&
-                            k.kategori.kategori === kat &&
-                            k.ukuran === uk,
-                    )
-                    .map((k) => k.ketebalan),
-            ),
-        ];
-
-        tebals.forEach((t) => {
-            selTeb.innerHTML += `<option value="${t}">${t} mm</option>`;
-        });
-    };
-
-    window.setIdKaca = function () {
-        const kat = selKat.value;
-        const uk = selUk.value;
-        const tebal = selTeb.value.replace(" mm", "");
-
-        const kaca = kacaData.find(
-            (k) =>
-                k.kategori &&
-                k.kategori.kategori === kat &&
-                k.ukuran === uk &&
-                k.ketebalan === tebal,
-        );
-
-        inputId.value = kaca ? kaca.id_kaca : "";
-    };
-
-    window.validasiForm = function (event) {
-        if (inputId.value === "") {
-            event.preventDefault();
-            alert(
-                "Harap pilih Kategori, Ukuran, dan Ketebalan kaca hingga selesai!",
-            );
-        }
-    };
 });
 
-const profileBtn = document.getElementById("profileBtn");
-const profileDropdown =
-    document.getElementById("profileDropdown");
+// Fungsi Buka Tutup Modal
+function bukaModal() {
+    document.getElementById("modalKaca").style.display = "flex";
+}
 
-if (profileBtn) {
-    profileBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        profileDropdown.style.display =
-            profileDropdown.style.display === "none"
-                ? "block"
-                : "none";
+function tutupModal() {
+    document.getElementById("modalKaca").style.display = "none";
+}
+
+// Fungsi fitur cari di dalam Modal
+function filterKaca() {
+    const search = document.getElementById("cariKaca").value.toLowerCase();
+    const items = document.querySelectorAll(".kaca-item");
+
+    items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        item.style.display = text.includes(search) ? "flex" : "none";
     });
 }
 
-window.addEventListener("click", (e) => {
-    if (
-        profileBtn &&
-        profileDropdown &&
-        !profileBtn.contains(e.target) &&
-        !profileDropdown.contains(e.target)
-    ) {
-        profileDropdown.style.display = "none";
+// Fitur tutup modal kalau nge-klik di luar pop-up
+window.addEventListener("click", function(event) {
+    const modal = document.getElementById("modalKaca");
+    if (event.target === modal) {
+        tutupModal();
     }
 });
 
+// --- LOGIKA SIDEBAR BAWAAN LU ---
+const profileBtn = document.getElementById("profileBtn");
+const profileDropdown = document.getElementById("profileDropdown");
+if (profileBtn) {
+    profileBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        profileDropdown.style.display = profileDropdown.style.display === "none" ? "block" : "none";
+    });
+}
+window.addEventListener("click", (e) => {
+    if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+        profileDropdown.style.display = "none";
+    }
+});
 const toggleBtn = document.getElementById("toggleBtn");
 const sidebar = document.getElementById("sidebar");
-
 if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
         sidebar.classList.toggle("close");

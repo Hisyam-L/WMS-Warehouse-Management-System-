@@ -12,14 +12,21 @@
     <nav class="top-navbar">
         <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
         <div style="position: relative;">
-            <div class="circle-profile" id="profileBtn" title="Menu Profil">{{ session.get('username', 'U')[0] | upper }}</div>
-            <div id="profileDropdown" style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
+            <div class="circle-profile" id="profileBtn" title="Menu Profil">{{ session.get('username', 'U')[0] | upper
+                }}</div>
+            <div id="profileDropdown"
+                style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
                 <div style="padding: 12px 16px; border-bottom: 1px solid #e2e6f2; background-color: #f4f6fd;">
                     <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">Masuk sebagai</p>
-                    <p style="font-size: 14px; font-weight: bold; color: #1f2957; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ session.get('username', 'Petugas') }}</p>
+                    <p
+                        style="font-size: 14px; font-weight: bold; color: #1f2957; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ session.get('username', 'Petugas') }}</p>
                 </div>
                 <div style="padding: 4px 0;">
-                    <a href="{{ url_for('auth.logout') }}" style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">Logout</a>
+                    <a href="{{ url_for('auth.logout') }}"
+                        style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;"
+                        onmouseover="this.style.backgroundColor='#fef2f2'"
+                        onmouseout="this.style.backgroundColor='transparent'">Logout</a>
                 </div>
             </div>
         </div>
@@ -32,73 +39,98 @@
                 <button class="toggle-btn" id="toggleBtn">☰</button>
             </div>
             <ul class="menu-list">
-                <li><a href="{{ url_for('petugas_monitoring.dashboard') }}"><span class="full-text">Dashboard</span><span class="initial">D</span></a></li>
-                <li><a href="{{ url_for('petugas_monitoring.kondisi_kaca') }}"><span class="full-text">Laporan Kaca</span><span class="initial">L</span></a></li>
-                <li><a href="{{ url_for('petugas_monitoring.instruksi') }}" class="active"><span class="full-text">Instruksi Beli Kaca</span><span class="initial">I</span></a></li>
-                <li><a href="{{ url_for('petugas_monitoring.chatting') }}"><span class="full-text">Chatting</span><span class="initial">C</span></a></li>
+                <li><a href="{{ url_for('petugas_monitoring.dashboard') }}"><span
+                            class="full-text">Dashboard</span><span class="initial">D</span></a></li>
+                <li><a href="{{ url_for('petugas_monitoring.kondisi_kaca') }}"><span class="full-text">Laporan
+                            Kaca</span><span class="initial">L</span></a></li>
+                <li><a href="{{ url_for('petugas_monitoring.instruksi') }}" class="active"><span
+                            class="full-text">Instruksi Beli Kaca</span><span class="initial">I</span></a></li>
+                <li><a href="{{ url_for('petugas_monitoring.chatting') }}"><span class="full-text">Chatting</span><span
+                            class="initial">C</span></a></li>
             </ul>
         </aside>
 
         <main class="content-section">
 
             {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
             {% endwith %}
 
             <div class="main-card">
                 <div class="header-box">Instruksi Beli Kaca</div>
 
-                <form action="{{ url_for('petugas_monitoring.instruksi') }}" method="POST" onsubmit="validasiForm(event)">
+                <form action="{{ url_for('petugas_monitoring.instruksi') }}" method="POST">
 
                     <div class="mb-3">
                         <label class="form-label">Kategori Kaca</label>
-                        <select id="kategori" class="form-select" onchange="loadUkuran()" required>
-                            <option value="">Memuat data...</option>
-                        </select>
+                        <div class="input-group">
+                            <input type="text" id="kategori" name="kategori_manual" class="form-control"
+                                placeholder="Ketik kategori..." required autocomplete="off">
+                            <button type="button" class="btn-pilih" onclick="bukaModal()">Pilih Database</button>
+                        </div>
                     </div>
 
-                    <div class="mb-3" id="ukuranBox">
+                    <div class="mb-3">
                         <label class="form-label">Ukuran Kaca</label>
-                        <select id="ukuran" class="form-select" onchange="loadKetebalan()" required>
-                            <option value="">Pilih Ukuran</option>
-                        </select>
+                        <div class="input-group">
+                            <input type="text" id="ukuran" name="ukuran_manual" class="form-control"
+                                placeholder="Ketik ukuran..." required autocomplete="off">
+                            <button type="button" class="btn-pilih" onclick="bukaModal()">Pilih Database</button>
+                        </div>
                     </div>
 
-                    <div class="mb-3" id="ketebalanBox">
+                    <div class="mb-3">
                         <label class="form-label">Ketebalan Kaca</label>
-                        <select id="ketebalan" class="form-select" onchange="setIdKaca()" required>
-                            <option value="">Pilih Ketebalan</option>
-                        </select>
+                        <div class="input-group">
+                            <input type="text" id="ketebalan" name="ketebalan_manual" class="form-control"
+                                placeholder="Ketik ketebalan..." required autocomplete="off">
+                            <button type="button" class="btn-pilih" onclick="bukaModal()">Pilih Database</button>
+                        </div>
                     </div>
 
                     <input type="hidden" name="id_kaca" id="id_kaca">
 
                     <div class="mb-4">
                         <label class="form-label">Jumlah Kaca (Pcs)</label>
-                        <input type="number" name="jumlah" class="form-control" placeholder="Masukkan jumlah pesanan" required min="1">
+                        <input type="number" name="jumlah" class="form-control" placeholder="Masukkan jumlah pesanan"
+                            required min="1">
                     </div>
 
                     <button type="submit" class="btn-submit">Kirim Instruksi Restock</button>
                 </form>
+
+                <div id="modalKaca" class="modal-kaca">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Pilih Kaca dari Database</h3>
+                            <button type="button" class="close-btn" onclick="tutupModal()">&times;</button>
+                        </div>
+                        <input type="text" id="cariKaca" class="cari-kaca"
+                            placeholder="Cari tipe, ukuran, atau ketebalan..." onkeyup="filterKaca()">
+                        <div class="kaca-list" id="daftarKaca">
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </main>
     </div>
 
-<script id="kaca-data" type="application/json">
+    <script id="kaca-data" type="application/json">
     {{ list_kaca | tojson }}
 </script>
 
-<script>
-    const kacaData = JSON.parse(
-        document.getElementById("kaca-data").textContent
-    );
-</script>
+    <script>
+        const kacaData = JSON.parse(
+            document.getElementById("kaca-data").textContent
+        );
+    </script>
 
-<script src="{{ url_for('static', filename='petugas_monitoring/js/instruksi.js') }}"></script>
+    <script src="{{ url_for('static', filename='petugas_monitoring/js/instruksi.js') }}"></script>
 </body>
+
 </html>
