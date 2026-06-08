@@ -23,7 +23,7 @@ app.config['SECRET_KEY'] = 'kunci-rahasia-wms-kaca-2026'
 app.register_blueprint(kepala_gudang_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(petugas_pencatatan_bp)
-app.register_blueprint(petugas_monitoring_bp) # <--- SAMA INI JUGA TAMBAHANNYA
+app.register_blueprint(petugas_monitoring_bp) 
 
 @app.route('/')
 def index():

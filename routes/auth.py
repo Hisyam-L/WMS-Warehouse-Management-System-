@@ -21,8 +21,8 @@ def login():
 
             if user['role'] == 'kepala_gudang':
                 return redirect(url_for('kepala_gudang.dashboard'))
-            elif user['role'] == 'petugas_pencatatan':
-                return redirect(url_for('petugas_pencatatan.dashboard'))
+            if user['role'] == 'petugas_pencatatan':
+                return redirect(url_for('petugas_pencatatan.lapor_masuk'))
             elif user['role'] == 'petugas_monitoring':
                 return redirect(url_for('petugas_monitoring.dashboard'))
         else:

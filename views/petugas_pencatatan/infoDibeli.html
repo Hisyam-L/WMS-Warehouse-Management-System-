@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Barang Dibeli - WMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='petugas_pencatatan/css/infoDibeli.css') }}">
+</head>
+
+<body>
+    <nav class="top-navbar">
+        <div class="brand-name">{{ session.get('perusahaan') }}</div>
+        <div style="position: relative;">
+            <div class="circle-profile" id="profileBtn">{{ session.get('username', 'U')[0] | upper }}</div>
+            <div id="profileDropdown"
+                style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e2e6f2; background-color: #f4f6fd;">
+                    <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">Masuk sebagai</p>
+                    <p style="font-size: 14px; font-weight: bold; color: #1f2957;">{{ session.get('username', 'Petugas')
+                        }}</p>
+                </div>
+                <div style="padding: 4px 0;">
+                    <a href="{{ url_for('auth.logout') }}"
+                        style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><span class="menu-title">Menu</span><button class="toggle-btn"
+                    id="toggleBtn">☰</button></div>
+            <ul class="menu-list">
+                <li><a href="{{ url_for('petugas_pencatatan.lapor_masuk') }}"><span class="full-text">Lapor Barang
+                            Masuk</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.info_dibeli') }}" class="active"><span
+                            class="full-text">Info Barang Dibeli</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.lapor_keluar') }}"><span class="full-text">Lapor Barang
+                            Keluar</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.chatting') }}"><span class="full-text">Pesan /
+                            Chatting</span></a></li>
+            </ul>
+        </aside>
+
+        <main class="content-section">
+            <h2 class="page-title">Instruksi Pembelian (Dari Monitoring)</h2>
+            <div class="card-list">
+                {% for item in instruksi_data %}
+                <div class="card-item card-blue">
+                    <div class="card-header">
+                        <span style="color: gray; font-size: 14px;">Tanggal: {{ item.tanggal[:10] }}</span>
+                        <span
+                            style="font-weight: bold; color: #2563eb; background: #dbeafe; padding: 4px 10px; border-radius: 6px; font-size: 13px;">{{
+                            item.status }}</span>
+                    </div>
+                    {% for detail in item.detail_instruksi %}
+                    <div class="detail-item">
+                        <div>
+                            <strong style="font-size: 16px;">{{ detail.kaca.kategori.kategori }}</strong><br>
+                            <small style="color: #64748b;">Ukuran: {{ detail.kaca.ukuran }} | Tebal: {{
+                                detail.kaca.ketebalan }}mm</small>
+                        </div>
+                        <div style="font-size: 20px; font-weight: bold; color: #0f172a;">
+                            {{ detail.jumlah }} Pcs
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div style="margin-top: 10px; font-size: 12px; color: gray;">Oleh: {{ item.users.username }}</div>
+                </div>
+                {% else %}
+                <p style="text-align: center; color: gray; margin-top: 50px;">Belum ada instruksi pembelian masuk.</p>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='petugas_pencatatan/js/infoDibeli.js') }}"></script>
+</body>
+
+</html>

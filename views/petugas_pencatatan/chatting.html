@@ -4,79 +4,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chattime - Petugas Monitoring</title>
+    <title>Pesan & Chatting - Pencatatan</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='petugas_pencatatan/css/chatting.css') }}">
 </head>
 
 <body>
 
-    <div class="container-layout">
-
-        <div class="sidebar">
-            <h3>Petugas Monitoring</h3>
-            <button>Lapor Barang Masuk</button>
-            <button>Info Barang Dibeli</button>
-            <button>Lapor Barang Keluar</button>
-            <button>Pesan / Chatting</button>
-            <button>Logout</button>
-
+    <nav class="top-navbar">
+        <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
+        <div style="position: relative;">
+            <div class="circle-profile" id="profileBtn" title="Menu Profil">
+                {{ session.get('username', 'U')[0] | upper }}
+            </div>
+            <div id="profileDropdown"
+                style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e2e6f2; background-color: #f4f6fd;">
+                    <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">Masuk sebagai</p>
+                    <p style="font-size: 14px; font-weight: bold; color: #1f2957;">
+                        {{ session.get('username', 'Petugas') }}
+                    </p>
+                </div>
+                <div style="padding: 4px 0;">
+                    <a href="{{ url_for('auth.logout') }}"
+                        style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;">Logout</a>
+                </div>
+            </div>
         </div>
+    </nav>
 
-        <div class="content">
-            <div class="navbar-mobile">
-                <div class="navbar-title">
-                    Petugas Monitoring
-                </div>
-                <div onclick="toggleMenu()" class="menu-button">
-                    ☰
-                </div>
+    <div class="main-container">
 
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="menu-title">Menu</span>
+                <button class="toggle-btn" id="toggleBtn">☰</button>
             </div>
+            <ul class="menu-list">
+                <li><a href="{{ url_for('petugas_pencatatan.lapor_masuk') }}"><span class="full-text">Lapor Barang Masuk</span><span class="initial">M</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.info_dibeli') }}"><span class="full-text">Info Barang Dibeli</span><span class="initial">I</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.lapor_keluar') }}"><span class="full-text">Lapor Barang Keluar</span><span class="initial">K</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.chatting') }}" class="active"><span class="full-text">Pesan / Chatting</span><span class="initial">C</span></a></li>
+            </ul>
+        </aside>
 
-            <div id="mobileMenu" class="mobile-menu">
-                <button>Lapor Barang Masuk</button>
-                <button>Info Barang Dibeli</button>
-                <button>Lapor Barang Keluar</button>
-                <button>Pesan / Chatting</button>
-                <button>Logout</button>
-            </div>
+        <main class="content-section">
+            <div class="chat-layout">
 
-            <div class="chat-card">
-
-                <div class="chat-header">
-                    Chattime
+                <div class="user-list">
+                    <div style="padding-bottom: 15px; font-weight: bold; border-bottom: 1px solid #dbe1ff; margin-bottom: 15px; text-align: center; color: #1f2957;">
+                        Daftar Kontak
+                    </div>
+                    {% for u in daftar_user %}
+                    <div class="user-card" onclick="pilihChat('{{ u.id_user }}', '{{ u.username }}', this)">
+                        <div class="user-name">{{ u.username }}</div>
+                        <div class="user-role" style="font-size: 12px; font-weight: normal; margin-top: 4px;">
+                            {{ u.role.replace('_', ' ').title() }}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div style="text-align: center; color: #888; font-size: 14px; margin-top: 20px;">Belum ada kontak</div>
+                    {% endfor %}
                 </div>
 
-                <div class="chat-list">
-
-                    <div class="chat-item"
-                        onclick="window.location.href='kepalaGudang.html'">
-
-                        <span>Kepala Gudang</span>
-
-                        <span class="arrow">➜</span>
-
+                <div class="chat-area">
+                    <div class="chat-header" id="chatTitle">
+                        Pilih Kontak untuk Memulai Chat
                     </div>
 
-                    <div class="chat-item"
-                        onclick="window.location.href='petugasMonitoring.html'">
+                    <div class="chat-container" id="chatContainer">
+                        <div style="text-align: center; color: #9ca3af; margin-top: 50px;">
+                            <i class="bi bi-chat-dots-fill" style="font-size: 40px;"></i><br>Belum ada percakapan
+                        </div>
+                    </div>
 
-                        <span>Petugas Monitoring</span>
-
-                        <span class="arrow">➜</span>
-
+                    <div class="input-area" id="inputArea" style="display: none;">
+                        <div class="input-wrapper">
+                            <input type="text" id="messageInput" class="chat-input" placeholder="Ketik pesan..." autocomplete="off">
+                            <button class="send-btn" id="sendBtn">
+                                <i class="bi bi-send-fill"></i>
+                            </button>
+                        </div>
                     </div>
 
                 </div>
-
             </div>
-
-        </div>
-
+        </main>
     </div>
 
     <script src="{{ url_for('static', filename='petugas_pencatatan/js/chatting.js') }}"></script>
-
 </body>
 
 </html>
