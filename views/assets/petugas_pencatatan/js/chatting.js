@@ -21,15 +21,17 @@ if (toggleBtn) {
     });
 }
 
-// --- LOGIKA CHAT KE SUPABASE API ---
+// --- LOGIKA CHAT ---
 let currentLawanId = null;
+let lastPesanCount = 0;
 
-async function pilihChat(id_lawan, nama_lawan, element) {
+function pilihChat(id_lawan, nama_lawan, element) {
     currentLawanId = id_lawan;
+    lastPesanCount = 0; // Reset counter saat ganti kontak
+
     document.getElementById("chatTitle").innerText = nama_lawan;
     document.getElementById("inputArea").style.display = "block";
 
-    // Ganti warna kartu yang aktif
     document.querySelectorAll(".user-card").forEach((el) => el.classList.remove("active"));
     if (element) element.classList.add("active");
 
@@ -41,43 +43,47 @@ async function loadPesan() {
     try {
         const res = await fetch(`/petugas_pencatatan/api/pesan?lawan_id=${currentLawanId}`);
         const data = await res.json();
-
         const container = document.getElementById("chatContainer");
-        container.innerHTML = "";
+
+        // Hanya render ulang kalau jumlah pesan berubah
+        if (data.pesan.length === lastPesanCount) return;
+        lastPesanCount = data.pesan.length;
+
+        // Cek posisi scroll sebelum render ulang
+        const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
 
         if (data.pesan.length === 0) {
             container.innerHTML = `<div style="text-align: center; color: #9ca3af; margin-top: 50px;">Belum ada percakapan dengan pengguna ini</div>`;
             return;
         }
 
+        container.innerHTML = "";
         data.pesan.forEach((p) => {
             const isMe = p.id_pengirim === data.my_id;
             const time = new Date(p.waktu).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            // HTML RENDER SESUAI CSS BARU LU
             container.innerHTML += `
                 <div class="chat-row ${isMe ? 'right' : 'left'}">
                     ${!isMe ? '<div class="chat-avatar"><i class="bi bi-person-fill"></i></div>' : ""}
-
                     <div class="chat-bubble ${isMe ? 'chat-right' : 'chat-left'}">
                         <div style="font-size: 14px;">${p.isi}</div>
                         <div style="font-size: 10px; text-align: ${isMe ? 'right' : 'left'}; margin-top: 5px; opacity: 0.7;">${time}</div>
                     </div>
-
                     ${isMe ? '<div class="chat-avatar"><i class="bi bi-person-fill"></i></div>' : ""}
                 </div>
             `;
         });
 
-        // Auto scroll kebawah
-        if (container.scrollHeight - container.scrollTop <= container.clientHeight + 100) {
+        // Auto scroll ke bawah hanya kalau user sudah di bawah
+        if (isAtBottom) {
             container.scrollTop = container.scrollHeight;
         }
+
     } catch (err) {
         console.error("Gagal load pesan:", err);
     }
 }
 
+// Interval refresh tiap 2 detik
 setInterval(loadPesan, 2000);
 
 async function sendMessage() {
@@ -95,10 +101,13 @@ async function sendMessage() {
         });
 
         input.value = "";
-        loadPesan();
+        lastPesanCount = 0; // Force render ulang setelah kirim pesan sendiri
+        await loadPesan();
 
+        // Paksa scroll ke bawah setelah kirim
         const container = document.getElementById("chatContainer");
         setTimeout(() => (container.scrollTop = container.scrollHeight), 100);
+
     } catch (err) {
         console.error("Gagal kirim pesan:", err);
     }

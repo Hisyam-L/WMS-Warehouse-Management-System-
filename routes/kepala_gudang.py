@@ -31,7 +31,7 @@ def instruksi():
 
 @kepala_gudang_bp.route('/buat_instruksi', methods=['POST'])
 def buat_instruksi():
-    my_perusahaan = session.get('perusahaan') # Ambil perusahaan buat disimpen ke tabel
+    my_perusahaan = session.get('perusahaan')
 
     id_kaca = request.form.get('id_kaca')
     jumlah = int(request.form.get('jumlah'))
@@ -40,40 +40,56 @@ def buat_instruksi():
     no_hp_pembeli = request.form.get('no_hp_pembeli')
     alamat = request.form.get('alamat')
 
-    # 1. Insert ke tabel kaca_keluar (wajib masukin 'perusahaan' ke DB)
-    resp = supabase.table('kaca_keluar').insert({
-        'perusahaan': my_perusahaan,      # <--- BIKIN DATA INI GAK BOCOR KE PERUSAHAAN LAIN
-        'nama_pembeli': nama_pembeli,
-        'no_hp': no_hp_pembeli,
-        'alamat': alamat,
-        'status_pembayaran': status_pembayaran,
-        'status_pengiriman': 'Pending'
-    }).execute()
+    # ✅ CEK STOK DULU SEBELUM INSERT APAPUN
+    stok_resp = supabase.table('stok') \
+        .select('id_stok, jumlah') \
+        .eq('id_kaca', id_kaca) \
+        .eq('kondisi', 'Baik') \
+        .eq('perusahaan', my_perusahaan) \
+        .execute()
 
-    id_kaca_keluar = resp.data[0]['id_kaca_keluar']
+    stok_sekarang = stok_resp.data[0]['jumlah'] if stok_resp.data else 0
+    id_stok = stok_resp.data[0]['id_stok'] if stok_resp.data else None
 
-    # 2. Insert ke detail_kaca_keluar
-    supabase.table('detail_kaca_keluar').insert({
-        'id_kaca': id_kaca,
-        'id_kaca_keluar': id_kaca_keluar,
-        'jumlah': jumlah
-    }).execute()
+    if not id_stok or jumlah > stok_sekarang:
+        flash(f"Stok tidak mencukupi! Stok tersedia: {stok_sekarang} pcs.", "danger")
+        return redirect(url_for('kepala_gudang.instruksi'))
 
-    # 3. LOGIKA POTONG STOK OTOMATIS (Aman, ini udah per row ID Kacanya langsung)
-    stok_resp = supabase.table('stok').select('jumlah').eq('id_kaca', id_kaca).execute()
+    try:
+        # ✅ BARU INSERT setelah stok dipastikan cukup
+        # 1. Insert kaca_keluar
+        resp = supabase.table('kaca_keluar').insert({
+            'perusahaan': my_perusahaan,
+            'nama_pembeli': nama_pembeli,
+            'no_hp': no_hp_pembeli,
+            'alamat': alamat,
+            'status_pembayaran': status_pembayaran,
+            'status_pengiriman': 'Pending'
+        }).execute()
 
-    if stok_resp.data:
-        stok_sekarang = stok_resp.data[0]['jumlah']
+        id_kaca_keluar = resp.data[0]['id_kaca_keluar']
+
+        # 2. Insert detail_kaca_keluar
+        supabase.table('detail_kaca_keluar').insert({
+            'id_kaca': id_kaca,
+            'id_kaca_keluar': id_kaca_keluar,
+            'jumlah': jumlah,
+            'kondisi': 'Baik'
+        }).execute()
+
+        # 3. Potong stok BAIK perusahaan ini saja
         stok_baru = stok_sekarang - jumlah
+        supabase.table('stok') \
+            .update({'jumlah': stok_baru}) \
+            .eq('id_stok', id_stok) \
+            .execute()
 
-        if stok_baru < 0:
-            flash("Stok tidak mencukupi untuk instruksi pesanan ini!", "danger")
-        else:
-            supabase.table('stok').update({'jumlah': stok_baru}).eq('id_kaca', id_kaca).execute()
-            flash("Instruksi pesanan berhasil dibuat!", "success")
+        flash("Instruksi pesanan berhasil dibuat!", "success")
+
+    except Exception as e:
+        flash(f"Gagal membuat instruksi: {str(e)}", "danger")
 
     return redirect(url_for('kepala_gudang.instruksi'))
-
 
 @kepala_gudang_bp.route('/tambahAkun')
 def tambah_akun():

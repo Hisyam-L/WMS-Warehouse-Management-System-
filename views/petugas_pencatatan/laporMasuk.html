@@ -52,38 +52,48 @@
 
             <div class="main-card">
                 <div class="header-box">Lapor Barang Masuk (Restock Gudang)</div>
-                <form action="{{ url_for('petugas_pencatatan.lapor_masuk') }}" method="POST">
+                <form action="{{ url_for('petugas_pencatatan.lapor_masuk') }}" method="POST"
+                    enctype="multipart/form-data">
 
-                    <div class="mb-3">
+                    <div style="margin-bottom: 40px;">
+                        <label class="form-label">Bukti Gambar / Foto Kaca</label>
+                        <div class="boxUpload" onclick="bukaKamera()">
+                            <span id="uploadText">Klik untuk buka kamera / galeri</span>
+                            <img id="previewImage">
+                        </div>
+                        <input type="file" name="gambar_kaca" id="imgInput" accept="image/*" capture="environment"
+                            style="display:none;">
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
                         <label class="form-label">Kategori Kaca</label>
                         <div class="input-group">
                             <input type="text" id="kategori" name="kategori_manual" class="form-control"
                                 placeholder="Ketik kategori..." required autocomplete="off">
-                            <button type="button" class="btn-pilih" onclick="bukaModal()">🔍 Pilih Database</button>
+                            <button type="button" class="btn-pilih" onclick="bukaModal('kategori')">Pilih
+                                Database</button>
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <div style="margin-bottom: 20px;">
                         <label class="form-label">Ukuran Kaca</label>
                         <div class="input-group">
                             <input type="text" id="ukuran" name="ukuran_manual" class="form-control"
                                 placeholder="Ketik ukuran..." required autocomplete="off">
-                            <button type="button" class="btn-pilih" onclick="bukaModal()">🔍 Pilih Database</button>
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <div style="margin-bottom: 20px;">
                         <label class="form-label">Ketebalan Kaca</label>
                         <div class="input-group">
                             <input type="text" id="ketebalan" name="ketebalan_manual" class="form-control"
                                 placeholder="Ketik ketebalan..." required autocomplete="off">
-                            <button type="button" class="btn-pilih" onclick="bukaModal()">🔍 Pilih Database</button>
                         </div>
                     </div>
 
                     <input type="hidden" name="id_kaca" id="id_kaca">
 
-                    <div class="mb-4">
+                    <div style="margin-bottom: 30px;">
                         <label class="form-label">Jumlah Kaca Masuk (Pcs)</label>
                         <input type="number" name="jumlah" class="form-control" placeholder="Masukkan jumlah stok masuk"
                             required min="1">
@@ -91,7 +101,6 @@
 
                     <button type="submit" class="btn-submit">Catat Stok Kaca Masuk</button>
                 </form>
-
                 <div id="modalKaca" class="modal-kaca">
                     <div class="modal-content">
                         <div class="modal-header">

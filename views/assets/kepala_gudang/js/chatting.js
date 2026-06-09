@@ -1,3 +1,4 @@
+// --- LOGIKA MENU PROFIL ---
 const profileBtn = document.getElementById("profileBtn");
 const profileDropdown = document.getElementById("profileDropdown");
 if (profileBtn) {
@@ -17,6 +18,8 @@ window.addEventListener("click", (e) => {
         profileDropdown.style.display = "none";
     }
 });
+
+// --- LOGIKA SIDEBAR ---
 const toggleBtn = document.getElementById("toggleBtn");
 const sidebar = document.getElementById("sidebar");
 if (toggleBtn) {
@@ -25,16 +28,18 @@ if (toggleBtn) {
     });
 }
 
+// --- LOGIKA CHAT ---
 let currentLawanId = null;
+let lastPesanCount = 0;
 
-async function pilihChat(id_lawan, nama_lawan, element) {
+function pilihChat(id_lawan, nama_lawan, element) {
     currentLawanId = id_lawan;
+    lastPesanCount = 0; // Reset counter saat ganti kontak
+
     document.getElementById("chatTitle").innerText = "Chat - " + nama_lawan;
     document.getElementById("inputArea").style.display = "block";
 
-    document
-        .querySelectorAll(".user-card")
-        .forEach((el) => el.classList.remove("active"));
+    document.querySelectorAll(".user-card").forEach((el) => el.classList.remove("active"));
     if (element) element.classList.add("active");
 
     loadPesan();
@@ -43,30 +48,45 @@ async function pilihChat(id_lawan, nama_lawan, element) {
 async function loadPesan() {
     if (!currentLawanId) return;
     try {
-        let res = await fetch(
-            `/kepala_gudang/api/pesan?lawan_id=${currentLawanId}`,
-        );
+        let res = await fetch(`/kepala_gudang/api/pesan?lawan_id=${currentLawanId}`);
         let data = await res.json();
-
         const container = document.getElementById("chatContainer");
-        container.innerHTML = "";
 
+        // Hanya render ulang kalau jumlah pesan berubah
+        if (data.pesan.length === lastPesanCount) return;
+        lastPesanCount = data.pesan.length;
+
+        // Cek posisi scroll sebelum render ulang
+        const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+
+        if (data.pesan.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: #9ca3af; margin-top: 50px;">Belum ada percakapan dengan kontak ini.</div>';
+            return;
+        }
+
+        container.innerHTML = "";
         data.pesan.forEach((p) => {
             let isMe = p.id_pengirim === data.my_id;
             container.innerHTML += `
-                        <div class="chat-row ${isMe ? "right" : ""}">
-                            ${!isMe ? '<div class="chat-avatar"></div>' : ""}
-                            <div class="chat-bubble ${isMe ? "chat-right" : "chat-left"}">${p.isi}</div>
-                            ${isMe ? '<div class="chat-avatar"></div>' : ""}
-                        </div>
-                    `;
+                <div class="chat-row ${isMe ? "right" : ""}">
+                    ${!isMe ? '<div class="chat-avatar"></div>' : ""}
+                    <div class="chat-bubble ${isMe ? "chat-right" : "chat-left"}">${p.isi}</div>
+                    ${isMe ? '<div class="chat-avatar"></div>' : ""}
+                </div>
+            `;
         });
-        container.scrollTop = container.scrollHeight;
+
+        // Auto scroll ke bawah hanya kalau user sudah di bawah
+        if (isAtBottom) {
+            container.scrollTop = container.scrollHeight;
+        }
+
     } catch (err) {
         console.error("Gagal load pesan:", err);
     }
 }
 
+// Interval refresh tiap 2 detik
 setInterval(loadPesan, 2000);
 
 async function sendMessage() {
@@ -82,8 +102,15 @@ async function sendMessage() {
                 isi: input.value,
             }),
         });
+
         input.value = "";
-        loadPesan();
+        lastPesanCount = 0; // Force render ulang setelah kirim pesan sendiri
+        await loadPesan();
+
+        // Paksa scroll ke bawah setelah kirim
+        const container = document.getElementById("chatContainer");
+        setTimeout(() => (container.scrollTop = container.scrollHeight), 100);
+
     } catch (err) {
         console.error("Gagal kirim pesan:", err);
     }

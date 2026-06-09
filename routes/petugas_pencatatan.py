@@ -55,14 +55,57 @@ def lapor_masuk():
 # ==========================================
 # 2. INFO BARANG DIBELI (Dari Petugas Monitoring)
 # ==========================================
-@petugas_pencatatan_bp.route('/info_dibeli')
+@petugas_pencatatan_bp.route('/info_dibeli', methods=['GET', 'POST'])
 def info_dibeli():
     my_perusahaan = session.get('perusahaan')
+
+    # JIKA TOMBOL "TANDAI SUDAH DIBELI" DITEKAN
+    if request.method == 'POST':
+        id_instruksi = request.form.get('id_instruksi')
+        try:
+            res_detail = supabase.table('detail_instruksi').select('id_kaca, jumlah').eq('id_instruksi_beli', id_instruksi).execute()
+            list_detail = res_detail.data if res_detail.data else []
+
+            if list_detail:
+                for item in list_detail:
+                    id_kaca = item['id_kaca']
+                    jumlah = int(item['jumlah'])
+
+                    supabase.table('kaca_masuk').insert({
+                        'id_kaca': id_kaca,
+                        'jumlah': jumlah,
+                        'perusahaan': my_perusahaan
+                    }).execute()
+
+                    cek_stok = supabase.table('stok').select('*').eq('id_kaca', id_kaca).eq('perusahaan', my_perusahaan).eq('kondisi', 'Baik').execute()
+
+                    if cek_stok.data:
+                        stok_baru = cek_stok.data[0]['jumlah'] + jumlah
+                        supabase.table('stok').update({'jumlah': stok_baru}).eq('id_stok', cek_stok.data[0]['id_stok']).execute()
+                    else:
+                        supabase.table('stok').insert({
+                            'id_kaca': id_kaca,
+                            'jumlah': jumlah,
+                            'kondisi': 'Baik',
+                            'perusahaan': my_perusahaan
+                        }).execute()
+
+            # Status kita pastiin ubah ke kapital 'Selesai' (walau di HTML udh kebal filter)
+            supabase.table('instruksi_beli').update({'status': 'Selesai'}).eq('id_instruksi_beli', id_instruksi).execute()
+
+            flash("Barang masuk berhasil dicatat otomatis dan stok gudang telah bertambah!", "success")
+        except Exception as e:
+            flash(f"Gagal memproses pencatatan otomatis: {e}", "danger")
+
+        return redirect(url_for('petugas_pencatatan.info_dibeli'))
+
+    # AMBIL DATA UNTUK DITAMPILKAN DI HALAMAN (GET)
     try:
-        # Ambil instruksi beli + detail kaca nya
         res = supabase.table('instruksi_beli').select('*, detail_instruksi(*, kaca(*, kategori(*))), users(username)').eq('perusahaan', my_perusahaan).order('tanggal', desc=True).execute()
         instruksi_data = res.data if res.data else []
     except Exception as e:
+        print(f"============== ERROR DATABASE INFO DIBELI: {e} ==============")
+        flash("Gagal menarik data dari Database. Cek terminal untuk detail error!", "danger")
         instruksi_data = []
 
     return render_template('petugas_pencatatan/infoDibeli.html', instruksi_data=instruksi_data)

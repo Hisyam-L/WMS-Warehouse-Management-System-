@@ -9,12 +9,15 @@
 </head>
 
 <body>
-    <nav class="top-navbar">
+    <nav class="top-navbar" style="position: relative; z-index: 9999;">
         <div class="brand-name">{{ session.get('perusahaan') }}</div>
         <div style="position: relative;">
-            <div class="circle-profile" id="profileBtn">{{ session.get('username', 'U')[0] | upper }}</div>
+            <div class="circle-profile" id="profileBtn" onclick="toggleProfile(event)" style="cursor: pointer;">
+                {{ session.get('username', 'U')[0] | upper }}
+            </div>
+
             <div id="profileDropdown"
-                style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
+                style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 10000; overflow: hidden;">
                 <div style="padding: 12px 16px; border-bottom: 1px solid #e2e6f2; background-color: #f4f6fd;">
                     <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">Masuk sebagai</p>
                     <p style="font-size: 14px; font-weight: bold; color: #1f2957;">{{ session.get('username', 'Petugas')
@@ -22,7 +25,9 @@
                 </div>
                 <div style="padding: 4px 0;">
                     <a href="{{ url_for('auth.logout') }}"
-                        style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;">Logout</a>
+                        style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;"
+                        onmouseover="this.style.backgroundColor='#fee2e2'"
+                        onmouseout="this.style.backgroundColor='transparent'">Logout</a>
                 </div>
             </div>
         </div>
@@ -45,33 +50,116 @@
         </aside>
 
         <main class="content-section">
-            <h2 class="page-title">Instruksi Pembelian (Dari Monitoring)</h2>
-            <div class="card-list">
-                {% for item in instruksi_data %}
-                <div class="card-item card-blue">
-                    <div class="card-header">
-                        <span style="color: gray; font-size: 14px;">Tanggal: {{ item.tanggal[:10] }}</span>
-                        <span
-                            style="font-weight: bold; color: #2563eb; background: #dbeafe; padding: 4px 10px; border-radius: 6px; font-size: 13px;">{{
-                            item.status }}</span>
-                    </div>
-                    {% for detail in item.detail_instruksi %}
-                    <div class="detail-item">
-                        <div>
-                            <strong style="font-size: 16px;">{{ detail.kaca.kategori.kategori }}</strong><br>
-                            <small style="color: #64748b;">Ukuran: {{ detail.kaca.ukuran }} | Tebal: {{
-                                detail.kaca.ketebalan }}mm</small>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}{% for category, message in messages %}<div class="alert alert-{{ category }}">{{ message
+                }}</div>{% endfor %}{% endif %}
+            {% endwith %}
+
+            <div class="main-card" style="border:none; box-shadow:none; background:transparent; padding:0;">
+                <section class="areaKontrol">
+                    <button id="tabAkanDibeli" class="tombolTab aktif">Akan Dibeli</button>
+                    <button id="tabSudahDibeli" class="tombolTab">Sudah Dibeli</button>
+                </section>
+
+                <main class="kontenBarang">
+                    <!-- AKAN DIBELI -->
+                    <div id="daftarAkanDibeli" class="grupDaftar tampilkan">
+                        <div class="pembungkusKartu">
+                            {% set ns = namespace(ada_pending=false) %}
+                            {% for item in instruksi_data %}
+                            {% if not item.status or item.status|lower != 'selesai' %}
+                            {% set ns.ada_pending = true %}
+                            <div class="kartuBarang">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 12px; width: 100%;">
+                                    <span class="namaBarang">Instruksi: {{ item.users.username if item.users else
+                                        'Unknown User' }}</span>
+                                    <span class="jumlahBarang" style="background: #fef08a; color: #854d0e;">
+                                        {{ item.tanggal[:10] if item.tanggal else 'Tanpa Tanggal' }}
+                                    </span>
+                                </div>
+
+                                <div style="width: 100%;">
+                                    {% if item.detail_instruksi %}
+                                    {% for detail in item.detail_instruksi %}
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span style="font-size: 14px; color: #475569;">
+                                            - {{ detail.kaca.kategori.kategori if detail.kaca and detail.kaca.kategori
+                                            else 'Kategori?' }}
+                                            ({{ detail.kaca.ukuran if detail.kaca else '?' }}, {{ detail.kaca.ketebalan
+                                            if detail.kaca else '?' }}mm)
+                                        </span>
+                                        <span style="font-weight: 600; font-size: 14px;">{{ detail.jumlah }} Pcs</span>
+                                    </div>
+                                    {% endfor %}
+                                    {% else %}
+                                    <p style="color: red; font-size: 12px;">(Detail kaca belum dimasukkan oleh Kepala
+                                        Gudang)</p>
+                                    {% endif %}
+                                </div>
+
+                                <form action="{{ url_for('petugas_pencatatan.info_dibeli') }}" method="POST"
+                                    style="width: 100%;">
+                                    <input type="hidden" name="id_instruksi" value="{{ item.id_instruksi_beli }}">
+                                    <button type="submit" class="btn-selesai">✓ Tandai Sudah Dibeli</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if not ns.ada_pending %}
+                            <p style="color: gray; padding: 20px 0;">Tidak ada instruksi pembelian baru yang harus
+                                dibeli.</p>
+                            {% endif %}
                         </div>
-                        <div style="font-size: 20px; font-weight: bold; color: #0f172a;">
-                            {{ detail.jumlah }} Pcs
+                    </div>
+
+                    <!-- SUDAH DIBELI -->
+                    <div id="daftarSudahDibeli" class="grupDaftar">
+                        <div class="pembungkusKartu">
+                            {% set ns = namespace(ada_selesai=false) %}
+                            {% for item in instruksi_data %}
+                            {% if item.status and item.status|lower == 'selesai' %}
+                            {% set ns.ada_selesai = true %}
+                            <div class="kartuBarang" style="border-left-color: #10b981; opacity: 0.85;">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 12px; width: 100%;">
+                                    <span class="namaBarang">Instruksi: {{ item.users.username if item.users else
+                                        'Unknown User' }}</span>
+                                    <span class="jumlahBarang" style="background: #d1fae5; color: #065f46;">{{
+                                        item.tanggal[:10] }}</span>
+                                </div>
+
+                                <div style="width: 100%;">
+                                    {% if item.detail_instruksi %}
+                                    {% for detail in item.detail_instruksi %}
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span style="font-size: 14px; color: #475569;">
+                                            - {{ detail.kaca.kategori.kategori if detail.kaca and detail.kaca.kategori
+                                            else 'Kategori?' }}
+                                            ({{ detail.kaca.ukuran if detail.kaca else '?' }}, {{ detail.kaca.ketebalan
+                                            if detail.kaca else '?' }}mm)
+                                        </span>
+                                        <span style="font-weight: 600; font-size: 14px;">{{ detail.jumlah }} Pcs</span>
+                                    </div>
+                                    {% endfor %}
+                                    {% endif %}
+                                </div>
+
+                                <div
+                                    style="margin-top: 15px; text-align: center; color: #10b981; font-weight: bold; font-size: 14px; padding: 10px; background: #ecfdf5; border-radius: 8px; width: 100%;">
+                                    ✓ Sudah Selesai Dibeli
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if not ns.ada_selesai %}
+                            <p style="color: gray; padding: 20px 0;">Belum ada riwayat kaca yang sudah dibeli.</p>
+                            {% endif %}
                         </div>
                     </div>
-                    {% endfor %}
-                    <div style="margin-top: 10px; font-size: 12px; color: gray;">Oleh: {{ item.users.username }}</div>
-                </div>
-                {% else %}
-                <p style="text-align: center; color: gray; margin-top: 50px;">Belum ada instruksi pembelian masuk.</p>
-                {% endfor %}
+                </main>
             </div>
         </main>
     </div>

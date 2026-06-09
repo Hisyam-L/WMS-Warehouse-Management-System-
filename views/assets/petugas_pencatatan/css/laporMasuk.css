@@ -318,3 +318,32 @@ body {
   font-size: 13px;
   font-weight: bold;
 }
+
+.boxUpload {
+  width: 140px;
+  height: 140px;
+  border: 2px dashed #94a3b8;
+  border-radius: 14px;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: 0.2s;
+}
+.boxUpload:hover {
+  border-color: #0f172a;
+}
+.boxUpload span {
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px;
+}
+.boxUpload img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
