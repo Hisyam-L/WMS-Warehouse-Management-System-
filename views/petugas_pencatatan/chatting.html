@@ -41,10 +41,14 @@
                 <button class="toggle-btn" id="toggleBtn">☰</button>
             </div>
             <ul class="menu-list">
-                <li><a href="{{ url_for('petugas_pencatatan.lapor_masuk') }}"><span class="full-text">Lapor Barang Masuk</span><span class="initial">M</span></a></li>
-                <li><a href="{{ url_for('petugas_pencatatan.info_dibeli') }}"><span class="full-text">Info Barang Dibeli</span><span class="initial">I</span></a></li>
-                <li><a href="{{ url_for('petugas_pencatatan.lapor_keluar') }}"><span class="full-text">Lapor Barang Keluar</span><span class="initial">K</span></a></li>
-                <li><a href="{{ url_for('petugas_pencatatan.chatting') }}" class="active"><span class="full-text">Pesan / Chatting</span><span class="initial">C</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.lapor_masuk') }}"><span class="full-text">Lapor Barang
+                            Masuk</span><span class="initial">M</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.info_dibeli') }}"><span class="full-text">Info Barang
+                            Dibeli</span><span class="initial">I</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.lapor_keluar') }}"><span class="full-text">Lapor Barang
+                            Keluar</span><span class="initial">K</span></a></li>
+                <li><a href="{{ url_for('petugas_pencatatan.chatting') }}" class="active"><span class="full-text">Pesan
+                            / Chatting</span><span class="initial">C</span></a></li>
             </ul>
         </aside>
 
@@ -52,7 +56,8 @@
             <div class="chat-layout">
 
                 <div class="user-list">
-                    <div style="padding-bottom: 15px; font-weight: bold; border-bottom: 1px solid #dbe1ff; margin-bottom: 15px; text-align: center; color: #1f2957;">
+                    <div
+                        style="padding-bottom: 15px; font-weight: bold; border-bottom: 1px solid #dbe1ff; margin-bottom: 15px; text-align: center; color: #1f2957;">
                         Daftar Kontak
                     </div>
                     {% for u in daftar_user %}
@@ -63,7 +68,8 @@
                         </div>
                     </div>
                     {% else %}
-                    <div style="text-align: center; color: #888; font-size: 14px; margin-top: 20px;">Belum ada kontak</div>
+                    <div style="text-align: center; color: #888; font-size: 14px; margin-top: 20px;">Belum ada kontak
+                    </div>
                     {% endfor %}
                 </div>
 
@@ -80,7 +86,8 @@
 
                     <div class="input-area" id="inputArea" style="display: none;">
                         <div class="input-wrapper">
-                            <input type="text" id="messageInput" class="chat-input" placeholder="Ketik pesan..." autocomplete="off">
+                            <input type="text" id="messageInput" class="chat-input" placeholder="Ketik pesan..."
+                                autocomplete="off">
                             <button class="send-btn" id="sendBtn">
                                 <i class="bi bi-send-fill"></i>
                             </button>
