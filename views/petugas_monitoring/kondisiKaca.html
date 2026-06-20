@@ -54,10 +54,11 @@
                     <div class="mb-4">
                         <label class="form-label">Tambah Gambar</label>
                         <div class="upload-box" onclick="bukaKamera()">
-                            <span id="uploadText">Klik untuk buka kamera</span>
-                            <img id="previewImage">
+                            <span id="uploadText">Klik untuk pilih gambar</span>
+                            <img id="previewImage" style="display:none; width:100%; border-radius:8px;">
                         </div>
-                        <input type="file" id="imgInput" accept="image/*" capture="environment" style="display:none;">
+                        <!-- ✅ Hapus capture="environment" supaya buka folder file -->
+                        <input type="file" id="imgInput" accept="image/*" style="display:none;">
                     </div>
 
                     <div class="mb-3">
@@ -97,18 +98,11 @@
                     <button type="submit" class="btn-submit">Kirim Kondisi Kaca</button>
                 </form>
             </div>
-
-        <script id="kaca-data" type="application/json">
-            {{ list_kaca | tojson }}
-        </script>
-
-        <script>
-            const kacaData = JSON.parse(
-                document.getElementById("kaca-data").textContent
-            );
-            </script>
-            <script src="{{ url_for('static', filename='petugas_monitoring/js/kondisiKaca.js') }}"></script>
         </main>
     </div>
+
+    <script id="kaca-data" type="application/json">{{ list_kaca | tojson }}</script>
+    <script>const kacaData = JSON.parse(document.getElementById("kaca-data").textContent);</script>
+    <script src="{{ url_for('static', filename='petugas_monitoring/js/kondisiKaca.js') }}"></script>
 </body>
 </html>
