@@ -1,3 +1,4 @@
+import os
 import json
 from flask import (
     Blueprint,
@@ -150,7 +151,7 @@ def kondisi_kaca():
         catatan = request.form.get("catatan")
         id_user = session.get("user_id")
         jumlah_rusak = int(request.form.get("jumlah_rusak", 0))
-        gambar_base64 = request.form.get("gambar_base64", "")
+        gambar_url = request.form.get("gambar_url", "").strip()
 
         if not id_kaca or not catatan:
             flash(
@@ -181,15 +182,14 @@ def kondisi_kaca():
                     )
                     return redirect(url_for("petugas_monitoring.kondisi_kaca"))
 
-            # Catat laporan kerusakan
-            supabase.table("laporan_kerusakan").insert(
-                {
-                    "id_kaca": id_kaca,
-                    "id_user": id_user,
-                    "catatan": catatan,
-                    "gambar": gambar_base64,
-                }
-            ).execute()
+            # Catat laporan kerusakan dengan URL gambar dari Supabase Storage
+            laporan_data = {
+                "id_kaca": id_kaca,
+                "id_user": id_user,
+                "catatan": catatan,
+                "gambar": gambar_url if gambar_url else None,
+            }
+            supabase.table("laporan_kerusakan").insert(laporan_data).execute()
 
             if jumlah_rusak > 0:
                 # Update atau insert stok RUSAK
@@ -327,3 +327,36 @@ def api_pesan():
                 return jsonify({"status": "error", "msg": str(e)}), 500
 
         return jsonify({"status": "error", "msg": "Data tidak lengkap"}), 400
+
+
+# ==========================================
+# 5. UPLOAD GAMBAR (bypass RLS via server)
+# ==========================================
+@petugas_monitoring_bp.route('/api/upload_gambar', methods=['POST'])
+def upload_gambar():
+    if 'file' not in request.files:
+        return jsonify({"error": "Tidak ada file yang dikirim"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "Nama file kosong"}), 400
+
+    try:
+        import random, string, time
+        ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else 'jpg'
+        filename = f"laporan_{int(time.time())}_{''.join(random.choices(string.ascii_lowercase, k=6))}.{ext}"
+        file_bytes = file.read()
+        content_type = file.content_type or f'image/{ext}'
+
+        supabase.storage.from_('laporan-images').upload(
+            path=filename,
+            file=file_bytes,
+            file_options={"content-type": content_type, "upsert": "true"}
+        )
+
+        supabase_url = os.environ.get('SUPABASE_URL', '')
+        public_url = f"{supabase_url}/storage/v1/object/public/laporan-images/{filename}"
+        return jsonify({"url": public_url})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

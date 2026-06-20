@@ -364,3 +364,56 @@ body {
     font-size: 13px;
     font-weight: bold;
 }
+/* =============================================
+   BOTTOM NAVIGATION (Mobile)
+   ============================================= */
+.bottom-nav {
+    display: none; position: fixed;
+    bottom: 0; left: 0; right: 0; height: 68px;
+    background: white; border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+    z-index: 999; justify-content: space-around;
+    align-items: center; padding: 0 8px;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.bottom-nav-item {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-decoration: none; color: #94a3b8;
+    flex: 1; padding: 8px 4px;
+    border-radius: 12px; transition: all 0.2s;
+    gap: 3px; min-height: 52px;
+}
+.bottom-nav-item.active { color: #1f2957; background: #eef2ff; }
+.bottom-nav-item:active { background: #e0e7ff; }
+.bottom-nav-icon { font-size: 22px; line-height: 1; }
+.bottom-nav-label { font-size: 11px; font-weight: 600; white-space: nowrap; }
+
+/* =============================================
+   RESPONSIVE - MOBILE
+   ============================================= */
+@media (max-width: 768px) {
+    body { overflow-x: hidden; min-height: 100vh; height: auto; }
+    .sidebar { display: none !important; }
+    .bottom-nav { display: flex; }
+    .main-container { height: calc(100vh - 60px); overflow: hidden; }
+    .content-section {
+        padding: 12px;
+        overflow-y: auto;
+        height: 100%;
+        padding-bottom: 80px;
+    }
+    .main-card { padding: 16px; margin-top: 0; margin-bottom: 0; border-radius: 14px; }
+    .header-box { font-size: 15px; padding: 12px; }
+    .form-control, .form-select { padding: 14px; font-size: 16px; border-radius: 12px; }
+    .btn-submit { padding: 18px; font-size: 16px; min-height: 56px; }
+    .btn-pilih { min-height: 50px; }
+    .input-group { flex-direction: row; }
+    .modal-kaca { align-items: flex-end; }
+    .modal-content { border-radius: 20px 20px 0 0; max-height: 85vh; width: 100%; max-width: 100%; }
+    .kaca-item { padding: 16px 12px; }
+}
+@media (min-width: 769px) {
+    .bottom-nav { display: none !important; }
+    .main-card { max-width: 700px; margin-left: auto; margin-right: auto; }
+}

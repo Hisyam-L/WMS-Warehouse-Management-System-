@@ -111,7 +111,7 @@ def get_stok_detail(perusahaan):
         response = (
             supabase.table("stok")
             .select(
-                "id_kaca, jumlah, kondisi, kaca(ukuran, ketebalan, kategori(kategori))"
+                "id_kaca, jumlah, kondisi, kaca(ukuran, ketebalan, gambar, kategori(kategori))"
             )
             .eq("perusahaan", perusahaan)
             .execute()
@@ -127,6 +127,7 @@ def get_stok_detail(perusahaan):
                     "ketebalan": item["kaca"]["ketebalan"],
                     "kondisi": item["kondisi"] if item["kondisi"] else "Baik",
                     "jumlah": item["jumlah"],
+                    "gambar": item["kaca"].get("gambar") or "",
                 }
             )
     except Exception as e:

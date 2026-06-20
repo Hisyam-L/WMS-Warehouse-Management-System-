@@ -2,14 +2,17 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="supabase-url" content="https://cbnkrgxwyjjxtehlvfpm.supabase.co">
+    <meta name="supabase-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNibmtyZ3h3eWpqeHRlaGx2ZnBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1MjU2MTIsImV4cCI6MjA5NTEwMTYxMn0.iqVvSTWbM1X3K5EYCjuwd9Hs2SPWEsp1JQtF2Q1pp6A">
     <title>Laporan Kondisi Kaca</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='petugas_monitoring/css/kondisiKaca.css') }}">
 </head>
 <body>
     <nav class="top-navbar">
-        <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
+        <div class="brand-name">{{ session.get('perusahaan', 'WMS') }}</div>
         <div style="position: relative;">
             <div class="circle-profile" id="profileBtn" title="Menu Profil">{{ session.get('username', 'U')[0] | upper }}</div>
             <div id="profileDropdown" style="display: none; position: absolute; right: 0; top: 50px; width: 200px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #c9cee2; z-index: 1000; overflow: hidden;">
@@ -18,13 +21,14 @@
                     <p style="font-size: 14px; font-weight: bold; color: #1f2957; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ session.get('username', 'Petugas') }}</p>
                 </div>
                 <div style="padding: 4px 0;">
-                    <a href="{{ url_for('auth.logout') }}" style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">Logout</a>
+                    <a href="{{ url_for('auth.logout') }}" style="display: block; padding: 10px 16px; font-size: 14px; color: #dc2626; text-decoration: none;">Logout</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <div class="main-container">
+        <!-- Sidebar (Desktop) -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <span class="menu-title">Menu</span>
@@ -33,7 +37,7 @@
             <ul class="menu-list">
                 <li><a href="{{ url_for('petugas_monitoring.dashboard') }}"><span class="full-text">Dashboard</span><span class="initial">D</span></a></li>
                 <li><a href="{{ url_for('petugas_monitoring.kondisi_kaca') }}" class="active"><span class="full-text">Laporan Kaca</span><span class="initial">L</span></a></li>
-                <li><a href="{{ url_for('petugas_monitoring.instruksi') }}"><span class="full-text">Instruksi Beli Kaca</span><span class="initial">I</span></a></li>
+                <li><a href="{{ url_for('petugas_monitoring.instruksi') }}"><span class="full-text">Instruksi Beli</span><span class="initial">I</span></a></li>
                 <li><a href="{{ url_for('petugas_monitoring.chatting') }}"><span class="full-text">Chatting</span><span class="initial">C</span></a></li>
             </ul>
         </aside>
@@ -48,34 +52,40 @@
             {% endwith %}
 
             <div class="main-card">
-                <div class="header-box">Laporan Kondisi Kaca</div>
+                <div class="header-box">🔍 Laporan Kondisi Kaca</div>
 
                 <form action="{{ url_for('petugas_monitoring.kondisi_kaca') }}" method="POST" onsubmit="validasiForm(event)">
-                    <div class="mb-4">
-                        <label class="form-label">Tambah Gambar</label>
-                        <div class="upload-box" onclick="bukaKamera()">
-                            <span id="uploadText">Klik untuk pilih gambar</span>
-                            <img id="previewImage" style="display:none; width:100%; border-radius:8px;">
+
+                    <!-- UPLOAD FOTO KERUSAKAN -->
+                    <div class="upload-section">
+                        <label class="form-label">📸 Foto Kerusakan</label>
+                        <div class="upload-box" onclick="bukaKamera()" id="uploadBoxEl">
+                            <div class="upload-icon">📷</div>
+                            <span id="uploadText">Klik untuk buka kamera</span>
+                            <img id="previewImage" style="display:none;">
                         </div>
-                        <!-- ✅ Hapus capture="environment" supaya buka folder file -->
-                        <input type="file" id="imgInput" accept="image/*" style="display:none;">
+                        <!-- capture="environment" = buka kamera belakang di Android -->
+                        <input type="file" id="imgInput" accept="image/*" capture="environment" style="display:none;">
+                        <input type="hidden" name="gambar_url" id="gambar_url">
+                        <p class="upload-hint">💡 Foto rusak akan menggantikan foto kaca normal</p>
                     </div>
 
-                    <div class="mb-3">
+                    <!-- DROPDOWN KACA -->
+                    <div class="form-group">
                         <label class="form-label">Kategori Kaca</label>
                         <select id="kategori" class="form-select" onchange="loadUkuran()" required>
                             <option value="">Pilih Kategori</option>
                         </select>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <label class="form-label">Ukuran Kaca</label>
                         <select id="ukuran" class="form-select" onchange="loadKetebalan()" required>
                             <option value="">Pilih Ukuran</option>
                         </select>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <label class="form-label">Ketebalan Kaca</label>
                         <select id="ketebalan" class="form-select" onchange="setIdKaca()" required>
                             <option value="">Pilih Ketebalan</option>
@@ -83,23 +93,46 @@
                     </div>
 
                     <input type="hidden" name="id_kaca" id="id_kaca">
-                    <input type="hidden" name="gambar_base64" id="gambar_base64">
 
-                    <div class="mb-3">
+                    <!-- JUMLAH RUSAK -->
+                    <div class="form-group">
                         <label class="form-label">Jumlah Rusak (Pcs)</label>
-                        <input type="number" name="jumlah_rusak" class="form-control" placeholder="0" required min="1">
+                        <input type="number" name="jumlah_rusak" class="form-control"
+                            placeholder="0" required min="1">
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Catatan Kaca</label>
-                        <textarea name="catatan" class="form-control" rows="4" placeholder="Masukkan kondisi atau catatan kaca" required></textarea>
+                    <!-- CATATAN -->
+                    <div class="form-group">
+                        <label class="form-label">Catatan Kerusakan</label>
+                        <textarea name="catatan" class="form-control" rows="3"
+                            placeholder="Deskripsikan kondisi atau penyebab kerusakan..." required></textarea>
                     </div>
 
-                    <button type="submit" class="btn-submit">Kirim Kondisi Kaca</button>
+                    <button type="submit" class="btn-submit">🚨 Kirim Laporan Kerusakan</button>
                 </form>
             </div>
         </main>
     </div>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <a href="{{ url_for('petugas_monitoring.dashboard') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">📊</span>
+            <span class="bottom-nav-label">Dashboard</span>
+        </a>
+        <a href="{{ url_for('petugas_monitoring.kondisi_kaca') }}" class="bottom-nav-item active">
+            <span class="bottom-nav-icon">🔍</span>
+            <span class="bottom-nav-label">Laporan</span>
+        </a>
+        <a href="{{ url_for('petugas_monitoring.instruksi') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">📋</span>
+            <span class="bottom-nav-label">Instruksi</span>
+        </a>
+        <a href="{{ url_for('petugas_monitoring.chatting') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">💬</span>
+            <span class="bottom-nav-label">Chat</span>
+        </a>
+    </nav>
 
     <script id="kaca-data" type="application/json">{{ list_kaca | tojson }}</script>
     <script>const kacaData = JSON.parse(document.getElementById("kaca-data").textContent);</script>

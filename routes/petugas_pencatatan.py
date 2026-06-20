@@ -1,3 +1,4 @@
+import os
 from flask import Blueprint, render_template, request, session, flash, redirect, url_for, jsonify
 from services.supabase_services import supabase
 
@@ -22,6 +23,7 @@ def lapor_masuk():
         kat_man = request.form.get('kategori_manual')
         uk_man = request.form.get('ukuran_manual')
         teb_man = request.form.get('ketebalan_manual')
+        gambar_url = request.form.get('gambar_url', '').strip()
 
         try:
             # Jika Kaca Baru / Manual
@@ -29,7 +31,14 @@ def lapor_masuk():
                 res_kat = supabase.table('kategori').select('id_kategori').eq('kategori', kat_man).execute()
                 id_kategori = res_kat.data[0]['id_kategori'] if res_kat.data else supabase.table('kategori').insert({'kategori': kat_man}).execute().data[0]['id_kategori']
 
-                id_kaca = supabase.table('kaca').insert({'id_kategori': id_kategori, 'ukuran': uk_man, 'ketebalan': teb_man}).execute().data[0]['id_kaca']
+                kaca_data_insert = {'id_kategori': id_kategori, 'ukuran': uk_man, 'ketebalan': teb_man}
+                if gambar_url:
+                    kaca_data_insert['gambar'] = gambar_url
+                id_kaca = supabase.table('kaca').insert(kaca_data_insert).execute().data[0]['id_kaca']
+            else:
+                # Update gambar kaca jika ada URL baru
+                if gambar_url:
+                    supabase.table('kaca').update({'gambar': gambar_url}).eq('id_kaca', id_kaca).execute()
 
             # Catat ke kaca_masuk
             supabase.table('kaca_masuk').insert({'id_kaca': id_kaca, 'jumlah': jumlah, 'perusahaan': my_perusahaan}).execute()
@@ -182,3 +191,35 @@ def kirim_pesan():
     }).execute()
 
     return jsonify({"status": "success"})
+
+# ==========================================
+# 5. UPLOAD GAMBAR (bypass RLS via server)
+# ==========================================
+@petugas_pencatatan_bp.route('/api/upload_gambar', methods=['POST'])
+def upload_gambar():
+    if 'file' not in request.files:
+        return jsonify({"error": "Tidak ada file yang dikirim"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "Nama file kosong"}), 400
+
+    try:
+        import random, string, time
+        ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else 'jpg'
+        filename = f"kaca_{int(time.time())}_{''.join(random.choices(string.ascii_lowercase, k=6))}.{ext}"
+        file_bytes = file.read()
+        content_type = file.content_type or f'image/{ext}'
+
+        supabase.storage.from_('kaca-images').upload(
+            path=filename,
+            file=file_bytes,
+            file_options={"content-type": content_type, "upsert": "true"}
+        )
+
+        supabase_url = os.environ.get('SUPABASE_URL', '')
+        public_url = f"{supabase_url}/storage/v1/object/public/kaca-images/{filename}"
+        return jsonify({"url": public_url})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

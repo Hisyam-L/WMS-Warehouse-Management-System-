@@ -3,8 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Monitoring Stock Kaca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='petugas_monitoring/css/dashboard.css') }}">
 </head>
 
@@ -78,6 +80,26 @@
             <script src="{{ url_for('static', filename='petugas_monitoring/js/dashboard.js') }}"></script>
         </main>
     </div>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <a href="{{ url_for('petugas_monitoring.dashboard') }}" class="bottom-nav-item active">
+            <span class="bottom-nav-icon">📊</span>
+            <span class="bottom-nav-label">Dashboard</span>
+        </a>
+        <a href="{{ url_for('petugas_monitoring.kondisi_kaca') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">🔍</span>
+            <span class="bottom-nav-label">Laporan</span>
+        </a>
+        <a href="{{ url_for('petugas_monitoring.instruksi') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">📋</span>
+            <span class="bottom-nav-label">Instruksi</span>
+        </a>
+        <a href="{{ url_for('petugas_monitoring.chatting') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">💬</span>
+            <span class="bottom-nav-label">Chat</span>
+        </a>
+    </nav>
 </body>
 
 </html>

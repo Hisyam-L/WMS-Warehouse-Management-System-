@@ -3,8 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesan & Chatting - Pencatatan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Pesan &amp; Chatting - Pencatatan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='petugas_pencatatan/css/chatting.css') }}">
 </head>
@@ -100,6 +102,25 @@
     </div>
 
     <script src="{{ url_for('static', filename='petugas_pencatatan/js/chatting.js') }}"></script>
-</body>
 
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <a href="{{ url_for('petugas_pencatatan.lapor_masuk') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">📦</span>
+            <span class="bottom-nav-label">Masuk</span>
+        </a>
+        <a href="{{ url_for('petugas_pencatatan.info_dibeli') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">🛒</span>
+            <span class="bottom-nav-label">Dibeli</span>
+        </a>
+        <a href="{{ url_for('petugas_pencatatan.lapor_keluar') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">🚚</span>
+            <span class="bottom-nav-label">Keluar</span>
+        </a>
+        <a href="{{ url_for('petugas_pencatatan.chatting') }}" class="bottom-nav-item active">
+            <span class="bottom-nav-icon">💬</span>
+            <span class="bottom-nav-label">Chat</span>
+        </a>
+    </nav>
+</body>
 </html>

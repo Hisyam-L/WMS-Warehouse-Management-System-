@@ -114,8 +114,14 @@
                     data-kondisi="{{ kaca.kondisi }}" data-ukuran="{{ kaca.ukuran }}"
                     data-ketebalan="{{ kaca.ketebalan }}">
                     <div class="relative">
+                        {% if kaca.gambar %}
+                        <img src="{{ kaca.gambar }}"
+                            class="w-full h-44 object-cover"
+                            onerror="this.src='https://placehold.co/400x200/9ca3af/ffffff?text=Kaca+{{ kaca.kategori }}'">
+                        {% else %}
                         <img src="https://placehold.co/400x200/9ca3af/ffffff?text=Kaca+{{ kaca.kategori }}"
                             class="w-full h-44 object-cover">
+                        {% endif %}
                         {% if kaca.kondisi == 'Rusak' %}
                         <div class="badge-rusak">Rusak</div>
                         {% endif %}
