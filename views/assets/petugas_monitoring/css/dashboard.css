@@ -221,43 +221,73 @@ select:focus {
     border-bottom: none;
 }
 /* =============================================
-   BOTTOM NAVIGATION (Mobile)
+   HAMBURGER BUTTON + OVERLAY MENU (Mobile)
    ============================================= */
-.bottom-nav {
-    display: none; position: fixed;
-    bottom: 0; left: 0; right: 0; height: 68px;
-    background: white; border-top: 1px solid #e2e8f0;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-    z-index: 999; justify-content: space-around;
-    align-items: center; padding: 0 8px;
-    padding-bottom: env(safe-area-inset-bottom, 0);
+.mobile-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    margin-left: auto;
 }
-.bottom-nav-item {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-decoration: none; color: #94a3b8;
-    flex: 1; padding: 8px 4px;
-    border-radius: 12px; transition: all 0.2s;
-    gap: 3px; min-height: 52px;
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    background: #1f2957;
+    z-index: 500;
+    flex-direction: column;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
 }
-.bottom-nav-item.active { color: #1f2957; background: #eef2ff; }
-.bottom-nav-item:active { background: #e0e7ff; }
-.bottom-nav-icon { font-size: 22px; line-height: 1; }
-.bottom-nav-label { font-size: 11px; font-weight: 600; white-space: nowrap; }
+.mobile-menu-overlay.open { display: flex; }
+.mobile-menu-overlay a {
+    display: block;
+    padding: 16px 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    transition: background 0.15s;
+}
+.mobile-menu-overlay a:hover,
+.mobile-menu-overlay a.active { background: rgba(255,255,255,0.14); }
+.mobile-menu-overlay .menu-logout {
+    display: block;
+    padding: 16px 20px;
+    color: #f87171;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    background: none;
+    border-left: none; border-right: none; border-bottom: none;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+}
+.mobile-menu-overlay .menu-logout:hover { background: rgba(239,68,68,0.15); }
 
-/* =============================================
-   RESPONSIVE - MOBILE
-   ============================================= */
+/* Bottom nav – tetap ada tapi disembunyikan (sesuai referensi lama) */
+.bottom-nav { display: none !important; }
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
+    .mobile-hamburger { display: block; }
+    .circle-profile { display: none !important; }
     body { overflow-x: hidden; min-height: 100vh; height: auto; }
     .sidebar { display: none !important; }
-    .bottom-nav { display: flex; }
     .main-container { height: calc(100vh - 60px); overflow: hidden; }
-    .content-section { padding: 12px; overflow-y: auto; height: 100%; padding-bottom: 80px; }
+    .content-section { padding: 12px; overflow-y: auto; height: 100%; }
     h2 { font-size: 15px; padding: 12px; }
     select { padding: 14px; font-size: 16px; }
     .box { padding: 16px; }
 }
 @media (min-width: 769px) {
-    .bottom-nav { display: none !important; }
+    .mobile-hamburger { display: none; }
+    .mobile-menu-overlay { display: none !important; }
 }

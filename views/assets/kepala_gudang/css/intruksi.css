@@ -303,3 +303,46 @@ body {
 .submit-btn:hover {
     background: #111b44;
 }
+
+/* === MOBILE RESPONSIVE === */
+.mobile-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 150;
+}
+.sidebar-overlay.show { display: block; }
+
+@media (max-width: 768px) {
+    .mobile-hamburger { display: block; }
+    .circle-profile { display: none !important; }
+    #profileDropdown { display: none !important; }
+    body { height: auto; overflow-x: hidden; }
+    .sidebar {
+        display: none;
+        position: fixed;
+        top: 60px; left: 0; bottom: 0;
+        width: 240px;
+        z-index: 200;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+    }
+    .sidebar.mobile-open { display: flex !important; }
+    .main-container { height: calc(100vh - 60px); overflow: hidden; }
+    .content-section { padding: 12px; overflow-y: auto; }
+    .glass-card { border-radius: 14px; }
+}
+@media (min-width: 769px) {
+    .mobile-hamburger { display: none; }
+    .custom-panel { max-width: 420px; }
+}

@@ -13,7 +13,10 @@
 <body>
 
     <nav class="top-navbar">
-        <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button class="mobile-hamburger" id="mobileHamburger">&#9776;</button>
+            <div class="brand-name">{{ session.get('perusahaan', 'PT Cermin Nusantara') }}</div>
+        </div>
         <div style="position: relative;">
             <div class="circle-profile" id="profileBtn" title="Menu Profil">
                 {{ session.get('username', 'U')[0] | upper }}
@@ -39,6 +42,7 @@
         </div>
     </nav>
 
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <div class="main-container">
 
         <aside class="sidebar" id="sidebar">
@@ -127,6 +131,15 @@
     <div id="supabase-tx-data" data-json='{{ transactions_json | safe }}' style="display: none;"></div>
 
     <script src="{{ url_for('static', filename='kepala_gudang/js/dashboard.js') }}"></script>
+    <script>
+    (function(){
+        var ham = document.getElementById('mobileHamburger');
+        var sb = document.getElementById('sidebar');
+        var ov = document.getElementById('sidebarOverlay');
+        if(ham){ ham.addEventListener('click', function(){ sb.classList.toggle('mobile-open'); ov.classList.toggle('show'); }); }
+        if(ov){ ov.addEventListener('click', function(){ sb.classList.remove('mobile-open'); ov.classList.remove('show'); }); }
+    })();
+    </script>
 </body>
 
 </html>

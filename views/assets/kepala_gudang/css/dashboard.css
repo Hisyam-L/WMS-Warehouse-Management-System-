@@ -373,8 +373,50 @@ body {
     gap: 16px;
 }
 
-@media (max-width: 700px) {
-    .content-body {
-        padding: 18px;
+/* ==========================================
+   MOBILE HAMBURGER + SIDEBAR DRAWER
+   ========================================== */
+.mobile-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 150;
+}
+.sidebar-overlay.show { display: block; }
+
+@media (max-width: 768px) {
+    .mobile-hamburger { display: block; }
+    .circle-profile { display: none !important; }
+    #profileDropdown { display: none !important; }
+
+    body { height: auto; overflow-x: hidden; }
+
+    .sidebar {
+        display: none;
+        position: fixed;
+        top: 60px; left: 0; bottom: 0;
+        width: 240px;
+        z-index: 200;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.2);
     }
+    .sidebar.mobile-open { display: flex !important; }
+    .main-container { height: calc(100vh - 60px); overflow: hidden; }
+    .content-body { padding: 14px; }
+    .content-box { padding: 16px; border-radius: 14px; }
+    .filter-bar { flex-wrap: wrap; border-radius: 16px; }
+    .stok-name { width: 130px; }
+}
+@media (min-width: 769px) {
+    .mobile-hamburger { display: none; }
 }

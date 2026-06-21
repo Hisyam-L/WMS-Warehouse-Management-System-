@@ -1,0 +1,472 @@
+/* ========================================================
+   BASE.CSS — Shared Design System (Figma)
+   WMS Warehouse Management System
+   ======================================================== */
+
+/* === TOKENS === */
+:root {
+  --navy:        #1a2347;
+  --navy-dark:   #111830;
+  --sidebar-bg:  #c8cde8;
+  --content-bg-desktop: #dde1f5;
+  --content-bg-mobile:  #f0ede8;
+  --card-bg:     #ffffff;
+  --border:      #c8cce0;
+  --text-main:   #1a2347;
+  --text-muted:  #64748b;
+  --danger:      #ef4444;
+  --font:        'Inter', system-ui, -apple-system, sans-serif;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+}
+
+/* === RESET === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font);
+}
+
+/* =========================================================
+   KEPALA GUDANG — Desktop-first Layout
+   ========================================================= */
+
+/* Top navbar */
+.kg-navbar {
+  background: var(--navy);
+  color: white;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+.kg-navbar .brand { font-size: 18px; font-weight: 600; }
+.kg-navbar .profile-circle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #e9edff;
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: 2px solid #a8b3e0;
+  transition: background .2s;
+  position: relative;
+}
+.kg-navbar .profile-circle:hover { background: #d1d5e8; }
+
+/* Layout wrapper */
+.kg-layout {
+  display: flex;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+}
+
+/* Sidebar */
+.kg-sidebar {
+  width: 160px;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+  gap: 10px;
+  overflow-y: auto;
+  transition: width .25s;
+}
+.kg-sidebar .sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.kg-sidebar .sidebar-header button {
+  background: none; border: none;
+  font-size: 18px; cursor: pointer;
+  color: var(--navy);
+}
+.kg-sidebar a {
+  display: block;
+  text-decoration: none;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  transition: background .15s, color .15s;
+}
+.kg-sidebar a:hover { background: #eef2ff; }
+.kg-sidebar a.active {
+  background: var(--navy);
+  color: white;
+  border-color: var(--navy);
+}
+
+/* Content area */
+.kg-content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--content-bg-desktop);
+  padding: 24px;
+}
+
+/* =========================================================
+   PETUGAS — Mobile-first Layout
+   ========================================================= */
+
+/* Top navbar */
+.pt-navbar {
+  background: var(--navy);
+  color: white;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  flex-shrink: 0;
+  z-index: 100;
+  position: sticky;
+  top: 0;
+}
+.pt-navbar .brand { font-size: 15px; font-weight: 600; }
+.pt-navbar .hamburger {
+  background: none; border: none;
+  color: white; font-size: 22px;
+  cursor: pointer; padding: 4px;
+  line-height: 1;
+}
+
+/* Hamburger dropdown menu overlay */
+.pt-menu-overlay {
+  display: none;
+  position: fixed;
+  top: 48px; left: 0; right: 0;
+  background: var(--navy);
+  z-index: 200;
+  flex-direction: column;
+}
+.pt-menu-overlay.open { display: flex; }
+.pt-menu-overlay a {
+  display: block;
+  padding: 14px 20px;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: background .15s;
+}
+.pt-menu-overlay a:hover { background: rgba(255,255,255,0.08); }
+.pt-menu-overlay .close-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 16px;
+}
+.pt-menu-overlay .close-row button {
+  background: none; border: none;
+  color: white; font-size: 22px;
+  cursor: pointer;
+}
+
+/* Content */
+.pt-content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--content-bg-mobile);
+  padding: 16px;
+  min-height: calc(100vh - 48px);
+}
+
+/* =========================================================
+   SHARED COMPONENTS
+   ========================================================= */
+
+/* Card */
+.wms-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Title bar inside card (dark button style from Figma) */
+.wms-card-title {
+  display: block;
+  background: var(--navy);
+  color: white;
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+/* Input / Select */
+.wms-input, .wms-select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: white;
+  font-size: 14px;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color .15s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.wms-input:focus, .wms-select:focus { border-color: var(--navy); }
+
+.wms-select-wrap {
+  position: relative;
+}
+.wms-select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--navy);
+  pointer-events: none;
+  font-size: 13px;
+}
+
+/* Button */
+.wms-btn {
+  display: block;
+  width: 100%;
+  background: var(--navy);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 13px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background .15s;
+}
+.wms-btn:hover { background: var(--navy-dark); }
+.wms-btn-outline {
+  background: white;
+  color: var(--navy);
+  border: 1.5px solid var(--navy);
+}
+.wms-btn-outline:hover { background: #eef2ff; }
+
+/* Form group */
+.wms-form-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.wms-form-group label {
+  flex: 0 0 130px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+  padding-top: 12px;
+}
+.wms-form-group .wms-input,
+.wms-form-group .wms-select,
+.wms-form-group .wms-select-wrap { flex: 1; }
+
+/* Badge Rusak */
+.badge-rusak {
+  background: var(--danger);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* Table */
+.wms-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.wms-table th {
+  padding: 10px 12px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-main);
+  border-bottom: 1.5px solid var(--border);
+}
+.wms-table td {
+  padding: 10px 12px;
+  text-align: center;
+  border-bottom: 1px solid #eef0f8;
+  color: var(--text-main);
+}
+
+/* Modal */
+.wms-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.2);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+.wms-modal-overlay.open { display: flex; }
+.wms-modal {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 360px;
+  overflow: hidden;
+}
+.wms-modal-body {
+  padding: 28px 24px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border);
+}
+.wms-modal-actions {
+  display: flex;
+}
+.wms-modal-actions button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--navy);
+  transition: background .15s;
+}
+.wms-modal-actions button:hover { background: #f4f6ff; }
+.wms-modal-actions button + button {
+  border-left: 1px solid var(--border);
+}
+
+/* Profile dropdown */
+.profile-dropdown {
+  display: none;
+  position: absolute;
+  right: 0; top: 44px;
+  width: 200px;
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  z-index: 300;
+  overflow: hidden;
+}
+.profile-dropdown.open { display: block; }
+.profile-dropdown .pd-info {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e6f2;
+  background: #f4f6fd;
+}
+.profile-dropdown .pd-info p:first-child { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+.profile-dropdown .pd-info p:last-child { font-size: 14px; font-weight: 700; color: var(--navy); }
+.profile-dropdown a {
+  display: block;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #dc2626;
+  text-decoration: none;
+  transition: background .15s;
+}
+.profile-dropdown a:hover { background: #fef2f2; }
+
+/* =========================================================
+   RESPONSIVE — KG becomes mobile at < 768px
+   ========================================================= */
+@media (max-width: 767px) {
+  /* KG: hide sidebar, show top hamburger pattern */
+  .kg-sidebar { display: none; }
+  .kg-sidebar.mobile-open {
+    display: flex;
+    position: fixed;
+    top: 56px; left: 0; bottom: 0;
+    width: 200px;
+    z-index: 200;
+    box-shadow: var(--shadow-md);
+  }
+  .kg-layout { flex-direction: column; }
+  .kg-content { padding: 14px; }
+  .kg-navbar .hamburger-kg {
+    display: flex;
+  }
+}
+@media (min-width: 768px) {
+  .kg-navbar .hamburger-kg { display: none; }
+}
+
+/* PT: on desktop show persistent sidebar */
+@media (min-width: 768px) {
+  .pt-body-wrap {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+  }
+  .pt-main-wrap {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  .pt-sidebar-desktop {
+    display: flex;
+    flex-direction: column;
+    width: 180px;
+    flex-shrink: 0;
+    background: var(--sidebar-bg);
+    padding: 20px 12px;
+    gap: 10px;
+    overflow-y: auto;
+  }
+  .pt-sidebar-desktop a {
+    display: block;
+    text-decoration: none;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    transition: background .15s;
+  }
+  .pt-sidebar-desktop a:hover { background: #eef2ff; }
+  .pt-sidebar-desktop a.active {
+    background: var(--navy);
+    color: white;
+    border-color: var(--navy);
+  }
+  .pt-sidebar-desktop .sidebar-title {
+    font-size: 14px; font-weight: 700;
+    color: var(--navy); margin-bottom: 4px;
+  }
+  .pt-content {
+    background: var(--content-bg-desktop);
+  }
+  .pt-menu-overlay { display: none !important; }
+  .pt-navbar .hamburger { display: none; }
+}

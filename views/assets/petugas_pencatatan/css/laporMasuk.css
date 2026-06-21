@@ -270,99 +270,89 @@ body {
 }
 
 /* =============================================
-   BOTTOM NAVIGATION (Mobile)
+   HAMBURGER BUTTON + OVERLAY MENU (Mobile)
    ============================================= */
-.bottom-nav {
+.mobile-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+.mobile-menu-overlay {
   display: none;
   position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 68px;
-  background: white;
-  border-top: 1px solid #e2e8f0;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-  z-index: 999;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0 8px;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  top: 60px; left: 0; right: 0;
+  background: #1f2957;
+  z-index: 500;
+  flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
 }
-.bottom-nav-item {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-decoration: none; color: #94a3b8;
-  flex: 1; padding: 8px 4px;
-  border-radius: 12px; transition: all 0.2s;
-  gap: 3px; min-height: 52px;
+.mobile-menu-overlay.open { display: flex; }
+.mobile-menu-overlay a {
+  display: block;
+  padding: 16px 20px;
+  color: white;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  transition: background 0.15s;
 }
-.bottom-nav-item.active { color: #1f2957; background: #eef2ff; }
-.bottom-nav-item:active { background: #e0e7ff; }
-.bottom-nav-icon { font-size: 22px; line-height: 1; }
-.bottom-nav-label { font-size: 11px; font-weight: 600; white-space: nowrap; }
+.mobile-menu-overlay a:hover,
+.mobile-menu-overlay a.active { background: rgba(255,255,255,0.14); }
+.mobile-menu-overlay .menu-logout {
+  display: block;
+  padding: 16px 20px;
+  color: #f87171;
+  font-size: 15px;
+  font-weight: 600;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  background: none;
+  border-left: none; border-right: none; border-bottom: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  text-decoration: none;
+}
+.mobile-menu-overlay .menu-logout:hover { background: rgba(239,68,68,0.15); }
 
-/* =============================================
-   RESPONSIVE - MOBILE (≤768px)
-   ============================================= */
+.bottom-nav { display: none !important; }
+
 @media (max-width: 768px) {
-  body { overflow-x: hidden; }
+    .top-navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-  /* Hide sidebar on mobile */
-  .sidebar { display: none !important; }
+    .desktop-profile {
+        display: none !important;
+    }
+    .circle-profile { display: none !important; }
 
-  /* Show bottom nav */
-  .bottom-nav { display: flex; }
+    .mobile-hamburger {
+        display: block !important;
+        margin-left: auto;}
 
-  /* Content full width + padding for bottom nav */
-  .content-section {
-    padding: 12px;
-    height: calc(100vh - 60px);
-    overflow-y: auto;
-    padding-bottom: 80px;
-  }
-
-  .main-container {
-    height: calc(100vh - 60px);
-    overflow: hidden;
-  }
-
-  /* Card */
-  .main-card {
-    padding: 16px;
-    border-radius: 14px;
-    margin-bottom: 0;
-  }
-
-  .header-box { font-size: 15px; padding: 12px; }
-
-  /* Forms bigger for touch */
-  .form-control {
-    padding: 14px;
-    font-size: 16px; /* prevent zoom on iOS */
-    border-radius: 12px;
-  }
-
-  .btn-submit {
-    padding: 18px;
-    font-size: 16px;
-    border-radius: 14px;
-    min-height: 56px;
-  }
-
-  .btn-pilih { min-height: 52px; padding: 0 12px; }
-
-  /* Upload box full width, taller */
-  .boxUpload { min-height: 200px; border-radius: 14px; }
-  .upload-icon { font-size: 48px; }
-  .boxUpload span { font-size: 15px; }
-
-  /* Modal bottom sheet */
-  .modal-kaca { align-items: flex-end; }
-  .modal-content { border-radius: 20px 20px 0 0; max-height: 85vh; }
-
-  /* Kaca items easier to tap */
-  .kaca-item { padding: 16px 12px; }
+    .sidebar { display: none !important; }
+    .main-container { height: calc(100vh - 60px); overflow: hidden; }
+    .content-section { padding: 8px; overflow: hidden; }
+    .chat-layout { height: calc(100vh - 60px); border-radius: 12px; flex-direction: column; }
+    .user-list { width: 100%; height: 130px; overflow-x: auto; overflow-y: hidden; display: flex; flex-direction: row; gap: 8px; padding: 10px; border-right: none; border-bottom: 1px solid #dbe1ff; }
+    .user-card { min-width: 110px; margin-bottom: 0; padding: 10px 8px; font-size: 12px; }
+    .chat-area { flex: 1; overflow: hidden; }
+    .chat-header { height: 50px; font-size: 14px; padding: 0 14px; }
+    .chat-container { padding: 10px; gap: 10px; }
+    .chat-bubble { max-width: 85vw; padding: 10px 13px; font-size: 14px; }
+    .chat-input { font-size: 16px; }
+    .input-area { padding: 8px 10px; }
 }
-
 @media (min-width: 769px) {
-  .bottom-nav { display: none !important; }
+  .mobile-hamburger { display: none; }
+  .mobile-menu-overlay { display: none !important; }
   .main-card { margin-bottom: 20px; max-width: 700px; margin-left: auto; margin-right: auto; }
 }
